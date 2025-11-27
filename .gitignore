@@ -1,0 +1,65 @@
+# Python
+.python-version
+__pycache__/
+*.py[cod]
+*$py.class
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# user local data and models
+user_data/*
+!user_data/strategies/
+db/
+
+# Generated data files
+*.csv
+*.html
+vectorbt_framework/data/
+vectorbt_framework/*.json
+
+# env
+.env
+.env.local
+*.secrets.json
+*.tar.gz
+.numba_cache/
+.pytest_cache/
+
+data/cache/*
+**/cache/*
+
+# Pycharm
+.idea/
+
+*.sqlite*
+
+# Caddy
+caddy/logs/
+!caddy/index.html
+
+#Ignore cursor AI rules
+.cursor/rules/codacy.mdc
+
+# --- tradingstrategies-ai auto-ignore ---
+# Ignore all data contents by default; keep placeholder
+/data/**
+!/data/.gitkeep
+
+# Notebook heavy artifacts
+**/.ipynb_checkpoints/**
+*.ipynb.backup
+*.backup
+
+# Common large data formats
+*.parquet
+*.feather
+*.zip
+*.db
+*.sqlite*
+*.pkl
+*.feather
+*.parquet

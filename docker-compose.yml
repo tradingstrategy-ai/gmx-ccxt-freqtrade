@@ -1,0 +1,25 @@
+x-freqtradebot: &default-freqtradebot
+  restart: unless-stopped
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  volumes:
+    - ./user_data:/freqtrade/user_data
+    - ./configs:/freqtrade/configs
+    - ./db:/freqtrade/db
+
+services:
+  pingpong-gmx:
+    <<: *default-freqtradebot
+    container_name: pingpong-gmx
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "9090:8080"
+    command: >
+      trade
+        --strategy Pingpong
+        --config /freqtrade/configs/pingpong_gmx.json
+        --config /freqtrade/configs/pingpong_gmx.secrets.json
+        --db-url sqlite:////freqtrade/db/pingpong-gmx.sqlite
+        --logfile /freqtrade/user_data/logs/pingpong-gmx.log
