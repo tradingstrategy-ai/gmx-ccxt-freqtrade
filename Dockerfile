@@ -21,7 +21,7 @@ USER ftuser
 
 # Copy and install web3-ethereum-defi dependency with extras
 COPY deps/web3-ethereum-defi /tmp/web3-ethereum-defi
-RUN pip install --user --force-reinstall --no-deps "/tmp/web3-ethereum-defi[web3v7]"
+RUN pip install --user --force-reinstall "/tmp/web3-ethereum-defi[web3v7]"
 
 # Use the patched entrypoint
 ENTRYPOINT ["python", "-u", "-B", "-m", "eth_defi.gmx.freqtrade.patched_entrypoint", "freqtrade"]
