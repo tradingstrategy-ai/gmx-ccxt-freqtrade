@@ -16,17 +16,17 @@ docker-compose up pingpong-gmx
 ## Usage
 
 ```bash
-# Run bot
+# Run bot and trade
 docker compose up pingpong-gmx
 
-# List markets
-docker compose run pingpong-gmx list-markets
+# Download data
+make data CONTAINER=pingpong_gmx
 
-# Backtesting
-docker compose run pingpong-gmx backtesting
+# Download data with timerange
+make data CONTAINER=pingpong_gmx TIMERANGE=20250801-20251001
 
-# Dry run
-docker compose run pingpong-gmx trade
+# Backtest
+make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
 ```
 
 ## How It Works

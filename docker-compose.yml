@@ -8,9 +8,9 @@ x-freqtradebot: &default-freqtradebot
     - ./db:/freqtrade/db
 
 services:
-  pingpong-gmx:
+  pingpong_gmx:
     <<: *default-freqtradebot
-    container_name: pingpong-gmx
+    container_name: pingpong_gmx
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -21,5 +21,5 @@ services:
         --strategy Pingpong
         --config /freqtrade/configs/pingpong_gmx.json
         --config /freqtrade/configs/pingpong_gmx.secrets.json
-        --db-url sqlite:////freqtrade/db/pingpong-gmx.sqlite
-        --logfile /freqtrade/user_data/logs/pingpong-gmx.log
+        --db-url sqlite:////freqtrade/db/pingpong_gmx.sqlite
+        --logfile /freqtrade/user_data/logs/pingpong_gmx.log
