@@ -2,9 +2,9 @@
     "$schema": "https://schema.freqtrade.io/schema.json",
     "trading_mode": "futures",
     "margin_mode": "isolated",
-    "max_open_trades": 1,
+    "max_open_trades": 2,
     "stake_currency": "USDC",
-    "stake_amount": 0.1,
+    "stake_amount": 10,
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
     "dry_run": false,
@@ -19,7 +19,7 @@
     },
     "entry_pricing": {
         "price_side": "other",
-        "use_order_book": true,
+        "use_order_book": false,
         "order_book_top": 1,
         "price_last_balance": 0.0,
         "check_depth_of_market": {
@@ -29,7 +29,7 @@
     },
     "exit_pricing":{
         "price_side": "other",
-        "use_order_book": true,
+        "use_order_book": false,
         "order_book_top": 1
     },
     "order_types": {
@@ -54,7 +54,7 @@
             "rateLimit": 500
         },
         "pair_whitelist": [
-            "ETH/USD"
+            "ETH/USDC"
         ]
     },
     "pairlists": [
