@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.freqtrade.io/schema.json",
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+    "max_open_trades": 3,
+    "stake_currency": "USDC",
+    "stake_amount": 10,
+    "tradable_balance_ratio": 0.99,
+    "fiat_display_currency": "USD",
+    "dry_run": false,
+    "dry_run_wallet": 100,
+    "timeframe": "1m",
+    "cancel_open_orders_on_exit": false,
+    "unfilledtimeout": {
+        "entry": 10,
+        "exit": 10,
+        "exit_timeout_count": 0,
+        "unit": "minutes"
+    },
+    "entry_pricing": {
+        "price_side": "bid",
+        "use_order_book": false,
+        "order_book_top": 1,
+        "price_last_balance": 0.0,
+        "check_depth_of_market": {
+            "enabled": false,
+            "bids_to_ask_delta": 1
+        }
+    },
+    "exit_pricing":{
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1
+    },
+    "order_types": {
+        "entry": "market",
+        "exit": "market",
+        "emergency_exit": "market",
+        "stoploss": "market",
+        "stoploss_on_exchange": false,
+        "stoploss_on_exchange_interval": 60,
+        "stoploss_on_exchange_limit_ratio": 0.99,
+        "entry_timeout_unfilled_order_method": "market",
+        "exit_timeout_unfilled_order_method": "market"
+    },
+    "exchange": {
+        "name": "hyperliquid",
+        "ccxt_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500
+        },
+        "ccxt_async_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500
+        },
+        "pair_whitelist": [
+            "BTC/USDC:USDC",
+            "ETH/USDC:USDC"
+        ],
+        "pair_blacklist": []
+    },
+    "pairlists": [
+        {
+            "method": "StaticPairList"
+        }
+    ],
+    "bot_name": "pingpong_hyperliquid",
+    "initial_state": "running",
+    "force_entry_enable": false,
+    "internals": {
+        "process_throttle_secs": 5
+    },
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8080,
+        "verbosity": "error",
+        "enable_openapi": true,
+        "CORS_origins": []
+    },
+}

@@ -46,11 +46,13 @@ class Pingpong(IStrategy):
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """Buy on every candle."""
+        dataframe.loc[:, "enter_long"] = 1
         dataframe.loc[:, "buy"] = 1
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """No exit signals in dataframe - all exits handled by custom_exit."""
+        dataframe.loc[:, "exit_long"] = 0
         dataframe.loc[:, "sell"] = 0
         return dataframe
 
