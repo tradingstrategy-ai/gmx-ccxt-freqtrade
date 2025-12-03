@@ -65,6 +65,9 @@ class Pingpong(IStrategy):
         side: str,
         **kwargs,
     ) -> bool:
+        if self.dp.runmode.value in ('backtest', 'plot'):
+            return True
+            
         existing = Trade.get_trades([Trade.is_open.is_(True), Trade.pair == pair]).first()
         if existing:
             logger.info(f"⛔ Skipping entry for {pair}: open trade exists (id={existing.id}).")

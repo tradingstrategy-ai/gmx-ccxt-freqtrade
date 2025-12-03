@@ -23,3 +23,51 @@ services:
         --config /freqtrade/configs/pingpong_gmx.secrets.json
         --db-url sqlite:////freqtrade/db/pingpong_gmx.sqlite
         --logfile /freqtrade/user_data/logs/pingpong_gmx.log
+
+  pingpong_hyperliquid:
+    <<: *default-freqtradebot
+    container_name: pingpong_hyperliquid
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "9090:8080"
+    command: >
+      trade
+        --strategy Pingpong
+        --config /freqtrade/configs/pingpong_hyperliquid.json
+        --config /freqtrade/configs/pingpong_hyperliquid.secrets.json
+        --db-url sqlite:////freqtrade/db/pingpong_hyperliquid.sqlite
+        --logfile /freqtrade/user_data/logs/pingpong_hyperliquid.log
+
+  simple_gmx:
+    <<: *default-freqtradebot
+    container_name: simple_gmx
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "9091:8080"
+    command: >
+      trade
+        --strategy Simple
+        --config /freqtrade/configs/simple_gmx.json
+        --config /freqtrade/configs/simple_gmx.secrets.json
+        --db-url sqlite:////freqtrade/db/simple_gmx.sqlite
+        --logfile /freqtrade/user_data/logs/simple_gmx.log
+
+  simple_hyperliquid:
+    <<: *default-freqtradebot
+    container_name: simple_hyperliquid
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "9092:8080"
+    command: >
+      trade
+        --strategy Simple
+        --config /freqtrade/configs/simple_hyperliquid.json
+        --config /freqtrade/configs/simple_hyperliquid.secrets.json
+        --db-url sqlite:////freqtrade/db/simple_hyperliquid.sqlite
+        --logfile /freqtrade/user_data/logs/simple_hyperliquid.log
