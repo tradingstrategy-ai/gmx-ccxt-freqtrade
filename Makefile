@@ -1,4 +1,4 @@
-TIMEFRAME ?= 1m
+TIMEFRAME ?= 5m
 TIMERANGE ?= 20251101-20251130
 
 data:
@@ -27,4 +27,6 @@ backtest:
 		--config /freqtrade/configs/$(CONTAINER).secrets.json \
 		--strategy-path /freqtrade/strategies \
 		--strategy $(STRATEGY) \
-		--timerange $(TIMERANGE)
+		--timerange $(TIMERANGE) \
+		--cache none \
+		-vvv

@@ -4,14 +4,13 @@
     "margin_mode": "isolated",
     "max_open_trades": 2,
     "stake_currency": "USDC",
-    "stake_amount": 15,
+    "stake_amount": 10,
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
     "dry_run": false,
     "dry_run_wallet": 100,
-    "timeframe": "5m",
+    "timeframe": "1m",
     "cancel_open_orders_on_exit": false,
-    "futures_funding_rate": 0,
     "unfilledtimeout": {
         "entry": 10,
         "exit": 10,
@@ -55,7 +54,7 @@
             "rateLimit": 500
         },
         "pair_whitelist": [
-            "ETH/USDC:USDC"
+            "ETH/USDC"
         ]
     },
     "pairlists": [
@@ -63,7 +62,7 @@
             "method": "StaticPairList"
         }
     ],
-    "bot_name": "pingpong_gmx",
+    "bot_name": "simple_gmx",
     "initial_state": "running",
     "force_entry_enable": false,
     "experimental": {
@@ -78,5 +77,6 @@
         "listen_port": 8080,
         "verbosity": "error",
         "enable_openapi": true
-    },
+    }
 }
+
