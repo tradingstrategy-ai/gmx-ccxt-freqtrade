@@ -27,6 +27,15 @@ make data CONTAINER=pingpong_gmx TIMERANGE=20250801-20251001
 
 # Backtest
 make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
+
+# Verbosity level for freqtrade commands (empty, -v, -vv, or -vvv or more)
+make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong VERBOSE=-v
+
+# Pass timerange to freqtrade
+make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250801-20251001 VERBOSE=-vv
+
+# Pass timeframe to freqtrade with a different strategy
+make backtest CONTAINER=pingpong_gmx STRATEGY=ADXMomentum TIMERANGE=20251031-20251105 TIMEFRAME=1m VERBOSE=-vvv # more verbose
 ```
 
 ## How It Works
