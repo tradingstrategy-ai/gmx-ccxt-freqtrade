@@ -23,31 +23,16 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERA
 ```
 
 **What you'll see:**
-```
-========================================= BACKTEST REPORT =========================================
-|      Pair |   Entries |   Avg Profit % |   Cum Profit % |   Tot Profit USDC |   Tot Profit % |
-|-----------+-----------+----------------+----------------+-------------------+----------------|
-| ETH/USDC  |        23 |           2.15 |          49.45 |            494.50 |           4.95 |
-|     TOTAL |        23 |           2.15 |          49.45 |            494.50 |           4.95 |
-...
-```
 
-## Step 4: Generate Equity Curve (1 min)
-
-### Method 1: Freqtrade Built-in
-
-```bash
-docker-compose run --rm adxmomentum_gmx freqtrade plot-dataframe \
-  --strategy ADXMomentum \
-  --timerange 20250101-20250401 \
-  -p ETH/USDC:USDC \
-  --indicators1 adx,plus_di,minus_di \
-  --indicators2 mom
+```py
+┏━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃    Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃         Drawdown ┃
+┡━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ ADXMomentum │     59 │        -0.08 │          -0.672 │        -0.67 │      1:58:00 │   18     0    41  30.5 │ 2.09 USDC  2.06% │
+└─────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┴──────────────────┘
 ```
 
-**Open:** `user_data/plot/freqtrade-plot-ETH_USDC_USDC-1h.html`
-
-### Method 2: Custom Python Script
+## Step 4: Generate Equity Curve (3 mins)
 
 ```bash
 # Find latest backtest results
@@ -67,49 +52,8 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-YYYY-MM
 2. **Green dashed line** = Peak balance (all-time high)
 3. **Red shaded area** = Drawdown from peak
 
-### Key Metrics to Check:
 
-**Good ADX Strategy:**
-- Win rate: 40-55%
-- Profit factor: > 1.5
-- Max drawdown: < 20%
-- Average profit per trade: > 2-3%
-
-**Warning Signs:**
-- Win rate < 30% (too many losers)
-- Max drawdown > 25% (too risky)
-- Equity curve flat or declining (not profitable)
-
-## Next Steps
-
-### 1. Understand the Strategy
-
-**Key points:**
-- ADX > 25 = Strong trend
-- +DI > -DI = Bullish
-- MOM > 0 = Positive momentum
-- All conditions must be true to enter
-
-### 2. Optimize Parameters
-
-Try different values:
-
-```python
-# Edit user_data/strategies/ADXMomentum.py
-
-# More conservative (fewer trades)
-(dataframe['adx'] > 30)  # Instead of 25
-
-# Take profits faster
-minimal_roi = {"0": 0.03}  # Instead of 0.05
-
-# Tighter stop loss
-stoploss = -0.15  # Instead of -0.25
-```
-
-Re-run backtest after each change.
-
-### 3. Test Different Timeframes
+### Test Different Timeframes
 
 ```bash
 # 4h timeframe (longer holds)
@@ -118,7 +62,7 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=4h TIMERA
 # Compare results
 ```
 
-### 4. Test Different Date Ranges
+### Test Different Date Ranges
 
 ```bash
 # Q1 2025
@@ -128,8 +72,6 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERA
 make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250401-20250701
 ```
 
-**Good strategy:** Performs similarly in both periods
-**Overfit strategy:** Great in Q1, poor in Q2
 
 ## Common Issues
 
@@ -141,17 +83,8 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERA
 
 ### Too Many Losing Trades
 
-**Solution:** Strategy catching false breakouts. Try:
-- Higher ADX threshold: `(dataframe['adx'] > 30)`
-- Use 4h timeframe instead of 1h
-- Tighten stop loss
+**Solution:** You suck. Give up.
 
-### Equity Curve Very Volatile
-
-**Solution:** High leverage or risky periods. Try:
-- Reduce position size in config
-- Tighter stop loss
-- Skip volatile market periods
 
 ## Full Workflow Example
 

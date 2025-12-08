@@ -128,7 +128,7 @@ Use correct pair format:
 {
   "pair_whitelist": [
     "ETH/USDC:USDC",  // ✅ Correct (futures format)
-    "ETH/USDC",       // ✅ Also works
+    "ETH/USDC",       // ✅ Also works. Won't work for futures
     "BTC/USDC:USDC"   // ✅ Correct
   ]
 }
@@ -225,7 +225,7 @@ ERROR: GMX only supports futures trading
 **Don't use:**
 ```json
 {
-  "trading_mode": "spot"  // ❌ GMX doesn't support spot
+  "trading_mode": "spot"  // ❌ GMX doesn't support spot. Use Swap markets
 }
 ```
 
