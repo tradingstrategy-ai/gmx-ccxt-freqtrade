@@ -84,8 +84,6 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-YYYY-MM
 
 ### 1. Understand the Strategy
 
-Read: [ADX Momentum Strategy Guide](examples/adx-momentum-strategy.md)
-
 **Key points:**
 - ADX > 25 = Strong trend
 - +DI > -DI = Bullish
@@ -185,9 +183,7 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERA
 
 ## Resources
 
-- **[Full ADX Strategy Guide](examples/adx-momentum-strategy.md)** - Deep dive into indicators and logic
 - **[Equity Curves Guide](equity-curves.md)** - Advanced plotting and analysis
-- **[Interpreting Results](interpreting-results.md)** - Understand backtest metrics
 - **[GMX Specifics](gmx-specifics.md)** - GMX trading considerations
 
 ## Quick Commands Cheat Sheet

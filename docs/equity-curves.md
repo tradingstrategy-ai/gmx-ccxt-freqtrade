@@ -394,11 +394,53 @@ chmod +x scripts/plot_equity.py
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-2025-12-08_12-34-56.json
 ```
 
-## Next Steps
+### Running the Script - Complete Example
 
-- **[Interpreting Results](interpreting-results.md)** - Understand what the equity curve means
-- **[ADX Strategy Example](examples/adx-momentum-strategy.md)** - Complete ADX strategy walkthrough
-- **[Optimization](examples/strategy-optimization.md)** - Improve your equity curve
+Here's a complete workflow from backtest to equity curve visualization:
+
+```bash
+# 1. Run backtest for ADXMomentum strategy
+make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMERANGE=20250101-20250401 VERBOSE=-vv
+
+# 2. Find the backtest results file (it has a timestamp in the name)
+ls -lt user_data/backtest_results/
+
+# You'll see something like:
+# backtest-result-2025-12-08_14-23-45.json
+
+# 3. Generate equity curve with the script
+python scripts/plot_equity.py user_data/backtest_results/backtest-result-2025-12-08_14-23-45.json
+```
+
+**Expected output:**
+
+```
+✓ Equity curve saved to: user_data/backtest_results/equity_curve.png
+
+==================================================
+  Starting Balance:  $10,000.00
+  Final Equity:      $10,494.50
+  Total Profit:      $494.50
+  Total Return:      4.95%
+  Max Drawdown:      -8.23%
+  Total Trades:      23
+==================================================
+```
+
+**Generated visualization:**
+
+![ADX Strategy Equity Curve](equity_curve_adx.png)
+
+The chart shows:
+- **Blue line**: Your account balance over time
+- **Green dashed line**: Peak equity (all-time high)
+- **Red shaded area**: Drawdown from peak (bottom panel)
+
+This visualization immediately shows you:
+- Strategy profitability (upward trend = profitable)
+- Risk level (shallow drawdowns = lower risk)
+- Consistency (smooth curve = consistent performance)
+- Recovery time (how quickly equity recovers after drawdowns)
 
 ## Resources
 

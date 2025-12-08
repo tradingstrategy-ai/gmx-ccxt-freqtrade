@@ -561,8 +561,6 @@ Manually account for funding:
 funding_cost = 10 × 0.03% × 1 day = 0.3% of stake
 ```
 
-See [Interpreting Results - Funding Fee Impact](interpreting-results.md#funding-fee-impact)
-
 ---
 
 ### High Slippage

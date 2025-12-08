@@ -291,8 +291,6 @@ Each backtest creates:
 - `.json` - Detailed trade list
 - `.meta.json` - Metadata and settings
 
-See [Interpreting Results](interpreting-results.md) for detailed analysis.
-
 ### Step 4: Iterate and Experiment
 
 Try different parameters:
@@ -615,17 +613,7 @@ Now that you have a working setup:
    - Learn how GMX differs from traditional exchanges
    - Understand funding fees and liquidity pools
 
-2. **Analyze your results** → [Interpreting Results](interpreting-results.md)
-   - Learn IStrategy v3 interface
-   - Explore example strategies
-   - Build custom indicators
-
-3. **Analyze results** → [Interpreting Results](interpreting-results.md)
-   - Deep dive into backtest metrics
-   - Identify profitable strategies
-   - Optimize parameters
-
-4. **Technical deep dive** → [Architecture](architecture.md)
+2. **Technical deep dive** → [Architecture](architecture.md)
    - Understand the monkeypatch approach
    - Explore CCXT integration
    - Extend the system

@@ -580,12 +580,7 @@ For developers who want to understand or extend the integration:
 
 Now that you understand GMX's unique characteristics:
 
-1. **Analyze results** → [Interpreting Results](interpreting-results.md)
-   - Factor in GMX-specific costs
-   - Evaluate funding impact
-   - Optimize for gas efficiency
-
-2. **Technical details** → [Architecture](architecture.md)
+1. **Technical details** → [Architecture](architecture.md)
    - Understand the monkeypatch
    - Explore CCXT integration
    - Extend functionality
