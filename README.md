@@ -89,7 +89,9 @@ make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-202502
 
 You should see backtest results with trades, profit, and statistics.
 
-**Next Steps**: Check [docs/getting-started.md](docs/getting-started.md) for detailed installation and configuration.
+**Next Steps**:
+- Quick start with ADX strategy: [docs/QUICKSTART.md](docs/QUICKSTART.md)
+- Detailed setup: [docs/getting-started.md](docs/getting-started.md)
 
 ## Usage Examples
 
@@ -179,11 +181,16 @@ Each container has its own:
 
 ## Documentation
 
+### Core Guides
 - **[Getting Started](docs/getting-started.md)** - Detailed installation and first backtest
 - **[GMX Specifics](docs/gmx-specifics.md)** - Understanding GMX differences
 - **[Interpreting Results](docs/interpreting-results.md)** - Analyzing backtest output
+- **[Equity Curves](docs/equity-curves.md)** - Generate and analyze equity curves
 - **[Architecture](docs/architecture.md)** - Technical deep dive (developers)
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
+
+### Strategy Examples
+- **[ADX Momentum Strategy](docs/examples/adx-momentum-strategy.md)** - Complete ADX strategy walkthrough
 
 
 ## Project Structure

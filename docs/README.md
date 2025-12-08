@@ -6,6 +6,13 @@ Complete documentation for GMX Freqtrade backtesting setup.
 
 New to this project? Start here:
 
+### [Quick Start](QUICKSTART.md)
+Get up and running with the ADX strategy in 10 minutes. Covers building, downloading data, backtesting, and generating equity curves.
+
+**Start here if:** You want to see results quickly.
+
+---
+
 ### [Getting Started](getting-started.md)
 Complete installation guide and your first backtest. Covers prerequisites, Docker setup, data download, and running backtests.
 
@@ -41,6 +48,36 @@ Understanding and analyzing backtest output.
 - Optimization guidelines
 
 **Read this if:** You want to evaluate strategy viability.
+
+---
+
+### [Equity Curves](equity-curves.md)
+Generating and analyzing equity curves from backtest results.
+
+**Topics:**
+- Using Freqtrade's built-in plotting tools
+- Creating custom equity curve visualizations
+- Analyzing drawdowns and performance patterns
+- Comparing strategy vs buy-and-hold
+- Python scripts for advanced analysis
+
+**Read this if:** You want to visualize backtest performance over time.
+
+---
+
+## Strategy Examples
+
+### [ADX Momentum Strategy](examples/adx-momentum-strategy.md)
+Complete walkthrough of the ADX trend-following strategy.
+
+**Topics:**
+- Indicator explanations (ADX, +DI, -DI, Momentum, SAR)
+- Entry and exit logic breakdown
+- Running and optimizing the strategy
+- Understanding results and patterns
+- Common issues and solutions
+
+**Read this if:** You want to understand or modify the ADX strategy.
 
 ---
 
@@ -81,9 +118,12 @@ Common issues and solutions.
 ### By User Type
 
 **Traders/Analysts:**
-1. [Getting Started](getting-started.md) - Setup and first backtest
-2. [GMX Specifics](gmx-specifics.md) - Understand GMX differences
-3. [Interpreting Results](interpreting-results.md) - Analyze performance
+1. [Quick Start](QUICKSTART.md) - 10-minute setup with ADX strategy
+2. [Getting Started](getting-started.md) - Detailed setup guide
+3. [GMX Specifics](gmx-specifics.md) - Understand GMX differences
+4. [ADX Momentum Strategy](examples/adx-momentum-strategy.md) - Strategy deep dive
+5. [Interpreting Results](interpreting-results.md) - Analyze performance
+6. [Equity Curves](equity-curves.md) - Visualize performance
 
 **Developers:**
 1. [Architecture](architecture.md) - Technical implementation
@@ -92,14 +132,23 @@ Common issues and solutions.
 
 ### By Task
 
+**Quick start (10 min):**
+→ [Quick Start Guide](QUICKSTART.md)
+
 **Installing:**
 → [Getting Started](getting-started.md)
 
 **First backtest:**
 → [Getting Started - Your First Backtest](getting-started.md#your-first-backtest)
 
+**Example strategy:**
+→ [ADX Momentum Strategy](examples/adx-momentum-strategy.md)
+
 **Understanding results:**
 → [Interpreting Results](interpreting-results.md)
+
+**Generating equity curves:**
+→ [Equity Curves](equity-curves.md)
 
 **Solving problems:**
 → [Troubleshooting](troubleshooting.md)
@@ -141,11 +190,15 @@ Common issues and solutions.
 ```
 docs/
 ├── README.md                    # This file (documentation index)
+├── QUICKSTART.md               # 10-minute ADX strategy setup
 ├── getting-started.md          # Installation and first backtest
 ├── gmx-specifics.md            # GMX differences and characteristics
 ├── interpreting-results.md     # Analyzing backtest output
+├── equity-curves.md            # Generating equity curves
 ├── architecture.md             # Technical implementation
-└── troubleshooting.md          # Common issues and solutions
+├── troubleshooting.md          # Common issues and solutions
+└── examples/
+    └── adx-momentum-strategy.md # ADX strategy walkthrough
 ```
 
 ---

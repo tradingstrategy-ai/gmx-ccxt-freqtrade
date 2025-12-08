@@ -47,20 +47,6 @@ Understanding GMX's unique characteristics and how they affect backtesting and t
 
 Understanding these differences is crucial for building effective GMX strategies.
 
-### Comparison Table
-
-| Feature | Centralized Exchange (CEX) | GMX |
-|---------|---------------------------|-----|
-| **Execution** | Order book matching | **Liquidity pool** |
-| **Order Book** | Full depth visible | **No order book** |
-| **Slippage** | Based on order book depth | **Based on pool liquidity** |
-| **Fees** | Maker (0.01-0.1%), Taker (0.02-0.2%) | **Flat 0.04-0.07%** |
-| **Funding** | Usually 8h, varies by CEX | **Always 8h cycles** |
-| **Latency** | ~50-200ms | **Block time (~0.25s Arbitrum)** |
-| **Volume Data** | Real-time tick data | **Not available** |
-| **Gas Costs** | None (centralized) | **$0.10-1.00 per transaction** |
-| **Privacy** | KYC required | **Wallet only** |
-| **Custody** | Exchange holds funds | **Self-custodial** |
 
 ### 1. No Order Book
 
@@ -398,25 +384,6 @@ Replace volume-based analysis:
 - Volume breakouts → Price + ATR breakouts
 - OBV → Accumulation/Distribution on price
 
-### Latency Expectations
-
-**Block time = execution delay**
-
-**Arbitrum:**
-- Block time: ~0.25 seconds
-- Total execution: 0.5-2 seconds
-- Finality: ~10 minutes (L1 confirmation)
-
-**Avalanche:**
-- Block time: ~2 seconds
-- Total execution: 3-5 seconds
-- Finality: 2-3 seconds
-
-**Implications:**
-- Can't front-run millisecond movements
-- Strategies should work on minute+ timeframes
-- Signals have 0.5-2s execution lag
-- Acceptable for most crypto strategies
 
 ### Fee Structure
 
@@ -446,6 +413,8 @@ Total: $62 (0.62%)
 
 Required profit to break even: 0.62%
 ```
+
+**N.B.** This is a very abstract overview of the fees & may change. Always use the official documentaion for reference.
 
 **Compare to CEX:**
 ```
@@ -556,6 +525,7 @@ The GMX integration lives in the `web3-ethereum-defi` library:
 
 **Why submodule?**
 - Shared across multiple projects
+- No need to install dependencies manually
 - Active development and maintenance
 - Comprehensive GMX functionality
 - Tested and production-ready
