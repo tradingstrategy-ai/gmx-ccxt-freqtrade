@@ -122,13 +122,32 @@ make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong VERBOSE=-vv
 
 # Different strategy and timeframe
 make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h VERBOSE=-vvv
-
-# To plot the equity curve of the strategy, will output to user_data/plot
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h 
-
-# To plot the strategy entry and exits for each backtested pair
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
 ```
+
+### Generate Visualizations
+
+```bash
+# Plot profit/equity curve (interactive HTML)
+make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+
+# Plot with auto-open in browser
+make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum AUTO_OPEN=1
+
+# Plot candlestick charts with entry/exit signals
+make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+
+# Plot with specific indicators
+make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
+  INDICATORS1="adx,plus_di,minus_di" \
+  INDICATORS2="mom"
+
+# Custom Python script (generates PNG images)
+python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
+```
+
+**Output locations:**
+- Freqtrade plots: `user_data/plot/*.html` (interactive)
+- Custom script: `user_data/backtest_results/*.png` (static images)
 
 ### Available Strategies
 

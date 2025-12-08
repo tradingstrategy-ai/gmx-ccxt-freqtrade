@@ -32,13 +32,29 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERA
 └─────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┴──────────────────┘
 ```
 
-## Step 4: Generate Equity Curve (3 mins)
+## Step 4: Generate Visualizations (3 mins)
+
+### Option 1: Freqtrade Built-in (Interactive HTML)
+
+```bash
+# Generate interactive profit plot (equity curve, drawdowns)
+make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+
+# Generate interactive candlestick charts with indicators
+make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
+  INDICATORS1="adx,plus_di,minus_di" \
+  INDICATORS2="mom"
+```
+
+**Output:** Interactive HTML files in `user_data/plot/`
+
+### Option 2: Custom Python Script (PNG Images)
 
 ```bash
 # Find latest backtest results
 ls -lt user_data/backtest_results/ | head -5
 
-# Plot equity curve
+# Generate equity curve and monthly returns heatmap
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-YYYY-MM-DD_HH-MM-SS.json
 ```
 
@@ -153,7 +169,11 @@ make data CONTAINER=adxmomentum_gmx TIMERANGE=YYYYMMDD-YYYYMMDD
 # Backtest
 make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMERANGE=YYYYMMDD-YYYYMMDD
 
-# Generate equity curve and monthly returns
+# Visualizations (Freqtrade built-in)
+make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum INDICATORS1="adx,plus_di,minus_di"
+
+# Visualizations (Custom Python)
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 
 # List backtest results
