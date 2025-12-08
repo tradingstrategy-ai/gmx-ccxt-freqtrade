@@ -183,7 +183,6 @@ class GMX(ccxt.Exchange):
         # Exchange metadata
         self.id = 'gmx'
         self.name = 'GMX'
-        self.countries = ['US']  # Decentralized
 
         # Supported features
         self.has = {
@@ -205,11 +204,14 @@ class GMX(ccxt.Exchange):
             'cancelOrder': False,     # Atomic execution
             'editOrder': False,       # No pending orders
         }
+        [...]
 
         # Web3 connection
         self.rpc_url = config.get('rpc_url')
         self.private_key = config.get('private_key')
         self.w3 = Web3(Web3.HTTPProvider(self.rpc_url))
+
+        [...]
 ```
 
 ### Supported CCXT Methods
