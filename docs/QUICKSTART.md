@@ -42,7 +42,32 @@ ls -lt user_data/backtest_results/ | head -5
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-YYYY-MM-DD_HH-MM-SS.json
 ```
 
-**Output:** `user_data/backtest_results/equity_curve.png`
+**Output:**
+- `user_data/backtest_results/equity_curve.png`
+- `user_data/backtest_results/monthly_returns.png`
+
+## How the ADXMomentum Strategy Works
+
+Trend-following momentum strategy that enters long positions during strong upward trends and exits when momentum reverses.
+
+### Entry Conditions (All must be true):
+
+1. **ADX > 25**: Strong trend present (not range-bound)
+2. **MOM > 0**: Positive momentum (price increasing)
+3. **+DI > 25**: Strong upward directional movement
+4. **+DI > -DI**: Upward direction stronger than downward
+
+### Exit Conditions (All must be true):
+
+1. **ADX > 25**: Still in trending market
+2. **MOM < 0**: Momentum turned negative
+3. **-DI > 25**: Strong downward directional movement
+4. **+DI < -DI**: Downward direction stronger than upward
+
+
+### Strategy Logic:
+
+This strategy enters when a strong uptrend is confirmed by multiple indicators agreeing, and exits when momentum reverses. It's designed to capture the middle of trends while avoiding false breakouts in ranging markets.
 
 ## Understanding the Results
 
@@ -128,11 +153,7 @@ make data CONTAINER=adxmomentum_gmx TIMERANGE=YYYYMMDD-YYYYMMDD
 # Backtest
 make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMERANGE=YYYYMMDD-YYYYMMDD
 
-# Plot with Freqtrade
-docker-compose run --rm adxmomentum_gmx freqtrade plot-dataframe \
-  --strategy ADXMomentum --timerange YYYYMMDD-YYYYMMDD -p ETH/USDC:USDC
-
-# Custom equity curve
+# Generate equity curve and monthly returns
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 
 # List backtest results

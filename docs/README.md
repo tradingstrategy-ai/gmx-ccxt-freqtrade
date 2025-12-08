@@ -40,11 +40,10 @@ Understanding how GMX differs from traditional exchanges. Essential reading befo
 Generating and analyzing equity curves from backtest results.
 
 **Topics:**
-- Using Freqtrade's built-in plotting tools
-- Creating custom equity curve visualizations
+- Creating custom equity curve visualizations with Python
 - Analyzing drawdowns and performance patterns
-- Comparing strategy vs buy-and-hold
-- Python scripts for advanced analysis
+- Monthly returns heatmap analysis
+- Complete example script (equity_curve.png + monthly_returns.png)
 
 **Read this if:** You want to visualize backtest performance over time.
 
