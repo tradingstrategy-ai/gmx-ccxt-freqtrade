@@ -209,71 +209,100 @@ make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-202502
 **Expected duration:** 30 seconds to 2 minutes (depends on data size)
 
 **Expected output:**
+
+```py
+                                                BACKTESTING REPORT
+┏━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃          Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ ETH/USDC:USDC │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+│         TOTAL │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+└───────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                         LEFT OPEN TRADES REPORT
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ TOTAL │      0 │          0.0 │           0.000 │          0.0 │         0:00 │    0     0     0     0 │
+└───────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                ENTER TAG STATS
+┏━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│     OTHER │    2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+│     TOTAL │    2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+└───────────┴─────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                 EXIT REASON STATS
+┏━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃     Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ one_minute_exit │  2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+│           TOTAL │  2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+└─────────────────┴───────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                        MIXED TAG STATS
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃     Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│           │ one_minute_exit │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+│     TOTAL │                 │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+└───────────┴─────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                         SUMMARY METRICS
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                        ┃ Value                          ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from              │ 2025-12-01 12:19:00            │
+│ Backtesting to                │ 2025-12-05 00:00:00            │
+│ Trading Mode                  │ Isolated Futures               │
+│ Max open trades               │ 1                              │
+│                               │                                │
+│ Total/Daily Avg Trades        │ 2510 / 836.67                  │
+│ Starting balance              │ 100 USDC                       │
+│ Final balance                 │ 55.334 USDC                    │
+│ Absolute profit               │ -44.666 USDC                   │
+│ Total profit %                │ -44.67%                        │
+│ CAGR %                        │ -100.00%                       │
+│ Sortino                       │ -24037.87                      │
+│ Sharpe                        │ -18729.53                      │
+│ Calmar                        │ -636.83                        │
+│ SQN                           │ -58.69                         │
+│ Profit factor                 │ 0.06                           │
+│ Expectancy (Ratio)            │ -0.02 (-0.87)                  │
+│ Avg. daily profit             │ -14.889 USDC                   │
+│ Avg. stake amount             │ 15 USDC                        │
+│ Total trade volume            │ 75345.619 USDC                 │
+│                               │                                │
+│ Best Pair                     │ ETH/USDC:USDC -44.67%          │
+│ Worst Pair                    │ ETH/USDC:USDC -44.67%          │
+│ Best trade                    │ ETH/USDC:USDC 0.73%            │
+│ Worst trade                   │ ETH/USDC:USDC -0.80%           │
+│ Best day                      │ -6.42 USDC                     │
+│ Worst day                     │ -13.274 USDC                   │
+│ Days win/draw/lose            │ 0 / 0 / 4                      │
+│ Min/Max/Avg. Duration Winners │ 0d 00:01 / 0d 00:01 / 0d 00:01 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:01 / 0d 00:01 / 0d 00:01 │
+│ Max Consecutive Wins / Loss   │ 4 / 128                        │
+│ Rejected Entry signals        │ 0                              │
+│ Entry/Exit Timeouts           │ 0 / 0                          │
+│                               │                                │
+│ Min balance                   │ 55.334 USDC                    │
+│ Max balance                   │ 99.976 USDC                    │
+│ Max % of account underwater   │ 44.67%                         │
+│ Absolute drawdown             │ 44.666 USDC (44.67%)           │
+│ Drawdown duration             │ 3 days 11:38:00                │
+│ Profit at drawdown start      │ -0.024 USDC                    │
+│ Profit at drawdown end        │ -44.666 USDC                   │
+│ Drawdown start                │ 2025-12-01 12:21:00            │
+│ Drawdown end                  │ 2025-12-04 23:59:00            │
+│ Market change                 │ 11.14%                         │
+└───────────────────────────────┴────────────────────────────────┘
+
+Backtested 2025-12-01 12:19:00 -> 2025-12-05 00:00:00 | Max open trades : 1
+                                                         STRATEGY SUMMARY
+┏━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
+┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃            Drawdown ┃
+┡━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
+│ Pingpong │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │ 44.666 USDC  44.67% │
+└──────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┴─────────────────────┘
 ```
-========================================================= BACKTESTING REPORT =========================================================
-|      Pair |   Entries |   Avg Profit % |   Cum Profit % |   Tot Profit USDC |   Tot Profit % |   Avg Duration |   Win  Draw  Loss  Win% |
-|-----------+-----------+----------------+----------------+-------------------+----------------+----------------+-------------------------|
-| ETH/USDC  |        45 |           0.25 |          11.25 |            112.50 |           1.13 |        0:01:00 |    27     0    18  60.0 |
-|     TOTAL |        45 |           0.25 |          11.25 |            112.50 |           1.13 |        0:01:00 |    27     0    18  60.0 |
-=============================================================== SUMMARY METRICS ========================================================
-| Metric                      | Value              |
-|-----------------------------|--------------------|
-| Backtesting from            | 2025-01-01 00:00:00|
-| Backtesting to              | 2025-02-01 00:00:00|
-| Max open trades             | 1                  |
-|                             |                    |
-| Total/Daily Avg Trades      | 45 / 1.45          |
-| Starting balance            | 10000 USDC         |
-| Final balance               | 10112.50 USDC      |
-| Absolute profit             | 112.50 USDC        |
-| Total profit %              | 1.13%              |
-| Avg. stake amount           | 1000 USDC          |
-| Total trade volume          | 45000 USDC         |
-|                             |                    |
-| Long / Short                | 45 / 0             |
-| Total profit Long %         | 1.13%              |
-| Total profit Short %        | 0.00%              |
-|                             |                    |
-| Best Pair                   | ETH/USDC 1.13%     |
-| Worst Pair                  | ETH/USDC 1.13%     |
-|                             |                    |
-| Best trade                  | 2.50%              |
-| Worst trade                 | -1.20%             |
-| Best day                    | 8.75%              |
-| Worst day                   | -3.50%             |
-| Days win/draw/lose          | 18 / 8 / 5         |
-| Avg. Duration Winners       | 0:01:00            |
-| Avg. Duration Loser         | 0:01:00            |
-| Zero Duration Trades        | 0.00%              |
-|                             |                    |
-| Max Consecutive Wins / Loss | 5 / 3              |
-| Rejected Entry signals      | 0                  |
-| Entry/Exit Timeouts         | 0 / 0              |
-|                             |                    |
-| Min balance                 | 9950 USDC          |
-| Max balance                 | 10150 USDC         |
-| Max % of account underwater | 2.5%               |
-| Absolute Drawdown (Account) | 2.5%               |
-| Drawdown                    | 50 USDC            |
-| Drawdown high               | 150 USDC           |
-| Drawdown low                | 100 USDC           |
-| Drawdown Start              | 2025-01-15 14:35:00|
-| Drawdown End                | 2025-01-16 09:10:00|
-| Market change               | 5.2%               |
-==========================================================================================================================
-```
-
-### Step 3: Understand the Results
-
-**Key Metrics Explained:**
-
-- **Total/Daily Avg Trades**: 45 trades over 31 days = 1.45 trades/day
-- **Win%**: 60% of trades were profitable (27 wins / 45 total)
-- **Total profit %**: 1.13% gain on starting balance
-- **Avg. stake amount**: Position size per trade (1000 USDC)
-- **Max Consecutive Wins/Loss**: Longest streak (5 wins, 3 losses)
-- **Max % of account underwater**: Worst drawdown (2.5%)
-- **Market change**: ETH price change during period (5.2%)
 
 **Result Files:**
 
@@ -291,7 +320,7 @@ Each backtest creates:
 - `.json` - Detailed trade list
 - `.meta.json` - Metadata and settings
 
-### Step 4: Iterate and Experiment
+### Step 3: Iterate and Experiment
 
 Try different parameters:
 
