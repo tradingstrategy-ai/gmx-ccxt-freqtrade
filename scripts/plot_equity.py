@@ -3,7 +3,7 @@
 Generate equity curve from Freqtrade backtest results
 
 Usage:
-    python scripts/plot_equity.py user_data/backtest_results/backtest-result-2025-12-08_12-34-56.json
+    python scripts/plot_equity.py user_data/backtest_results/backtest-result-2025-12-08_11-36-37.json
 """
 
 import sys
@@ -16,6 +16,12 @@ def plot_equity_curve(results_file):
     # Load results
     with open(results_file) as f:
         results = json.load(f)
+
+    # Handle multi-strategy format
+    if 'strategy' in results:
+        # Multi-strategy format - extract first strategy
+        strategy_name = list(results['strategy'].keys())[0]
+        results = results['strategy'][strategy_name]
 
     if not results.get('trades'):
         print("No trades found in results!")
@@ -91,5 +97,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("Usage: python plot_equity.py <backtest_results.json>")
         sys.exit(1)
+    # file = "backtest-result-2025-12-08_11-36-37.json"
 
     plot_equity_curve(sys.argv[1])

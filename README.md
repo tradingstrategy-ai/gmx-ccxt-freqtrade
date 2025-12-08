@@ -184,14 +184,9 @@ Each container has its own:
 ### Core Guides
 - **[Getting Started](docs/getting-started.md)** - Detailed installation and first backtest
 - **[GMX Specifics](docs/gmx-specifics.md)** - Understanding GMX differences
-- **[Interpreting Results](docs/interpreting-results.md)** - Analyzing backtest output
 - **[Equity Curves](docs/equity-curves.md)** - Generate and analyze equity curves
 - **[Architecture](docs/architecture.md)** - Technical deep dive (developers)
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
-
-### Strategy Examples
-- **[ADX Momentum Strategy](docs/examples/adx-momentum-strategy.md)** - Complete ADX strategy walkthrough
-
 
 ## Project Structure
 

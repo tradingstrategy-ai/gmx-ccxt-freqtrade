@@ -36,21 +36,6 @@ Understanding how GMX differs from traditional exchanges. Essential reading befo
 
 ---
 
-### [Interpreting Results](interpreting-results.md)
-Understanding and analyzing backtest output.
-
-**Topics:**
-- Key metrics explained (win rate, profit factor, drawdown, Sharpe)
-- Performance analysis and evaluation criteria
-- Identifying overfitting
-- Comparing strategies
-- GMX-specific considerations (funding fees, gas costs, slippage)
-- Optimization guidelines
-
-**Read this if:** You want to evaluate strategy viability.
-
----
-
 ### [Equity Curves](equity-curves.md)
 Generating and analyzing equity curves from backtest results.
 
@@ -62,22 +47,6 @@ Generating and analyzing equity curves from backtest results.
 - Python scripts for advanced analysis
 
 **Read this if:** You want to visualize backtest performance over time.
-
----
-
-## Strategy Examples
-
-### [ADX Momentum Strategy](examples/adx-momentum-strategy.md)
-Complete walkthrough of the ADX trend-following strategy.
-
-**Topics:**
-- Indicator explanations (ADX, +DI, -DI, Momentum, SAR)
-- Entry and exit logic breakdown
-- Running and optimizing the strategy
-- Understanding results and patterns
-- Common issues and solutions
-
-**Read this if:** You want to understand or modify the ADX strategy.
 
 ---
 
@@ -121,9 +90,7 @@ Common issues and solutions.
 1. [Quick Start](QUICKSTART.md) - 10-minute setup with ADX strategy
 2. [Getting Started](getting-started.md) - Detailed setup guide
 3. [GMX Specifics](gmx-specifics.md) - Understand GMX differences
-4. [ADX Momentum Strategy](examples/adx-momentum-strategy.md) - Strategy deep dive
-5. [Interpreting Results](interpreting-results.md) - Analyze performance
-6. [Equity Curves](equity-curves.md) - Visualize performance
+4. [Equity Curves](equity-curves.md) - Visualize performance
 
 **Developers:**
 1. [Architecture](architecture.md) - Technical implementation
@@ -140,12 +107,6 @@ Common issues and solutions.
 
 **First backtest:**
 → [Getting Started - Your First Backtest](getting-started.md#your-first-backtest)
-
-**Example strategy:**
-→ [ADX Momentum Strategy](examples/adx-momentum-strategy.md)
-
-**Understanding results:**
-→ [Interpreting Results](interpreting-results.md)
 
 **Generating equity curves:**
 → [Equity Curves](equity-curves.md)
@@ -193,12 +154,9 @@ docs/
 ├── QUICKSTART.md               # 10-minute ADX strategy setup
 ├── getting-started.md          # Installation and first backtest
 ├── gmx-specifics.md            # GMX differences and characteristics
-├── interpreting-results.md     # Analyzing backtest output
 ├── equity-curves.md            # Generating equity curves
 ├── architecture.md             # Technical implementation
-├── troubleshooting.md          # Common issues and solutions
-└── examples/
-    └── adx-momentum-strategy.md # ADX strategy walkthrough
+└── troubleshooting.md          # Common issues and solutions
 ```
 
 ---
