@@ -23,6 +23,9 @@ USER ftuser
 COPY deps/web3-ethereum-defi /tmp/web3-ethereum-defi
 RUN pip install --user --force-reinstall "/tmp/web3-ethereum-defi[web3v7]"
 
+# Install plotly for freqtrade plotting commands
+RUN pip install --user plotly
+
 # Use the patched entrypoint
 ENTRYPOINT ["python", "-u", "-B", "-m", "eth_defi.gmx.freqtrade.patched_entrypoint", "freqtrade"]
 # Default to trade mode
