@@ -34,3 +34,39 @@ backtest:
 		--timerange $(TIMERANGE) \
 		--cache none \
 		$(VERBOSE)
+
+plot-dataframe:
+	@if [ -z "$(CONTAINER)" ] || [ -z "$(STRATEGY)" ]; then \
+		echo "Error: CONTAINER and STRATEGY are required. Usage: make plot-dataframe CONTAINER=YourContainer STRATEGY=YourStrategy [PAIRS='BTC/USDT ETH/USDT']"; \
+		echo "Optional: BACKTEST_FILENAME=path/to/backtest.zip (defaults to latest backtest in user_data/backtest_results)"; \
+		exit 1; \
+	fi
+	docker compose run --rm $(CONTAINER) plot-dataframe \
+		--config /freqtrade/configs/$(CONTAINER).json \
+		--config /freqtrade/configs/$(CONTAINER).secrets.json \
+		--strategy-path /freqtrade/strategies \
+		--strategy $(STRATEGY) \
+		$(if $(PAIRS),-p $(PAIRS)) \
+		$(if $(TIMEFRAME),-i $(TIMEFRAME)) \
+		$(if $(TIMERANGE),--timerange $(TIMERANGE)) \
+		--backtest-filename $(if $(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results/$(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results) \
+		$(if $(INDICATORS1),--indicators1 $(INDICATORS1)) \
+		$(if $(INDICATORS2),--indicators2 $(INDICATORS2))
+
+plot-profit:
+	@if [ -z "$(CONTAINER)" ] || [ -z "$(STRATEGY)" ]; then \
+		echo "Error: CONTAINER and STRATEGY are required. Usage: make plot-profit CONTAINER=YourContainer STRATEGY=YourStrategy [PAIRS='BTC/USDT ETH/USDT']"; \
+		echo "Optional: BACKTEST_FILENAME=path/to/backtest.zip (defaults to latest backtest in user_data/backtest_results)"; \
+		echo "Optional: TRADE_SOURCE=DB DB=db_filename.sqlite (only use if you want database trades instead of backtest)"; \
+		exit 1; \
+	fi
+	docker compose run --rm $(CONTAINER) plot-profit \
+		--config /freqtrade/configs/$(CONTAINER).json \
+		--config /freqtrade/configs/$(CONTAINER).secrets.json \
+		--strategy-path /freqtrade/strategies \
+		--strategy $(STRATEGY) \
+		$(if $(PAIRS),-p $(PAIRS)) \
+		$(if $(TIMEFRAME),-i $(TIMEFRAME)) \
+		$(if $(TIMERANGE),--timerange $(TIMERANGE)) \
+		$(if $(AUTO_OPEN),--auto-open) \
+		$(if $(filter DB,$(TRADE_SOURCE)),--db-url sqlite:////freqtrade/db/$(DB) --trade-source DB,--backtest-filename $(if $(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results/$(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results))
