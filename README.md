@@ -120,6 +120,12 @@ make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong VERBOSE=-vv
 
 # Different strategy and timeframe
 make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h VERBOSE=-vvv
+
+# To plot the equity curve of the strategy, will output to user_data/plot
+make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h 
+
+# To plot the strategy entry and exits for each backtested pair
+make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
 ```
 
 ### Available Strategies
