@@ -179,11 +179,6 @@ Each container has its own:
 - **[Architecture](docs/architecture.md)** - Technical deep dive (developers)
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
 
-### Examples & Tutorials
-- [Basic RSI Strategy](docs/examples/basic-rsi-strategy.md)
-- [Multi-Indicator Strategy](docs/examples/multi-indicator-strategy.md)
-- [Funding Rate Analysis](docs/examples/funding-rate-analysis.md)
-- [Strategy Optimization](docs/examples/strategy-optimization.md)
 
 ## Project Structure
 
