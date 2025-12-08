@@ -271,9 +271,6 @@ See [docs/troubleshooting.md](docs/troubleshooting.md) for more issues and solut
 - **web3-ethereum-defi**: https://github.com/tradingstrategy-ai/web3-ethereum-defi
 - **CCXT**: https://docs.ccxt.com/
 
-## License
-
-[Your License Here]
 
 ## Acknowledgments
 
