@@ -4,6 +4,12 @@ from pandas import DataFrame
 import talib.abstract as ta
 
 class ADXMomentum(IStrategy):
+    """
+    Trend-following momentum strategy that enters long positions during strong upward trends and exits when momentum reverses.
+    
+    Entry: ADX > 25 (strong trend), MOM > 0 (positive momentum), PLUS_DI > 25 and PLUS_DI > MINUS_DI (upward directional strength).
+    Exit: ADX > 25, MOM < 0 (negative momentum), MINUS_DI > 25 and PLUS_DI < MINUS_DI (downward directional strength).
+    """
 
     INTERFACE_VERSION: int = 3
     
