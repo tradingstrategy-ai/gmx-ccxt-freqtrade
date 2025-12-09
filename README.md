@@ -133,6 +133,8 @@ freqtrade-gmx --version
 
 ### 4. Download Historical Data
 
+
+
 ```bash
 # 5m data for backtesting
 ./freqtrade-gmx download-data \
@@ -147,6 +149,11 @@ freqtrade-gmx --version
 
 This fetches GMX market data from GraphQL and stores it locally.
 
+#### Demo
+
+![](media/download-data.gif)
+
+
 ### 5. Run Your First Backtest
 
 ```bash
@@ -159,6 +166,10 @@ This fetches GMX market data from GraphQL and stores it locally.
 ```
 
 You should see backtest results with trades, profit, and statistics.
+
+#### Demo
+
+![](media/backtest.gif)
 
 **Next Steps**:
 - Quick start with ADX strategy: [docs/QUICKSTART.md](docs/QUICKSTART.md)
