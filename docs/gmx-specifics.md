@@ -12,36 +12,34 @@ Understanding GMX's unique characteristics and how they affect backtesting and t
 
 ## What is GMX?
 
-[GMX](https://gmx.io) is a decentralized perpetual futures exchange built on Arbitrum and Avalanche blockchains. Unlike centralized exchanges (CEX) like Binance or traditional decentralized exchanges (DEX) like Uniswap, GMX uses a unique **liquidity pool model** for perpetual futures trading.
+[GMX](https://gmx.io) is a decentralized perpetual futures exchange on Arbitrum and Avalanche. Unlike CEXs (Binance) or traditional DEXs (Uniswap), GMX uses a **liquidity pool model** for perpetual trading.
 
 ### Key Characteristics
 
 1. **Decentralized & Non-Custodial**
-   - Trades execute on-chain via smart contracts
-   - You control your private keys
-   - No KYC or account registration
-   - Transparent, verifiable execution
+   - On-chain execution via smart contracts
+   - No KYC, account registration, or custody
+   - Transparent, verifiable
 
-2. **Liquidity Pool Model**
-   - Trades against GLP/GM pools (not order books)
-   - Liquidity providers earn fees + funding rates
-   - Zero price impact within available liquidity
-   - Pool composition affects slippage
+2. **Liquidity Pool Model (V2: GM Pools)**
+   - Trades against GM pools with long/short token pairs
+   - LPs earn 63% of protocol fees
+   - Entry: No price impact (oracle price)
+   - Exit: Price impact capped at ~0.5%
 
 3. **Perpetual Futures Only**
-   - No spot trading
-   - Up to 100x leverage (varies by pair)
-   - Funding rates every 8 hours
-   - Borrowing fees for leverage
+   - Up to 100x leverage
+   - Hourly funding rates (dynamic)
+   - Borrowing fees based on utilization
 
 4. **Supported Chains**
-   - **Arbitrum**: Main deployment, lower fees (~$0.10-0.50 per trade)
-   - **Avalanche**: Alternative chain, faster blocks (~2s vs ~0.25s)
+   - **Arbitrum**: Main deployment, lower fees (~$0.10-0.50/trade)
+   - **Avalanche**: Faster blocks, higher fees
 
 5. **Available Markets**
-   - Major crypto: ETH, BTC, SOL, LINK, ARB
+   - Major: ETH, BTC, SOL, LINK, ARB
    - Alts: DOGE, XRP, LTC, UNI
-   - Total: 15+ perpetual markets
+   - 15+ perpetual markets
 
 ## Key Differences from Traditional Exchanges
 
@@ -50,35 +48,28 @@ Understanding these differences is crucial for building effective GMX strategies
 
 ### 1. No Order Book
 
-**What this means:**
-- Can't analyze order book depth
-- Can't place orders at specific price levels
-- Can't see support/resistance from order flow
-- No front-running or MEV concerns (different model)
+**Implications:**
+- No order book depth analysis
+- No limit orders at specific prices
+- No order flow support/resistance
+- No front-running/MEV (different model)
 
-**Data not available:**
-- `fetch_order_book()` - Not supported
-- Bid/ask spreads
-- Order book imbalance
-- Market depth
+**Data unavailable:**
+- `fetch_order_book()`, bid/ask spreads, market depth
 
-**Alternative indicators:**
-- Use available liquidity instead of order book depth
-- Monitor open interest for market sentiment
-- Track funding rates for long/short bias
+**Alternatives:**
+- Available liquidity → order book depth
+- Open interest → market sentiment
+- Funding rates → long/short bias
 
 ### 2. Atomic Execution
 
-**What this means:**
-- Orders execute in a single blockchain transaction
-- Either complete success or complete failure
-- No partial fills
-- No pending order management
+**Characteristics:**
+- Single blockchain transaction (all-or-nothing)
+- No partial fills or pending orders
 
 **Benefits:**
-- Simplified order logic
-- No order timeout handling
-- No cancel/replace logic
+- Simplified order logic, no timeouts/cancels
 - Deterministic execution
 
 **Limitations:**
@@ -89,21 +80,23 @@ Understanding these differences is crucial for building effective GMX strategies
 GMX funding rates work differently than most CEXs:
 
 **GMX Funding:**
-- **8-hour cycles**: 00:00, 08:00, 16:00 UTC
-- **Borrowing fees**: Hourly cost for leverage
+- **Hourly calculation**: Funding rates update continuously based on long/short ratio (not fixed 8-hour cycles like CEXs)
+- **Borrowing fees**: Hourly cost for leverage based on pool utilization
 - **Long/short imbalance**: Affects funding direction
-- **Pool based**: Depends on GLP/GM pool composition
+- **Pool based**: Depends on GM pool composition and open interest balance
 
 **Typical rates:**
-- Balanced markets: -0.01% to +0.01% (per 8h)
-- Imbalanced markets: -0.05% to +0.05% (per 8h)
-- Extreme conditions: -0.1% to +0.1% (per 8h)
+- Balanced markets: -0.01% to +0.01% per hour
+- Imbalanced markets: -0.05% to +0.05% per hour
+- Extreme conditions: Can exceed ±0.1% per hour
 
 **Annual funding (approximation):**
 ```
-Annual rate = (8h rate) × 3 (daily) × 365
-Example: 0.01% per 8h = 10.95% APR
+Annual rate = (hourly rate) × 24 (daily) × 365
+Example: 0.01% per hour = 87.6% APR
 ```
+
+**Note**: Third-party data providers (CoinGlass, Coinalyze) often normalize GMX funding rates to 8-hour periods for comparison with CEXs, but the actual protocol calculates hourly.
 
 **Strategy implications:**
 - Long-term positions pay significant funding
@@ -124,24 +117,20 @@ def custom_stake_amount(self, pair, current_time, ...):
 ### 4. Liquidity Pools Instead of Order Books
 
 **How GMX pools work:**
-- **GLP (V1)** / **GM (V2)**: Liquidity provider tokens
-- Pools contain: 50% stablecoins, 50% crypto assets
+- **V1 (legacy)**: GLP pools - single liquidity token
+- **V2 (current)**: GM pools - individual market pools with long/short token pairs
+- GM pools aim to maintain equal worth of long and short tokens
 - Traders trade against the pool
-- LP's take opposite side of trades
+- Liquidity providers take opposite side of trades and earn 63% of protocol fees
 
-**Slippage model:**
-```
-Price impact = f(trade_size, pool_liquidity, pool_balance)
-```
-
-**Zero price impact when:**
-- Pool has sufficient liquidity
-- Pool balance isn't heavily skewed
-- Trade size is small relative to pool
+**Price impact model:**
+- **Entry positions**: No price impact - always executed at mark (oracle) price
+- **Exit positions**: Price impact applies, typically capped at ~0.5% (50 bps)
+- Impact can be positive (favorable) or negative (unfavorable)
 
 **High price impact when:**
 - Pool is imbalanced (too many longs or shorts)
-- Large trade relative to available liquidity
+- Large position relative to available liquidity
 - Extreme market conditions
 
 **Check available liquidity:**
@@ -164,71 +153,46 @@ asyncio.run(check_liquidity())
 
 ### 5. Gas Costs
 
-Every trade incurs blockchain transaction fees:
+**Arbitrum:** $0.10-0.50 (typical), $1-3 (congestion)
+**Avalanche:** $0.50-2.00 (higher, more stable)
 
-**Arbitrum (typical):**
-- Simple market order: $0.10 - $0.50
-- During congestion: $1.00 - $3.00
-- Complex operations: $0.50 - $2.00
-
-**Avalanche:**
-- Simple market order: $0.50 - $2.00
-- Higher than Arbitrum but more stable
-
-**Impact on strategies:**
-- High-frequency strategies pay more gas
-- Must factor gas into profitability
-- Minimum profit threshold: > $0.50 per trade
-- Gas costs reduce effective returns
+**Impact:**
+- Minimum profit threshold: >$0.50/trade
+- High-frequency strategies pay more
 
 **Example:**
 ```
-Strategy: 100 trades, 1% avg profit, $1000 stake
-Profit: $1000 (1% × 100 trades)
-Gas costs: $50 (100 trades × $0.50)
-Net profit: $950 (5% reduction)
+100 trades @ $0.50 gas = $50 cost
+On $1000 stake with 1% avg profit: 5% reduction
 ```
 
-**Backtesting note:**
-Gas costs are NOT automatically included in Freqtrade backtests. You must account for them manually.
+**Note:** Not auto-included in Freqtrade backtests - account manually.
 
 ## Available Data
 
 ### Historical OHLCV Data
 
-GMX provides candlestick data via GraphQL:
-
-**Timeframes:**
-- 1m, 5m, 15m, 30m (intraday)
-- 1h, 4h (hourly)
-- 1d (daily)
+**Timeframes:** 1m, 5m, 15m, 30m, 1h, 4h, 1d (via GraphQL)
 
 **Data fields:**
 ```python
 {
   "timestamp": 1704067200000,  # Unix timestamp (ms)
-  "open": 2250.50,             # Opening price
-  "high": 2265.75,             # Highest price
-  "low": 2245.20,              # Lowest price
-  "close": 2260.00,            # Closing price
+  "open": 2250.50,
+  "high": 2265.75,
+  "low": 2245.20,
+  "close": 2260.00,
   "volume": 0                  # ⚠️ Always 0 (not available)
 }
 ```
 
-**⚠️ Volume data not available:**
-- GMX doesn't track volume per candle
-- Volume-based indicators won't work
-- Use open interest or price-based indicators instead
-
-**Alternatives to volume indicators:**
+**⚠️ Volume unavailable - use alternatives:**
 ```python
-# ❌ Won't work (no volume)
+# ❌ Won't work
 dataframe['volume_sma'] = ta.SMA(dataframe['volume'], timeperiod=20)
 
-# ✅ Use open interest instead
+# ✅ Use open interest or price-based
 dataframe['oi_sma'] = ta.SMA(dataframe['open_interest'], timeperiod=20)
-
-# ✅ Or price-based indicators
 dataframe['rsi'] = ta.RSI(dataframe['close'], timeperiod=14)
 dataframe['atr'] = ta.ATR(dataframe, timeperiod=14)
 ```
@@ -299,44 +263,29 @@ asyncio.run(show_oi())
 
 ### Price Oracle
 
-GMX uses Chainlink oracles for pricing:
+GMX uses Chainlink Data Streams for pricing:
 
 **Characteristics:**
-- Updated every ~1-5 minutes
+- Updates: ~1-5 minutes
 - Median of multiple exchanges
-- Protection against manipulation
-- May differ from spot prices
+- Manipulation-resistant
+- May differ from spot
 
 **Implications:**
-- Backtest prices match actual execution
-- Less arbitrage opportunity
-- Oracle lag during volatility
+- Backtest prices = actual execution
+- Reduced arbitrage opportunities
+- Potential lag during volatility
 
 ### Supported Markets
 
-As of 2025, GMX supports:
-
-**Major markets:**
-- ETH/USDC (most liquid)
-- BTC/USDC (most liquid)
-- SOL/USDC
-- ARB/USDC
-- LINK/USDC
-
-**Alt markets:**
-- DOGE/USDC
-- XRP/USDC
-- LTC/USDC
-- UNI/USDC
-- AAVE/USDC
+**Major:** ETH/USDC, BTC/USDC (most liquid), SOL/USDC, ARB/USDC, LINK/USDC
+**Alts:** DOGE/USDC, XRP/USDC, LTC/USDC, UNI/USDC, AAVE/USDC
 
 **Check current markets:**
 ```bash
 python -c "
 from eth_defi.gmx.constants import ARBITRUM_MARKETS
-print('GMX Arbitrum Markets:')
-for market in ARBITRUM_MARKETS:
-    print(f'  - {market}')
+for market in ARBITRUM_MARKETS: print(market)
 "
 ```
 
@@ -347,20 +296,22 @@ for market in ARBITRUM_MARKETS:
 **1. Funding Cost Awareness**
 
 Factor funding into P&L:
-- Short-term strategies (< 8h holds) - minimal impact
-- Medium-term (1-3 days) - moderate impact (0.03-0.15%)
-- Long-term (> 1 week) - significant impact (0.5-2%)
+- Short-term strategies (< 1 day holds) - moderate impact
+- Medium-term (1-3 days) - significant impact
+- Long-term (> 1 week) - very significant impact (can exceed profit)
 
 **Example:**
 ```
 Position: 1 ETH long at $2500, 10x leverage
 Holding period: 7 days
-Funding rate: 0.01% per 8h (3% APR)
+Funding rate: 0.01% per hour (87.6% APR)
 
-Daily funding: $2500 × 10x × 0.01% × 3 = $7.50
-Weekly funding: $7.50 × 7 = $52.50
-Profit needed to break even: 2.1% (on unleveraged position)
+Daily funding: $2500 × 10x × 0.01% × 24 = $60
+Weekly funding: $60 × 7 = $420
+Profit needed to break even: 16.8% (on unleveraged position)
 ```
+
+**Critical**: GMX hourly funding can be 8x more expensive than CEX 8-hour funding for long holds.
 
 **2. Gas Cost Threshold**
 
@@ -371,47 +322,46 @@ Ensure profit > gas costs:
 
 **3. Liquidity Constraints**
 
-Check pool liquidity before large trades:
-- Small positions (< $10k): Usually no issue
-- Medium positions ($10k-$100k): Check available liquidity
-- Large positions (> $100k): May need to split or wait
+- Small (< $10k): No issue
+- Medium ($10k-$100k): Check liquidity
+- Large (> $100k): Split or wait
 
 **4. No Volume Indicators**
 
-Replace volume-based analysis:
-- Volume SMA → Price SMA or Open Interest
+**Replacements:**
+- Volume SMA → Price SMA / Open Interest
 - Volume oscillators → Price oscillators
-- Volume breakouts → Price + ATR breakouts
-- OBV → Accumulation/Distribution on price
+- Volume breakouts → Price + ATR
+- OBV → Accumulation/Distribution
 
 
 ### Fee Structure
 
-**GMX fee tiers:**
+**GMX fee tiers (V2):**
 - **Balanced pool**: 0.04% entry + 0.04% exit = 0.08% total
 - **Imbalanced pool**: 0.06% entry + 0.06% exit = 0.12% total
-- **Extreme imbalance**: Up to 0.07% each side = 0.14% total
 
 **Additional costs:**
-- **Borrowing fees**: ~0.01-0.05% per hour (varies by leverage)
-- **Funding rates**: -0.05% to +0.05% per 8h
-- **Gas**: $0.10-0.50 per transaction
+- **Borrowing fees**: Varies by pool utilization (displayed when opening position)
+- **Funding rates**: Dynamic hourly rates based on long/short ratio
+- **Gas**: Varies by network congestion (excess refunded)
+- **Price impact**: Only on exits, typically capped at ~0.5%
 
 **Total cost example:**
 ```
 Trade: Enter + hold 1 day + exit
-Entry fee: 0.05%
-Funding (3 × 8h): 0.03%
-Borrowing (24h × 0.02%/h): 0.48%
-Exit fee: 0.05%
-Gas (2 transactions): $1.00
+Entry fee: 0.06% (imbalanced)
+Funding (24h): ~0.24% (0.01%/hour × 24)
+Borrowing fees: ~0.48% (varies)
+Exit fee: 0.06% (imbalanced)
+Gas (2 transactions): $0.50-1.00
 
 Total cost on $10,000 position:
-Fees: $61 (0.61%)
+Fees: $84 (0.84%)
 Gas: $1.00
-Total: $62 (0.62%)
+Total: $85 (0.85%)
 
-Required profit to break even: 0.62%
+Required profit to break even: 0.85%
 ```
 
 **N.B.** This is a very abstract overview of the fees & may change. Always use the official documentaion for reference.
@@ -429,47 +379,34 @@ Total (taker): ~0.09%
 
 GMX fees are higher than CEX maker fees but competitive with taker fees.
 
-### Slippage Behavior
+### Slippage and Price Impact
 
-**GMX slippage model:**
-```
-Slippage = f(position_size, available_liquidity, pool_balance)
-```
+**Important distinction:**
+- **Slippage**: Difference between expected price (when submitted) and actual mark price (when executed) - caused by volatility
+- **Price impact**: Applied only to exit/decrease orders, capped at ~0.5%
 
-**Low slippage scenarios:**
-- Small positions (< 0.1% of pool)
-- Balanced pool composition
-- High available liquidity
+**Entry positions:**
+- No price impact - executed at mark (oracle) price
+- Only slippage from volatility during pending execution
+- Default allowed slippage: 1% (adjustable)
 
-**High slippage scenarios:**
-- Large positions (> 1% of pool)
+**Exit positions:**
+- Price impact applies (typically ±0.5% cap)
+- Can be positive (favorable) or negative (unfavorable)
+- Depends on pool balance and position size
+
+**High price impact on exits when:**
+- Large position relative to pool liquidity
 - Imbalanced pool (too many longs/shorts)
-- Low liquidity periods
+- Extreme market conditions
 
-**Estimate slippage:**
-```python
-def estimate_slippage(position_size_usd, available_liquidity_usd):
-    """
-    Rough slippage estimate for GMX
-    """
-    size_ratio = position_size_usd / available_liquidity_usd
-
-    if size_ratio < 0.001:  # < 0.1% of liquidity
-        return 0.01  # ~1 basis point
-    elif size_ratio < 0.01:  # 0.1-1% of liquidity
-        return 0.05  # ~5 basis points
-    elif size_ratio < 0.05:  # 1-5% of liquidity
-        return 0.20  # ~20 basis points
-    else:  # > 5% of liquidity
-        return 1.00  # ~100 basis points (avoid!)
-```
-
-**Backtest slippage:**
+**Backtest considerations:**
 ```json
 {
   "exchange": {
     "name": "gmx",
-    "slippage": 0.05  // 5 basis points = 0.05%
+    "slippage": 0.01  // Account for entry slippage only (1 basis point)
+    // Note: Exit price impact varies and is market-dependent
   }
 }
 ```
