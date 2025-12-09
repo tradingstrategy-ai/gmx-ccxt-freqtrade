@@ -13,6 +13,11 @@ Equity curves visualize your account balance over time during backtests, helping
 
 Freqtrade provides built-in plotting commands that generate interactive HTML visualizations.
 
+**Note**: Ensure your virtual environment is activated and you've set up the alias:
+```bash
+alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
+```
+
 ### Plot Dataframe (Interactive Charts)
 
 Generate interactive candlestick charts with indicators and entry/exit points overlaid.
@@ -20,43 +25,51 @@ Generate interactive candlestick charts with indicators and entry/exit points ov
 **Basic usage:**
 
 ```bash
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+freqtrade plot-dataframe \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json
 ```
 
 **With specific pairs and indicators:**
 
 ```bash
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
-  PAIRS="ETH/USDC:USDC" \
-  INDICATORS1="adx,plus_di,minus_di" \
-  INDICATORS2="mom"
+freqtrade plot-dataframe \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  -p ETH/USDC:USDC \
+  --indicators1 adx plus_di minus_di \
+  --indicators2 mom
 ```
 
 **With timeframe and timerange:**
 
 ```bash
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
-  TIMEFRAME=1h \
-  TIMERANGE=20250101-20250401 \
-  INDICATORS1="adx,plus_di,minus_di"
+freqtrade plot-dataframe \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange 20250101-20250401 \
+  --indicators1 adx plus_di minus_di
 ```
 
 **With specific backtest file:**
 
 ```bash
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
-  BACKTEST_FILENAME=backtest-result-2025-12-08_11-36-37.json
+freqtrade plot-dataframe \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --export-filename user_data/backtest_results/backtest-result-2025-12-08_11-36-37.json
 ```
 
 **Parameters:**
-- `CONTAINER` (required): Docker container name
-- `STRATEGY` (required): Strategy name
-- `PAIRS` (optional): Space-separated pairs (e.g., "ETH/USDC:USDC BTC/USDC:USDC")
-- `TIMEFRAME` (optional): Timeframe for the chart
-- `TIMERANGE` (optional): Date range filter
-- `INDICATORS1` (optional): Comma-separated indicators for main chart
-- `INDICATORS2` (optional): Comma-separated indicators for subplot
-- `BACKTEST_FILENAME` (optional): Specific backtest file to plot (defaults to latest)
+- `--strategy` (required): Strategy name
+- `--config` (required): Configuration file path
+- `-p, --pairs` (optional): Space-separated pairs (e.g., ETH/USDC:USDC BTC/USDC:USDC)
+- `--timeframe` (optional): Timeframe for the chart
+- `--timerange` (optional): Date range filter
+- `--indicators1` (optional): Space-separated indicators for main chart
+- `--indicators2` (optional): Space-separated indicators for subplot
+- `--export-filename` (optional): Specific backtest file to plot (defaults to latest)
 
 **Output:** Opens interactive HTML in browser showing candlestick charts with your strategy's entry/exit signals and indicators.
 
@@ -69,48 +82,53 @@ Generate equity curve and profit visualizations from backtest results.
 **Basic usage:**
 
 ```bash
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+freqtrade plot-profit \
+  --config configs/adxmomentum_gmx.json
 ```
 
 **With auto-open in browser:**
 
 ```bash
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum AUTO_OPEN=1
+freqtrade plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  --auto-open
 ```
 
 **With specific pairs and timerange:**
 
 ```bash
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
-  PAIRS="ETH/USDC:USDC" \
-  TIMERANGE=20250101-20250401
+freqtrade plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  -p ETH/USDC:USDC \
+  --timerange 20250101-20250401
 ```
 
 **With specific backtest file:**
 
 ```bash
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
-  BACKTEST_FILENAME=backtest-result-2025-12-08_11-36-37.json
+freqtrade plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  --export-filename user_data/backtest_results/backtest-result-2025-12-08_11-36-37.json
 ```
 
 **Using database trades (for live/dry-run):**
 
 ```bash
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
-  TRADE_SOURCE=DB \
-  DB=tradesv3.sqlite
+freqtrade plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  --db-url sqlite:///user_data/tradesv3.sqlite \
+  --trade-source DB
 ```
 
 **Parameters:**
-- `CONTAINER` (required): Docker container name
-- `STRATEGY` (required): Strategy name
-- `PAIRS` (optional): Space-separated pairs
-- `TIMEFRAME` (optional): Timeframe filter
-- `TIMERANGE` (optional): Date range filter
-- `AUTO_OPEN` (optional): Set to `1` to auto-open in browser
-- `BACKTEST_FILENAME` (optional): Specific backtest file (defaults to latest)
-- `TRADE_SOURCE` (optional): Set to `DB` to use database trades
-- `DB` (optional): Database filename when using TRADE_SOURCE=DB
+- `--config` (required): Configuration file path
+- `-p, --pairs` (optional): Space-separated pairs
+- `--timeframe` (optional): Timeframe filter
+- `--timerange` (optional): Date range filter
+- `--auto-open` (optional): Automatically open plot in browser
+- `--export-filename` (optional): Specific backtest file (defaults to latest)
+- `--trade-source` (optional): Set to `DB` to use database trades
+- `--db-url` (optional): Database URL when using trade-source DB
 
 **Output:** Generates HTML profit plot showing equity curve, drawdowns, and profit distribution.
 
