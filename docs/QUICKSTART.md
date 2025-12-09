@@ -29,22 +29,19 @@ git clone https://github.com/yourusername/freqtrade-gmx-demo.git
 cd freqtrade-gmx-demo
 git submodule update --init --recursive
 
-# Clone freqtrade
-git clone https://github.com/freqtrade/freqtrade.git
+# Clone freqtrade (naming is important to avoid Python import conflicts)
+git clone https://github.com/freqtrade/freqtrade.git freqtrade-develop
 
 # Create and activate virtual environment in main project directory
 uv venv .venv
 source .venv/bin/activate  # Linux/macOS (.venv\Scripts\activate on Windows)
 
 # Install freqtrade
-uv pip install -r freqtrade/requirements.txt
-uv pip install -e freqtrade/
+uv pip install -r freqtrade-develop/requirements.txt
+uv pip install -e freqtrade-develop/
 
 # Install GMX integration from local submodule (includes freqtrade integration)
 uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
-
-# Install additional required dependency
-uv pip install cchecksum
 
 # Verify installation
 ./freqtrade-gmx --version
@@ -52,7 +49,6 @@ uv pip install cchecksum
 
 **Why these steps?**
 - We install from the **local submodule** (`deps/web3-ethereum-defi`) because the PyPI version doesn't include the freqtrade integration yet
-- We need **cchecksum** for Ethereum address checksumming (not auto-installed with extras)
 - We use the **freqtrade-gmx wrapper script** to avoid Python import conflicts with the `freqtrade/` directory
 
 ## Step 2: Download Data (2-3 min)

@@ -203,26 +203,23 @@ git clone <repo>
 cd freqtrade-gmx-demo
 git submodule update --init --recursive
 
-# 2. Clone and install Freqtrade
-git clone https://github.com/freqtrade/freqtrade.git
-cd freqtrade
+# 2. Clone Freqtrade (use freqtrade-develop to avoid namespace conflicts)
+git clone https://github.com/freqtrade/freqtrade.git freqtrade-develop
+
+# 3. Create venv in main project directory
 uv venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-pip install -e .
-cd ..
 
-# 3. Install GMX integration
-pip install -e deps/web3-ethereum-defi[web3v7]
-
-# 4. Set up alias (optional)
-alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
+# 4. Install Freqtrade and dependencies
+uv pip install -r freqtrade-develop/requirements.txt
+uv pip install -e freqtrade-develop/
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 
 # 5. Download data
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timeframe 5m --timerange 20250101-20250201
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201
 
 # 6. Backtest
-freqtrade backtesting --strategy Pingpong --config configs/pingpong_gmx.json --timerange 20250101-20250201
+./freqtrade-gmx backtesting --strategy Pingpong --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timerange 20250101-20250201
 ```
 
 See [Getting Started](getting-started.md) for detailed instructions.
