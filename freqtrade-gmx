@@ -1,0 +1,12 @@
+#!/bin/bash
+# Wrapper script to run freqtrade with GMX integration
+# Activates the virtual environment and runs the GMX-patched freqtrade
+
+# Get the script's directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Activate virtual environment
+source "$SCRIPT_DIR/.venv/bin/activate"
+
+# Run freqtrade with GMX integration
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade "$@"

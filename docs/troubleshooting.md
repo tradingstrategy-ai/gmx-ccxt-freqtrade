@@ -35,6 +35,42 @@ which python
 
 ---
 
+### ImportError: cannot import name '__version__' from 'freqtrade'
+
+**Problem:**
+```bash
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+# ImportError: cannot import name '__version__' from 'freqtrade' (unknown location)
+```
+
+**Cause:**
+This is a Python import conflict. When running from the project directory, Python finds the `freqtrade/` subdirectory (the cloned freqtrade repository) as a namespace package before finding the installed freqtrade package in the virtual environment.
+
+**Solution:**
+Use the `freqtrade-gmx` wrapper script instead:
+
+```bash
+# ✓ Correct - use the wrapper script
+./freqtrade-gmx --version
+
+# ✓ Or add to PATH
+export PATH="$PWD:$PATH"
+freqtrade-gmx --version
+```
+
+**Why the wrapper works:**
+The `freqtrade-gmx` script changes to `/tmp` before running freqtrade, avoiding the import conflict with the `freqtrade/` directory in your project.
+
+**Alternative (manual):**
+If you need to run the command directly without the wrapper:
+```bash
+cd /tmp
+source /path/to/freqtrade-gmx-demo/.venv/bin/activate
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+```
+
+---
+
 ### Submodule Not Initialized
 
 **Problem:**
@@ -509,6 +545,45 @@ freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json -
 - Restart your computer if needed
 
 ## GMX-Specific Issues
+
+### ModuleNotFoundError: No module named 'eth_defi.gmx.freqtrade'
+
+**Problem:**
+```bash
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+# ModuleNotFoundError: No module named 'eth_defi.gmx.freqtrade'
+```
+
+**Cause:**
+You installed `web3-ethereum-defi` from PyPI instead of from the local submodule. The PyPI version (v0.35) doesn't include the freqtrade integration yet.
+
+**Solution:**
+Uninstall the PyPI version and install from the local submodule:
+
+```bash
+source .venv/bin/activate
+
+# Uninstall PyPI version
+uv pip uninstall web3-ethereum-defi
+
+# Install from local submodule (includes freqtrade integration)
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+
+# Install missing dependency
+uv pip install cchecksum
+
+# Verify
+./freqtrade-gmx --version
+```
+
+**Verification:**
+Check that the freqtrade module exists:
+```bash
+python -c "import eth_defi.gmx.freqtrade; print('Freqtrade integration found!')"
+# Should print: Freqtrade integration found!
+```
+
+---
 
 ### GMX Exchange Not Recognized
 

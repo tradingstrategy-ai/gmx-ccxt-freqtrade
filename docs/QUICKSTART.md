@@ -46,15 +46,20 @@ uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 # Install additional required dependency
 uv pip install cchecksum
 
-# Add convenience alias (optional but recommended)
-alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
+# Verify installation
+./freqtrade-gmx --version
 ```
+
+**Why these steps?**
+- We install from the **local submodule** (`deps/web3-ethereum-defi`) because the PyPI version doesn't include the freqtrade integration yet
+- We need **cchecksum** for Ethereum address checksumming (not auto-installed with extras)
+- We use the **freqtrade-gmx wrapper script** to avoid Python import conflicts with the `freqtrade/` directory
 
 ## Step 2: Download Data (2-3 min)
 
 ```bash
 # Download 3 months of 1h data for ETH/USDC
-freqtrade download-data \
+./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/adxmomentum_gmx.json \
   --timeframe 1h \
@@ -65,7 +70,7 @@ freqtrade download-data \
 
 ```bash
 # Run backtest with verbose output
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --timeframe 1h \
@@ -89,11 +94,11 @@ freqtrade backtesting \
 
 ```bash
 # Generate interactive profit plot (equity curve, drawdowns)
-freqtrade plot-profit \
+./freqtrade-gmx plot-profit \
   --config configs/adxmomentum_gmx.json
 
 # Generate interactive candlestick charts with indicators
-freqtrade plot-dataframe \
+./freqtrade-gmx plot-dataframe \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --indicators1 adx plus_di minus_di \
@@ -105,6 +110,9 @@ freqtrade plot-dataframe \
 ### Option 2: Custom Python Script (PNG Images)
 
 ```bash
+# Activate virtual environment
+source .venv/bin/activate
+
 # Find latest backtest results
 ls -lt user_data/backtest_results/ | head -5
 
@@ -152,7 +160,7 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 
 ```bash
 # 4h timeframe (longer holds)
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --timeframe 4h \
@@ -165,14 +173,14 @@ freqtrade backtesting \
 
 ```bash
 # Q1 2025
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --timeframe 1h \
   --timerange 20250101-20250401
 
 # Q2 2025 (out-of-sample)
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --timeframe 1h \
@@ -200,14 +208,14 @@ freqtrade backtesting \
 # See Step 1 above
 
 # 2. Download 6 months of data
-freqtrade download-data \
+./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/adxmomentum_gmx.json \
   --timeframe 1h \
   --timerange 20250101-20250701
 
 # 3. Backtest first 3 months
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --timeframe 1h \
@@ -215,6 +223,7 @@ freqtrade backtesting \
   -vv
 
 # 4. Generate equity curve
+source .venv/bin/activate
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 
 # 5. Analyze results
@@ -223,7 +232,7 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 # - Look for smooth upward equity curve
 
 # 6. Test out-of-sample (last 3 months)
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --timeframe 1h \
@@ -242,30 +251,29 @@ freqtrade backtesting \
 
 ## Quick Commands Cheat Sheet
 
-**Note**: Assumes `alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'`
-
 ```bash
 # Data download
-freqtrade download-data \
+./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/adxmomentum_gmx.json \
   --timeframe 1h \
   --timerange YYYYMMDD-YYYYMMDD
 
 # Backtest
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --timerange YYYYMMDD-YYYYMMDD
 
 # Visualizations (Freqtrade built-in)
-freqtrade plot-profit --config configs/adxmomentum_gmx.json
-freqtrade plot-dataframe \
+./freqtrade-gmx plot-profit --config configs/adxmomentum_gmx.json
+./freqtrade-gmx plot-dataframe \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --indicators1 adx plus_di minus_di
 
 # Visualizations (Custom Python)
+source .venv/bin/activate
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 
 # List backtest results

@@ -64,4 +64,4 @@ caddy/logs/
 *.feather
 *.parquet
 
-freqtrade/
+freqtrade-develop/

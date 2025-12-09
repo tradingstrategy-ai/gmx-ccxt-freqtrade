@@ -171,6 +171,9 @@ uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 
 # Install additional required dependency
 uv pip install cchecksum
+
+# Verify installation
+./freqtrade-gmx --version
 ```
 
 **What this installs:**
@@ -181,9 +184,51 @@ uv pip install cchecksum
 - CCXT integration (with ccxt extra)
 - cchecksum for address checksumming
 
-### Step 6: Set Up Shell Alias
+**Why install from local submodule instead of PyPI?**
 
-For convenience, add this alias to your shell profile:
+The PyPI version of `web3-ethereum-defi` (v0.35) doesn't include the freqtrade integration yet. The `eth_defi.gmx.freqtrade` module only exists in the development version at `deps/web3-ethereum-defi/`. Installing from PyPI would give you:
+
+```bash
+# ❌ This won't work - PyPI version missing freqtrade module
+uv pip install "web3-ethereum-defi[web3v7,data,ccxt]"
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+# Error: ModuleNotFoundError: No module named 'eth_defi.gmx.freqtrade'
+```
+
+Instead, we install from the local submodule in editable mode (`-e`) which includes the unreleased freqtrade integration code.
+
+### Step 6: Understanding the `freqtrade-gmx` Wrapper Script
+
+The project includes a `freqtrade-gmx` bash script in the project root. This wrapper is necessary due to a Python import conflict.
+
+**The Problem:**
+When you run `python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade` from the project directory, Python's import system finds the `freqtrade/` subdirectory (the cloned repo) as a namespace package before finding the installed freqtrade package. This causes:
+
+```bash
+ImportError: cannot import name '__version__' from 'freqtrade' (unknown location)
+```
+
+**The Solution:**
+The `freqtrade-gmx` wrapper script:
+1. Activates the virtual environment automatically
+2. Changes to `/tmp` before running freqtrade (avoiding the import conflict)
+3. Passes all arguments to the underlying freqtrade command
+
+**Usage:**
+```bash
+# Use the wrapper directly
+./freqtrade-gmx --version
+./freqtrade-gmx download-data --exchange gmx ...
+./freqtrade-gmx backtesting --strategy ADXMomentum ...
+
+# Or add to PATH for convenience
+export PATH="$PWD:$PATH"
+freqtrade-gmx --version
+```
+
+### Step 7: Optional - Add to PATH
+
+For convenience, add the project directory to your PATH:
 
 ```bash
 # Add to ~/.bashrc or ~/.zshrc

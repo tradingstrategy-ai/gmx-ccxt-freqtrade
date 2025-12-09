@@ -87,7 +87,8 @@ git submodule update --init --recursive
 
 ```bash
 # Clone freqtrade repository
-git clone https://github.com/freqtrade/freqtrade.git
+# this naming is very important else python will get confused because the freqtrade command and the directory name would be same
+git clone https://github.com/freqtrade/freqtrade.git freqtrade-develop
 
 # Create virtual environment in main project directory using uv
 uv venv .venv
@@ -98,10 +99,10 @@ source .venv/bin/activate  # Linux/macOS
 .venv\Scripts\activate     # Windows
 
 # Install freqtrade dependencies
-uv pip install -r freqtrade/requirements.txt
+uv pip install -r freqtrade-develop/requirements.txt
 
 # Install freqtrade itself (editable mode)
-uv pip install -e freqtrade/
+uv pip install -e freqtrade-develop/
 ```
 
 ### 3. Install GMX Integration
@@ -114,24 +115,41 @@ uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 uv pip install cchecksum
 
 # Verify installation
-python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+./freqtrade-gmx --version
 ```
 
-**Pro Tip**: Add this alias to your shell profile (~/.bashrc or ~/.zshrc) for convenience:
+**Important Notes:**
+
+- **Why install from local submodule?** The PyPI version of `web3-ethereum-defi` doesn't include the freqtrade integration yet. The freqtrade monkeypatch module only exists in the local `deps/web3-ethereum-defi` directory.
+
+- **Why install `cchecksum` separately?** This is a required dependency for Ethereum address checksumming that isn't automatically installed with the current extras configuration.
+
+- **Why use the `freqtrade-gmx` wrapper script?** Running `python -m eth_defi.gmx.freqtrade.patched_entrypoint` directly from the project directory causes Python import conflicts. Python finds the `freqtrade/` subdirectory as a namespace package instead of the installed freqtrade package, leading to `ImportError: cannot import name '__version__'`. The wrapper script solves this by running from a clean directory (`/tmp`).
+
+**Pro Tip**: The project includes a `freqtrade-gmx` wrapper script that handles the GMX integration:
 ```bash
-alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
+# Use the wrapper script directly
+./freqtrade-gmx --version
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json ...
+
+# Or add it to your PATH for convenience:
+export PATH="$PWD:$PATH"
+freqtrade-gmx --version
 ```
 
 ### 4. Download Historical Data
 
 ```bash
 # Download 1 month of 5m data for backtesting
-python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade download-data \
-  --exchange gmx \
+./freqtrade-gmx download-data \
   --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --exchange gmx \
   --timeframe 5m \
-  --timerange 20250101-20250201
+  --timerange 20251128-20251208
 ```
+
+**Note**: Always pass both config files - the main config and the secrets config.
 
 This fetches GMX market data from GraphQL and stores it locally.
 
@@ -139,10 +157,11 @@ This fetches GMX market data from GraphQL and stores it locally.
 
 ```bash
 # Backtest the Pingpong strategy
-python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade backtesting \
-  --strategy Pingpong \
+./freqtrade-gmx backtesting \
   --config configs/pingpong_gmx.json \
-  --timerange 20250101-20250201
+  --config configs/pingpong_gmx.secrets.json \
+  --strategy Pingpong \
+  --timerange 20251128-20251208
 ```
 
 You should see backtest results with trades, profit, and statistics.
@@ -153,31 +172,40 @@ You should see backtest results with trades, profit, and statistics.
 
 ## Usage Examples
 
-**Note**: All commands below assume you've activated your virtual environment (`source .venv/bin/activate`).
+**Note**: All commands below use the `freqtrade-gmx` wrapper script.
 
-For convenience, these examples use the alias: `alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'`
+For shorter commands, add it to your PATH:
+```bash
+export PATH="$PWD:$PATH"
+```
+
+Then you can use `freqtrade-gmx` directly instead of `./freqtrade-gmx`.
 
 ### Download Data
 
 ```bash
 # Basic data download
-freqtrade download-data \
-  --exchange gmx \
+freqtrade-gmx download-data \
   --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --exchange gmx \
   --timeframe 5m \
-  --timerange 20250101-20250201
+  --timerange 20251128-20251208 \
+  --prepend
 
 # Specific timerange
-freqtrade download-data \
-  --exchange gmx \
+freqtrade-gmx download-data \
   --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --exchange gmx \
   --timeframe 5m \
   --timerange 20250801-20251001
 
 # Different timeframe (1-minute candles)
-freqtrade download-data \
-  --exchange gmx \
+freqtrade-gmx download-data \
   --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --exchange gmx \
   --timeframe 1m \
   --timerange 20251101-20251130
 ```
@@ -186,24 +214,27 @@ freqtrade download-data \
 
 ```bash
 # Basic backtest
-freqtrade backtesting \
-  --strategy Pingpong \
+freqtrade-gmx backtesting \
   --config configs/pingpong_gmx.json \
-  --timerange 20250101-20250201
+  --config configs/pingpong_gmx.secrets.json \
+  --strategy Pingpong \
+  --timerange 20251128-20251208
 
 # With verbose output (-v, -vv, -vvv)
-freqtrade backtesting \
-  --strategy Pingpong \
+freqtrade-gmx backtesting \
   --config configs/pingpong_gmx.json \
-  --timerange 20250101-20250201 \
+  --config configs/pingpong_gmx.secrets.json \
+  --strategy Pingpong \
+  --timerange 20251128-20251208 \
   -vv
 
 # Different strategy with hourly timeframe
-freqtrade backtesting \
-  --strategy ADXMomentum \
+freqtrade-gmx backtesting \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --strategy ADXMomentum \
   --timeframe 1h \
-  --timerange 20250101-20250401 \
+  --timerange 20241128-20251205 \
   -vvv
 ```
 
@@ -211,27 +242,32 @@ freqtrade backtesting \
 
 ```bash
 # Plot profit/equity curve (interactive HTML)
-freqtrade plot-profit \
-  --config configs/adxmomentum_gmx.json
+freqtrade-gmx plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json
 
 # Plot with auto-open in browser
-freqtrade plot-profit \
+freqtrade-gmx plot-profit \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --auto-open
 
 # Plot candlestick charts with entry/exit signals
-freqtrade plot-dataframe \
-  --strategy ADXMomentum \
-  --config configs/adxmomentum_gmx.json
+freqtrade-gmx plot-dataframe \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --strategy ADXMomentum
 
 # Plot with specific indicators
-freqtrade plot-dataframe \
-  --strategy ADXMomentum \
+freqtrade-gmx plot-dataframe \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --strategy ADXMomentum \
   --indicators1 adx plus_di minus_di \
   --indicators2 mom
 
 # Custom Python script (generates PNG images)
+source .venv/bin/activate
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 ```
 
@@ -249,22 +285,31 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 
 ```bash
 # Dry run mode (paper trading)
-freqtrade trade \
+freqtrade-gmx trade \
   --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
   --strategy Pingpong
-
-# Requires setting up configs/pingpong_gmx.secrets.json with RPC URL
-# See docs/getting-started.md for configuration details
 ```
 
 ## How It Works
 
 This project uses a transparent monkeypatch approach to integrate GMX into Freqtrade:
 
-1. **web3-ethereum-defi** is installed via pip from the deps/ submodule
+1. **web3-ethereum-defi** is installed from the local `deps/` submodule (includes freqtrade integration)
 2. **patched_entrypoint** module applies monkeypatch before Freqtrade starts
 3. **GMX Exchange class** is registered in both CCXT and Freqtrade
 4. **Freqtrade** uses GMX like any other exchange
+
+### The `freqtrade-gmx` Wrapper Script
+
+The project includes a `freqtrade-gmx` bash script that:
+- Activates the virtual environment
+- Runs freqtrade from a clean directory to avoid Python import conflicts
+- Applies the GMX monkeypatch automatically
+
+This wrapper is needed because running `python -m eth_defi.gmx.freqtrade.patched_entrypoint` directly from the project directory causes Python to find the `freqtrade/` subdirectory as a namespace package, leading to import errors.
+
+### The Monkeypatch
 
 The monkeypatch (`python -m eth_defi.gmx.freqtrade.patched_entrypoint`):
 - Adds `ccxt.gmx` and `ccxt.async_support.gmx` classes
@@ -375,7 +420,7 @@ freqtrade download-data \
   --exchange gmx \
   --config configs/pingpong_gmx.json \
   --timeframe 5m \
-  --timerange 20250101-20250201 \
+  --timerange 20251128-20251208 \
   -vv
 ```
 
@@ -412,10 +457,10 @@ If you prefer using Docker containers for isolated environments, you can use the
 docker-compose build pingpong_gmx
 
 # Download data
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+make data CONTAINER=pingpong_gmx TIMERANGE=20251128-20251208
 
 # Run backtest
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-20250201
+make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20251128-20251208
 
 # Generate plots
 make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
