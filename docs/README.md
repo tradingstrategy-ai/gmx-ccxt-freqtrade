@@ -7,14 +7,14 @@ Complete documentation for GMX Freqtrade backtesting setup.
 New to this project? Start here:
 
 ### [Quick Start](QUICKSTART.md)
-Get up and running with the ADX strategy in 10 minutes. Covers building, downloading data, backtesting, and generating equity curves.
+Get up and running with the ADX strategy in 10 minutes. Covers setup, downloading data, backtesting, and generating equity curves.
 
 **Start here if:** You want to see results quickly.
 
 ---
 
 ### [Getting Started](getting-started.md)
-Complete installation guide and your first backtest. Covers prerequisites, Docker setup, data download, and running backtests.
+Complete installation guide and your first backtest. Covers prerequisites, Python/uv setup, data download, and running backtests.
 
 **Start here if:** You're setting up for the first time.
 
@@ -70,11 +70,11 @@ Technical deep dive into how GMX integration works. For developers and advanced 
 Common issues and solutions.
 
 **Topics:**
-- Installation problems (submodule, Docker build)
+- Installation problems (venv, dependencies, system packages)
 - Configuration errors (pairs, secrets, RPC)
 - Data download issues (GraphQL, timerange)
 - Backtest failures (no trades, strategy errors)
-- GMX-specific issues (exchange not recognized, volume missing)
+- GMX-specific issues (exchange not recognized, monkeypatch)
 - Diagnostic commands
 
 **Read this if:** Something isn't working.
@@ -191,7 +191,7 @@ Found an error? Want to improve documentation?
 - What you've tried
 - Error messages (full output)
 - Configuration (sanitized)
-- Environment (OS, Docker version)
+- Environment (OS, Python version)
 
 ---
 
@@ -203,14 +203,26 @@ git clone <repo>
 cd freqtrade-gmx-demo
 git submodule update --init --recursive
 
-# 2. Build
-docker-compose build pingpong_gmx
+# 2. Clone and install Freqtrade
+git clone https://github.com/freqtrade/freqtrade.git
+cd freqtrade
+uv venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+cd ..
 
-# 3. Download data
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+# 3. Install GMX integration
+pip install -e deps/web3-ethereum-defi[web3v7]
 
-# 4. Backtest
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-20250201
+# 4. Set up alias (optional)
+alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
+
+# 5. Download data
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timeframe 5m --timerange 20250101-20250201
+
+# 6. Backtest
+freqtrade backtesting --strategy Pingpong --config configs/pingpong_gmx.json --timerange 20250101-20250201
 ```
 
 See [Getting Started](getting-started.md) for detailed instructions.

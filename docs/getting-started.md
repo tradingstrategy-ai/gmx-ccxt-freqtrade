@@ -1,6 +1,6 @@
 # Getting Started
 
-Complete guide to installing the GMX Freqtrade setup and running your first backtest.
+Complete guide to installing the GMX Freqtrade setup and running your first backtest using Python and uv.
 
 ## Table of Contents
 
@@ -14,16 +14,28 @@ Complete guide to installing the GMX Freqtrade setup and running your first back
 
 ### Required Software
 
-1. **Docker and Docker Compose**
-   - Docker Desktop (Mac/Windows): https://www.docker.com/products/docker-desktop
-   - Docker Engine (Linux): https://docs.docker.com/engine/install/
-   - Verify installation:
+1. **Python 3.11+**
+   - Check your version:
      ```bash
-     docker --version  # Should be 20.10+
-     docker-compose --version  # Should be 2.0+
+     python3 --version  # Should be 3.11 or higher
      ```
+   - Install if needed:
+     - Mac: `brew install python@3.11`
+     - Ubuntu/Debian: `sudo apt install python3.11`
+     - Windows: Download from https://www.python.org/downloads/
 
-2. **Git**
+2. **uv (Python Package Installer)**
+   - Install uv:
+     ```bash
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+     ```
+   - Or via pip:
+     ```bash
+     pip install uv
+     ```
+   - Documentation: https://docs.astral.sh/uv/
+
+3. **Git**
    - Mac: Pre-installed or via Homebrew (`brew install git`)
    - Linux: `sudo apt install git` or `sudo yum install git`
    - Windows: https://git-scm.com/download/win
@@ -32,47 +44,55 @@ Complete guide to installing the GMX Freqtrade setup and running your first back
      git --version  # Should be 2.30+
      ```
 
-3. **Disk Space**
-   - Minimum: 5GB (Docker image + minimal data)
+4. **System Dependencies**
+
+   **Debian/Ubuntu:**
+   ```bash
+   sudo apt-get update
+   sudo apt install -y python3-pip python3-venv python3-dev python3-pandas git curl
+   ```
+
+   **macOS:**
+   ```bash
+   brew install gettext libomp
+   ```
+
+   **For other systems**, see [Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
+
+5. **Disk Space**
+   - Minimum: 5GB (Freqtrade + minimal data)
    - Recommended: 10GB+ (multiple strategies and historical data)
    - Check available space:
      ```bash
      df -h .  # Linux/Mac
      ```
 
-### Optional for Development
-
-- **Python 3.11+**: For local strategy development
-- **Code Editor**: VS Code, PyCharm, or similar
-- **Basic Command Line Knowledge**: Navigate directories, run commands
-
 ### System Requirements
 
 - **CPU**: 2+ cores recommended
 - **RAM**: 4GB minimum, 8GB recommended
 - **OS**: Linux, macOS, or Windows with WSL2
-- **Internet**: Required for downloading data and Docker images
+- **Internet**: Required for downloading data and packages
+
+### Optional
+
+- **Code Editor**: VS Code, PyCharm, or similar
+- **Docker**: If you prefer containerized execution (see bottom of README)
 
 ## Installation
 
-### Step 1: Clone the Repository
+### Step 1: Clone the Repositories
 
 ```bash
-# Clone the project
+# Clone the GMX demo project
 git clone https://github.com/yourusername/freqtrade-gmx-demo.git
 cd freqtrade-gmx-demo
 
 # Verify you're in the right directory
 ls -la
-# You should see: Dockerfile, docker-compose.yml, Makefile, configs/, etc.
-```
+# You should see: Dockerfile, docker-compose.yml, Makefile, configs/, deps/, etc.
 
-### Step 2: Initialize Git Submodule
-
-This project uses `web3-ethereum-defi` as a git submodule for GMX integration.
-
-```bash
-# Initialize and fetch the submodule
+# Initialize web3-ethereum-defi submodule (GMX integration)
 git submodule update --init --recursive
 
 # Verify submodule is loaded
@@ -80,54 +100,110 @@ ls deps/web3-ethereum-defi/
 # You should see Python files and directories
 ```
 
-**Troubleshooting**: If the submodule directory is empty:
+**Troubleshooting submodule**: If deps/web3-ethereum-defi/ is empty:
 ```bash
 # Force reinitialize
 git submodule deinit -f deps/web3-ethereum-defi
 git submodule update --init --recursive
 ```
 
-### Step 3: Build Docker Container
-
-Build the Freqtrade container with GMX monkeypatch:
+### Step 2: Clone Freqtrade
 
 ```bash
-# Build the pingpong_gmx container (takes 5-10 minutes first time)
-docker-compose build pingpong_gmx
+# Clone freqtrade repository
+git clone https://github.com/freqtrade/freqtrade.git
+cd freqtrade
+
+# Verify freqtrade is cloned
+ls -la
+# You should see: freqtrade/, requirements.txt, setup.py, etc.
 ```
 
-**What happens during build:**
-1. Pulls base Freqtrade image (freqtradeorg/freqtrade:2025.10)
-2. Installs build dependencies (gcc, g++, libgmp-dev, etc.)
-3. Installs web3-ethereum-defi Python package
-4. Sets up patched entrypoint for GMX integration
+### Step 3: Create Virtual Environment
+
+```bash
+# Create virtual environment using uv (fast!)
+uv venv .venv
+
+# Activate the virtual environment
+source .venv/bin/activate  # Linux/macOS
+
+# On Windows, use:
+# .venv\Scripts\activate
+
+# Verify venv is activated (prompt should show (.venv))
+which python
+# Should show: /path/to/freqtrade/.venv/bin/python
+```
+
+**Note**: Always activate your venv before running freqtrade commands.
+
+### Step 4: Install Freqtrade
+
+```bash
+# Upgrade pip (recommended)
+python3 -m pip install --upgrade pip
+
+# Install freqtrade dependencies
+python3 -m pip install -r requirements.txt
+
+# Install freqtrade in editable mode
+python3 -m pip install -e .
+
+# Verify freqtrade is installed
+freqtrade --version
+```
 
 **Expected output:**
 ```
-[+] Building 250.3s (10/10) FINISHED
- => [internal] load build definition from Dockerfile
- => => transferring dockerfile: 817B
- => [internal] load .dockerignore
- => ...
- => => naming to docker.io/library/freqtrade-gmx-demo-pingpong_gmx
+freqtrade 2025.10
 ```
 
-**Troubleshooting**: If build fails:
+**Troubleshooting**: If installation fails:
+- Ensure system dependencies are installed (see Prerequisites)
+- Check Python version: `python3 --version` (must be 3.11+)
+- Try: `python3 -m pip install --upgrade setuptools wheel`
+
+### Step 5: Install GMX Integration
+
 ```bash
-# Clean build cache and retry
-docker-compose build --no-cache pingpong_gmx
+# Return to project directory
+cd ..  # Back to freqtrade-gmx-demo/
 
-# Check Docker is running
-docker info
+# Ensure venv is still activated
+source freqtrade/.venv/bin/activate
+
+# Install web3-ethereum-defi with GMX support
+python3 -m pip install -e deps/web3-ethereum-defi[web3v7]
 ```
 
-### Step 4: Verify Installation
+**What this installs:**
+- web3-ethereum-defi core library
+- GMX-specific modules
+- Web3 v7 dependencies
+- CCXT and Freqtrade monkeypatch code
+
+### Step 6: Set Up Shell Alias
+
+For convenience, add this alias to your shell profile:
+
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+echo "alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'" >> ~/.bashrc
+
+# Reload shell configuration
+source ~/.bashrc  # or source ~/.zshrc
+```
+
+Now you can use `freqtrade` instead of the full command.
+
+### Step 7: Verify Installation
 
 Check that GMX is registered as an exchange:
 
 ```bash
 # Test GMX registration
-docker-compose run --rm pingpong_gmx python -c "import ccxt; print('GMX registered:', 'gmx' in ccxt.exchanges)"
+python -c "import ccxt; print('GMX registered:', 'gmx' in ccxt.exchanges)"
 ```
 
 **Expected output:**
@@ -135,29 +211,55 @@ docker-compose run --rm pingpong_gmx python -c "import ccxt; print('GMX register
 GMX registered: True
 ```
 
-If you see `False`, the monkeypatch failed. Check:
-1. Submodule is initialized (`ls deps/web3-ethereum-defi/`)
-2. Docker build completed without errors
-3. Dockerfile has correct entrypoint
+If you see `False`, troubleshoot:
+1. Verify submodule: `ls deps/web3-ethereum-defi/eth_defi/gmx/`
+2. Reinstall: `python3 -m pip install -e deps/web3-ethereum-defi[web3v7] --force-reinstall`
+3. Check venv is activated: `which python`
+
+**Test the full command:**
+```bash
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+```
+
+**Expected output:**
+```
+freqtrade 2025.10
+```
 
 ## Your First Backtest
 
 Let's backtest the **Pingpong** strategy on GMX using historical data.
+
+**Note**: Ensure your virtual environment is activated before running these commands:
+```bash
+source freqtrade/.venv/bin/activate  # From freqtrade-gmx-demo directory
+```
 
 ### Step 1: Download Historical Data
 
 Download 1 month of 5-minute candle data:
 
 ```bash
-# Download January 2025 data
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+# Download January 2025 data (assuming you set up the alias)
+freqtrade download-data \
+  --exchange gmx \
+  --config configs/pingpong_gmx.json \
+  --timeframe 5m \
+  --timerange 20250101-20250201
+
+# Or without alias, use the full command:
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade download-data \
+  --exchange gmx \
+  --config configs/pingpong_gmx.json \
+  --timeframe 5m \
+  --timerange 20250101-20250201
 ```
 
 **What this does:**
 - Fetches OHLCV data from GMX's GraphQL API
 - Stores data in `user_data/data/gmx/`
 - Downloads for pairs in `configs/pingpong_gmx.json` (ETH/USDC by default)
-- Uses 5m timeframe (configurable in Makefile)
+- Uses 5m timeframe as specified
 
 **Expected output:**
 ```
@@ -165,14 +267,16 @@ make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
 2025-01-01 00:00:00 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDC:USDC from 2025-01-01 to 2025-02-01
 ```
 
-**Progress tracking:**
-- With `-v` flag: Basic progress
-- With `-vv` flag: Detailed progress
-- With `-vvv` flag: Debug information
-
+**Add verbosity for more details:**
 ```bash
-# Example with verbose output
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201 VERBOSE=-vv
+# Basic progress
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timeframe 5m --timerange 20250101-20250201 -v
+
+# Detailed progress
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timeframe 5m --timerange 20250101-20250201 -vv
+
+# Debug information
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timeframe 5m --timerange 20250101-20250201 -vvv
 ```
 
 **Data location:**
@@ -189,6 +293,7 @@ du -h user_data/data/gmx/
 - Check internet connection
 - Verify timerange format (YYYYMMDD-YYYYMMDD)
 - Try different timerange (GMX launched in 2021)
+- Ensure venv is activated: `which python`
 - Check GraphQL endpoint is accessible
 
 ### Step 2: Run the Backtest
@@ -197,13 +302,23 @@ Backtest the Pingpong strategy using the downloaded data:
 
 ```bash
 # Run backtest for January 2025
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-20250201
+freqtrade backtesting \
+  --strategy Pingpong \
+  --config configs/pingpong_gmx.json \
+  --timerange 20250101-20250201
+
+# With verbose output
+freqtrade backtesting \
+  --strategy Pingpong \
+  --config configs/pingpong_gmx.json \
+  --timerange 20250101-20250201 \
+  -vv
 ```
 
 **What this does:**
 - Loads historical data from `user_data/data/gmx/`
 - Simulates trades using `user_data/strategies/pingpong.py`
-- Applies GMX-specific constraints (funding fees)
+- Applies GMX-specific constraints (funding fees, market orders)
 - Generates backtest results
 
 **Expected duration:** 30 seconds to 2 minutes (depends on data size)

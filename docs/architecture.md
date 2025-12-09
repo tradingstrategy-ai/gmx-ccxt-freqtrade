@@ -35,12 +35,13 @@ Instead of forking and maintaining custom versions, we inject GMX support at run
 ### High-Level Flow
 
 ```
-Docker Container Startup
+Python Execution
          │
          ▼
 ┌─────────────────────────────┐
-│  patched_entrypoint.py      │  ← Runs BEFORE Freqtrade
-│  (Entrypoint override)      │
+│  python -m                  │
+│  eth_defi.gmx.freqtrade     │  ← Runs BEFORE Freqtrade
+│  .patched_entrypoint        │
 └─────────────┬───────────────┘
               │
               ▼
@@ -66,21 +67,29 @@ Docker Container Startup
 └─────────────────────────────┘
 ```
 
-### Dockerfile Configuration
+### Installation Setup
 
-```dockerfile
-FROM freqtradeorg/freqtrade:2025.10
+Instead of Docker, you install the GMX integration directly in your Python environment:
 
-# Install web3-ethereum-defi (contains GMX integration)
-COPY deps/web3-ethereum-defi /tmp/web3-ethereum-defi
-RUN pip install --user "/tmp/web3-ethereum-defi[web3v7]"
+```bash
+# 1. Create virtual environment
+cd freqtrade
+uv venv .venv
+source .venv/bin/activate
 
-# Override entrypoint with patched version
-ENTRYPOINT ["python", "-u", "-B", "-m", "eth_defi.gmx.freqtrade.patched_entrypoint", "freqtrade"]
-CMD ["trade"]
+# 2. Install freqtrade
+pip install -r requirements.txt
+pip install -e .
+
+# 3. Install web3-ethereum-defi (contains GMX integration)
+cd ..
+pip install -e deps/web3-ethereum-defi[web3v7]
+
+# 4. Set up alias for convenience
+alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
 ```
 
-**Key:** The `ENTRYPOINT` runs the patched entrypoint instead of Freqtrade's default entrypoint.
+**Key:** The `patched_entrypoint` runs before Freqtrade and applies the monkeypatch.
 
 ### Patched Entrypoint
 
@@ -147,7 +156,7 @@ sys.exit(main(sys.argv[1:]))
 ```
 eth_defi/gmx/
 ├── freqtrade/
-│   ├── patched_entrypoint.py    # Docker entrypoint
+│   ├── patched_entrypoint.py    # Python module entrypoint
 │   ├── monkeypatch.py           # Monkeypatch logic
 │   └── gmx_exchange.py          # Freqtrade Exchange subclass
 │
@@ -335,12 +344,12 @@ After this monkeypatch:
 ### Backtesting Flow
 
 ```
-User runs: make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
+User runs: freqtrade backtesting --strategy Pingpong --config configs/pingpong_gmx.json
          │
          ▼
 ┌─────────────────────────────┐
-│  Docker: pingpong_gmx       │
-│  Entrypoint: patched        │
+│  Python Interpreter         │
+│  Patched entrypoint runs    │
 └─────────────┬───────────────┘
               │
               ▼
@@ -376,11 +385,12 @@ User runs: make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
 ### Live Trading Flow
 
 ```
-User runs: docker compose up pingpong_gmx
+User runs: freqtrade trade --strategy Pingpong --config configs/pingpong_gmx.json
          │
          ▼
 ┌─────────────────────────────┐
-│  Docker: pingpong_gmx       │
+│  Python Interpreter         │
+│  Patched entrypoint runs    │
 │  Mode: live/dry_run         │
 └─────────────┬───────────────┘
               │
@@ -486,12 +496,12 @@ The GMX integration lives in `web3-ethereum-defi`. To contribute:
 cd deps/web3-ethereum-defi/
 # Make your changes...
 
-# Rebuild Docker with changes
+# Reinstall the modified package
 cd ../..
-docker-compose build --no-cache pingpong_gmx
+pip install -e deps/web3-ethereum-defi[web3v7]
 
-# Test
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
+# Test with backtesting
+freqtrade backtesting --strategy Pingpong --config configs/pingpong_gmx.json
 ```
 
 ## Configuration Deep Dive
@@ -526,23 +536,17 @@ make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
 }
 ```
 
-### Docker Volumes
+### Data Storage
 
-```yaml
-# docker-compose.yml
-services:
-  pingpong_gmx:
-    volumes:
-      - ./user_data:/freqtrade/user_data  # Strategies, data, results
-      - ./configs:/freqtrade/configs      # Configuration files
-      - ./db:/freqtrade/db                # SQLite databases
-```
+All data is stored locally in the freqtrade directory:
 
 **Persistence:**
 - Historical data: `user_data/data/gmx/`
 - Backtest results: `user_data/backtest_results/`
-- Trade database: `db/<container>.sqlite`
-- Logs: `user_data/logs/<container>.log`
+- Trade database: `user_data/tradesv3.sqlite`
+- Logs: `user_data/logs/freqtrade.log`
+- Strategies: `user_data/strategies/`
+- Configuration: `configs/`
 
 ## Security Considerations
 
@@ -583,7 +587,7 @@ services:
 
 Historical data is cached in `user_data/data/gmx/`:
 - Re-running backtests uses cached data
-- Update with `make data` command
+- Update with `freqtrade download-data` command
 - Delete cache to force refresh
 
 ### Parallel Backtesting
@@ -592,10 +596,10 @@ Run multiple backtests simultaneously:
 
 ```bash
 # Terminal 1
-make backtest CONTAINER=pingpong_gmx STRATEGY=Strategy1 &
+freqtrade backtesting --strategy Strategy1 --config configs/config1.json &
 
 # Terminal 2
-make backtest CONTAINER=simple_gmx STRATEGY=Strategy2 &
+freqtrade backtesting --strategy Strategy2 --config configs/config2.json &
 ```
 
 ### Memory Usage
@@ -615,22 +619,28 @@ freqtrade.exceptions.OperationalException: Exchange gmx is not supported
 ```
 
 **Fix:**
-1. Verify Docker entrypoint:
+1. Verify you're using the patched entrypoint:
    ```bash
-   docker inspect pingpong_gmx | grep Entrypoint
+   # Check alias
+   alias freqtrade
+   # Should show: python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade
    ```
-   Should show: `eth_defi.gmx.freqtrade.patched_entrypoint`
 
-2. Rebuild container:
+2. Verify web3-ethereum-defi is installed:
    ```bash
-   docker-compose build --no-cache pingpong_gmx
+   python -c "import eth_defi.gmx; print('GMX module found')"
+   ```
+
+3. Reinstall if needed:
+   ```bash
+   pip install -e deps/web3-ethereum-defi[web3v7]
    ```
 
 ### GMX Not in CCXT
 
 **Check:**
 ```bash
-docker-compose run --rm pingpong_gmx python -c "import ccxt; print('gmx' in ccxt.exchanges)"
+python -c "import ccxt; print('gmx' in ccxt.exchanges)"
 ```
 
 Should print: `True`
@@ -644,7 +654,7 @@ Should print: `True`
 
 **Debug:**
 ```bash
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201 VERBOSE=-vvv
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201 -vvv
 ```
 
 ## Next Steps

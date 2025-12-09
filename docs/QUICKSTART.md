@@ -1,25 +1,76 @@
 # Quick Start: ADX Strategy with Equity Curves
 
-Get up and running with the ADX Momentum strategy and visualize results in under 10 minutes.
+Get up and running with the ADX Momentum strategy and visualize results in under 15 minutes.
 
-## Step 1: Build Container (1 min)
+## Prerequisites
+
+Install system dependencies first:
+
+**Debian/Ubuntu:**
+```bash
+sudo apt-get update
+sudo apt install -y python3-pip python3-venv python3-dev python3-pandas git curl
+```
+
+**macOS:**
+```bash
+brew install gettext libomp
+```
+
+**For other systems**, see [Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
+
+---
+
+## Step 1: Setup Environment (3 mins)
 
 ```bash
-docker-compose build adxmomentum_gmx
+# Clone project (if not done already)
+git clone https://github.com/yourusername/freqtrade-gmx-demo.git
+cd freqtrade-gmx-demo
+git submodule update --init --recursive
+
+# Clone freqtrade
+git clone https://github.com/freqtrade/freqtrade.git
+cd freqtrade
+
+# Create and activate virtual environment
+uv venv .venv
+source .venv/bin/activate  # Linux/macOS (.venv\Scripts\activate on Windows)
+
+# Install freqtrade
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
+python3 -m pip install -e .
+
+# Return to project and install GMX integration
+cd ..
+python3 -m pip install -e deps/web3-ethereum-defi[web3v7]
+
+# Add convenience alias (optional but recommended)
+alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
 ```
 
 ## Step 2: Download Data (2-3 min)
 
 ```bash
 # Download 3 months of 1h data for ETH/USDC
-make data CONTAINER=adxmomentum_gmx TIMEFRAME=1h TIMERANGE=20250101-20250401
+freqtrade download-data \
+  --exchange gmx \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange 20250101-20250401
 ```
 
 ## Step 3: Run Backtest (1-2 min)
 
 ```bash
 # Run backtest with verbose output
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250101-20250401 VERBOSE=-vv
+freqtrade backtesting \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange 20250101-20250401 \
+  -vv
 ```
 
 **What you'll see:**
@@ -38,12 +89,15 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERA
 
 ```bash
 # Generate interactive profit plot (equity curve, drawdowns)
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+freqtrade plot-profit \
+  --config configs/adxmomentum_gmx.json
 
 # Generate interactive candlestick charts with indicators
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum \
-  INDICATORS1="adx,plus_di,minus_di" \
-  INDICATORS2="mom"
+freqtrade plot-dataframe \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --indicators1 adx plus_di minus_di \
+  --indicators2 mom
 ```
 
 **Output:** Interactive HTML files in `user_data/plot/`
@@ -98,7 +152,11 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 
 ```bash
 # 4h timeframe (longer holds)
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=4h TIMERANGE=20250101-20250401
+freqtrade backtesting \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 4h \
+  --timerange 20250101-20250401
 
 # Compare results
 ```
@@ -107,10 +165,18 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=4h TIMERA
 
 ```bash
 # Q1 2025
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250101-20250401
+freqtrade backtesting \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange 20250101-20250401
 
 # Q2 2025 (out-of-sample)
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250401-20250701
+freqtrade backtesting \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange 20250401-20250701
 ```
 
 
@@ -130,14 +196,23 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERA
 ## Full Workflow Example
 
 ```bash
-# 1. Build
-docker-compose build adxmomentum_gmx
+# 1. Setup (if not done)
+# See Step 1 above
 
 # 2. Download 6 months of data
-make data CONTAINER=adxmomentum_gmx TIMEFRAME=1h TIMERANGE=20250101-20250701
+freqtrade download-data \
+  --exchange gmx \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange 20250101-20250701
 
 # 3. Backtest first 3 months
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250101-20250401 VERBOSE=-vv
+freqtrade backtesting \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange 20250101-20250401 \
+  -vv
 
 # 4. Generate equity curve
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
@@ -148,7 +223,12 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 # - Look for smooth upward equity curve
 
 # 6. Test out-of-sample (last 3 months)
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250401-20250701 VERBOSE=-vv
+freqtrade backtesting \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange 20250401-20250701 \
+  -vv
 
 # 7. Compare results
 # - Similar performance = robust strategy
@@ -162,16 +242,28 @@ make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERA
 
 ## Quick Commands Cheat Sheet
 
+**Note**: Assumes `alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'`
+
 ```bash
 # Data download
-make data CONTAINER=adxmomentum_gmx TIMERANGE=YYYYMMDD-YYYYMMDD
+freqtrade download-data \
+  --exchange gmx \
+  --config configs/adxmomentum_gmx.json \
+  --timeframe 1h \
+  --timerange YYYYMMDD-YYYYMMDD
 
 # Backtest
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMERANGE=YYYYMMDD-YYYYMMDD
+freqtrade backtesting \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --timerange YYYYMMDD-YYYYMMDD
 
 # Visualizations (Freqtrade built-in)
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum INDICATORS1="adx,plus_di,minus_di"
+freqtrade plot-profit --config configs/adxmomentum_gmx.json
+freqtrade plot-dataframe \
+  --strategy ADXMomentum \
+  --config configs/adxmomentum_gmx.json \
+  --indicators1 adx plus_di minus_di
 
 # Visualizations (Custom Python)
 python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
@@ -185,6 +277,6 @@ ls -lt user_data/backtest_results/
 If something isn't working:
 
 1. Check [Troubleshooting Guide](troubleshooting.md)
-2. Verify data downloaded: `ls user_data/data/gmx/`
-3. Check container built: `docker images | grep adxmomentum`
-4. Run with verbose output: `VERBOSE=-vvv`
+2. Verify venv activated: `which python` (should show `.venv/bin/python`)
+3. Verify data downloaded: `ls user_data/data/gmx/`
+4. Run with verbose output: add `-vvv` flag to commands

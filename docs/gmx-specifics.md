@@ -146,7 +146,7 @@ Price impact = f(trade_size, pool_liquidity, pool_balance)
 
 **Check available liquidity:**
 ```bash
-docker-compose run --rm pingpong_gmx python -c "
+python -c "
 from eth_defi.gmx.ccxt.exchange import GMX
 import asyncio
 
@@ -282,7 +282,7 @@ Track total open positions:
 
 **Example:**
 ```bash
-docker-compose run --rm pingpong_gmx python -c "
+python -c "
 from eth_defi.gmx.open_interest import fetch_open_interest
 import asyncio
 
@@ -332,7 +332,7 @@ As of 2025, GMX supports:
 
 **Check current markets:**
 ```bash
-docker-compose run --rm pingpong_gmx python -c "
+python -c "
 from eth_defi.gmx.constants import ARBITRUM_MARKETS
 print('GMX Arbitrum Markets:')
 for market in ARBITRUM_MARKETS:
@@ -482,10 +482,11 @@ This project integrates GMX into Freqtrade using a **monkeypatch approach**:
 
 ```
 ┌──────────────────────────────────────────────┐
-│ Docker Container                             │
+│ Python Execution Environment                 │
 │                                              │
 │  ┌────────────────────────────────────┐    │
-│  │ patched_entrypoint.py              │    │
+│  │ python -m eth_defi.gmx.freqtrade   │    │
+│  │       .patched_entrypoint          │    │
 │  │ (runs before Freqtrade starts)     │    │
 │  └─────────────┬──────────────────────┘    │
 │                │                             │
@@ -511,6 +512,28 @@ This project integrates GMX into Freqtrade using a **monkeypatch approach**:
 │  │ - Uses GMX like Binance/Kraken     │    │
 │  └────────────────────────────────────┘    │
 └──────────────────────────────────────────────┘
+```
+
+**How it works:**
+
+1. Instead of running `freqtrade` directly, you run through the patched entrypoint:
+   ```bash
+   python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade <command>
+   ```
+
+2. The patched entrypoint applies the monkeypatches before Freqtrade starts
+
+3. Freqtrade sees GMX as a native exchange and works transparently
+
+**Convenience alias:**
+```bash
+alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
+```
+
+This allows you to run commands naturally:
+```bash
+freqtrade download-data --exchange gmx ...
+freqtrade backtesting --strategy Pingpong ...
 ```
 
 ### Web3-Ethereum-DeFi Module
