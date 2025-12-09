@@ -283,17 +283,11 @@ source .venv/bin/activate  # From freqtrade-gmx-demo directory
 Download 1 month of 5-minute candle data:
 
 ```bash
-# Download January 2025 data (assuming you set up the alias)
-freqtrade download-data \
+# Download January 2025 data using the freqtrade-gmx wrapper
+./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/pingpong_gmx.json \
-  --timeframe 5m \
-  --timerange 20250101-20250201
-
-# Or without alias, use the full command:
-python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade download-data \
-  --exchange gmx \
-  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
   --timeframe 5m \
   --timerange 20250101-20250201
 ```
@@ -313,13 +307,13 @@ python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade download-data \
 **Add verbosity for more details:**
 ```bash
 # Basic progress
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timeframe 5m --timerange 20250101-20250201 -v
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -v
 
 # Detailed progress
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timeframe 5m --timerange 20250101-20250201 -vv
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -vv
 
 # Debug information
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timeframe 5m --timerange 20250101-20250201 -vvv
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -vvv
 ```
 
 **Data location:**
@@ -345,15 +339,17 @@ Backtest the Pingpong strategy using the downloaded data:
 
 ```bash
 # Run backtest for January 2025
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy Pingpong \
   --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
   --timerange 20250101-20250201
 
 # With verbose output
-freqtrade backtesting \
+./freqtrade-gmx backtesting \
   --strategy Pingpong \
   --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
   --timerange 20250101-20250201 \
   -vv
 ```

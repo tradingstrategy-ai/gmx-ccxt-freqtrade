@@ -13,10 +13,7 @@ Equity curves visualize your account balance over time during backtests, helping
 
 Freqtrade provides built-in plotting commands that generate interactive HTML visualizations.
 
-**Note**: Ensure your virtual environment is activated and you've set up the alias:
-```bash
-alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
-```
+**Note**: All commands below use the `./freqtrade-gmx` wrapper script, which automatically activates the virtual environment and applies the GMX integration.
 
 ### Plot Dataframe (Interactive Charts)
 
@@ -25,17 +22,19 @@ Generate interactive candlestick charts with indicators and entry/exit points ov
 **Basic usage:**
 
 ```bash
-freqtrade plot-dataframe \
+./freqtrade-gmx plot-dataframe \
   --strategy ADXMomentum \
-  --config configs/adxmomentum_gmx.json
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json
 ```
 
 **With specific pairs and indicators:**
 
 ```bash
-freqtrade plot-dataframe \
+./freqtrade-gmx plot-dataframe \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   -p ETH/USDC:USDC \
   --indicators1 adx plus_di minus_di \
   --indicators2 mom
@@ -44,9 +43,10 @@ freqtrade plot-dataframe \
 **With timeframe and timerange:**
 
 ```bash
-freqtrade plot-dataframe \
+./freqtrade-gmx plot-dataframe \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
   --timerange 20250101-20250401 \
   --indicators1 adx plus_di minus_di
@@ -55,9 +55,10 @@ freqtrade plot-dataframe \
 **With specific backtest file:**
 
 ```bash
-freqtrade plot-dataframe \
+./freqtrade-gmx plot-dataframe \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --export-filename user_data/backtest_results/backtest-result-2025-12-08_11-36-37.json
 ```
 
@@ -82,23 +83,26 @@ Generate equity curve and profit visualizations from backtest results.
 **Basic usage:**
 
 ```bash
-freqtrade plot-profit \
-  --config configs/adxmomentum_gmx.json
+./freqtrade-gmx plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json
 ```
 
 **With auto-open in browser:**
 
 ```bash
-freqtrade plot-profit \
+./freqtrade-gmx plot-profit \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --auto-open
 ```
 
 **With specific pairs and timerange:**
 
 ```bash
-freqtrade plot-profit \
+./freqtrade-gmx plot-profit \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   -p ETH/USDC:USDC \
   --timerange 20250101-20250401
 ```
@@ -106,16 +110,18 @@ freqtrade plot-profit \
 **With specific backtest file:**
 
 ```bash
-freqtrade plot-profit \
+./freqtrade-gmx plot-profit \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --export-filename user_data/backtest_results/backtest-result-2025-12-08_11-36-37.json
 ```
 
 **Using database trades (for live/dry-run):**
 
 ```bash
-freqtrade plot-profit \
+./freqtrade-gmx plot-profit \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --db-url sqlite:///user_data/tradesv3.sqlite \
   --trade-source DB
 ```

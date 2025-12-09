@@ -90,6 +90,10 @@ git submodule update --init --recursive
 # this naming is very important else python will get confused because the freqtrade command and the directory name would be same
 git clone https://github.com/freqtrade/freqtrade.git freqtrade-develop
 
+cd freqtrade-develop
+git checkout stable
+cd ..
+
 # Create virtual environment in main project directory using uv
 uv venv .venv
 
@@ -118,13 +122,6 @@ uv pip install cchecksum
 ./freqtrade-gmx --version
 ```
 
-**Important Notes:**
-
-- **Why install from local submodule?** The PyPI version of `web3-ethereum-defi` doesn't include the freqtrade integration yet. The freqtrade monkeypatch module only exists in the local `deps/web3-ethereum-defi` directory.
-
-- **Why install `cchecksum` separately?** This is a required dependency for Ethereum address checksumming that isn't automatically installed with the current extras configuration.
-
-- **Why use the `freqtrade-gmx` wrapper script?** Running `python -m eth_defi.gmx.freqtrade.patched_entrypoint` directly from the project directory causes Python import conflicts. Python finds the `freqtrade/` subdirectory as a namespace package instead of the installed freqtrade package, leading to `ImportError: cannot import name '__version__'`. The wrapper script solves this by running from a clean directory (`/tmp`).
 
 **Pro Tip**: The project includes a `freqtrade-gmx` wrapper script that handles the GMX integration:
 ```bash
@@ -140,7 +137,7 @@ freqtrade-gmx --version
 ### 4. Download Historical Data
 
 ```bash
-# Download 1 month of 5m data for backtesting
+# 5m data for backtesting
 ./freqtrade-gmx download-data \
   --config configs/pingpong_gmx.json \
   --config configs/pingpong_gmx.secrets.json \
@@ -416,9 +413,10 @@ python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
 ### No data downloaded
 ```bash
 # Check timerange format (YYYYMMDD-YYYYMMDD)
-freqtrade download-data \
+./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
   --timeframe 5m \
   --timerange 20251128-20251208 \
   -vv
