@@ -38,8 +38,8 @@ Understanding GMX's unique characteristics and how they affect backtesting and t
 
 5. **Available Markets**
    - Major: ETH, BTC, SOL, LINK, ARB
-   - Alts: DOGE, XRP, LTC, UNI
-   - 15+ perpetual markets
+   - Alts: DOGE, XRP, LTC, UNI, and many more
+   - 95+ perpetual markets
 
 ## Key Differences from Traditional Exchanges
 
@@ -72,8 +72,6 @@ Understanding these differences is crucial for building effective GMX strategies
 - Simplified order logic, no timeouts/cancels
 - Deterministic execution
 
-**Limitations:**
-- Can't scale into positions gradually
 
 ### 3. Funding Rates
 
@@ -90,29 +88,6 @@ GMX funding rates work differently than most CEXs:
 - Imbalanced markets: -0.05% to +0.05% per hour
 - Extreme conditions: Can exceed ±0.1% per hour
 
-**Annual funding (approximation):**
-```
-Annual rate = (hourly rate) × 24 (daily) × 365
-Example: 0.01% per hour = 87.6% APR
-```
-
-**Note**: Third-party data providers (CoinGlass, Coinalyze) often normalize GMX funding rates to 8-hour periods for comparison with CEXs, but the actual protocol calculates hourly.
-
-**Strategy implications:**
-- Long-term positions pay significant funding
-- Consider funding in backtest P&L
-- Funding can reverse trend profitability
-- Short-term strategies less affected
-
-**Freqtrade handling:**
-```python
-# Funding fees are automatically included in backtests
-# Check funding impact:
-def custom_stake_amount(self, pair, current_time, ...):
-    # Account for funding in position sizing
-    funding_cost = self.get_funding_fees(pair, ...)
-    return adjusted_stake - funding_cost
-```
 
 ### 4. Liquidity Pools Instead of Order Books
 
@@ -135,38 +110,22 @@ def custom_stake_amount(self, pair, current_time, ...):
 
 **Check available liquidity:**
 ```bash
+# Activate your virtual environment first
+source .venv/bin/activate
+
+# Check open interest as proxy for liquidity
 python -c "
 from eth_defi.gmx.ccxt.exchange import GMX
-import asyncio
-
-async def check_liquidity():
-    gmx = GMX({'rpc_url': 'https://arb1.arbitrum.io/rpc'})
-    liquidity = await gmx.fetch_available_liquidity('ETH/USDC:USDC')
-    print(f'ETH/USDC Available Liquidity:')
-    print(f'  Long: {liquidity[\"long\"]} ETH')
-    print(f'  Short: {liquidity[\"short\"]} USDC')
-    await gmx.close()
-
-asyncio.run(check_liquidity())
+exchange = GMX()
+markets = exchange.load_markets()
+print('ETH/USD:USD Market Info:')
+market = markets.get('ETH/USD:USD')
+if market:
+    print(f\"  Contract Size: {market.get('contractSize', 'N/A')}\")
+    print(f\"  Max Leverage: {market.get('limits', {}).get('leverage', {}).get('max', 'N/A')}\")
 "
 ```
 
-### 5. Gas Costs
-
-**Arbitrum:** $0.10-0.50 (typical), $1-3 (congestion)
-**Avalanche:** $0.50-2.00 (higher, more stable)
-
-**Impact:**
-- Minimum profit threshold: >$0.50/trade
-- High-frequency strategies pay more
-
-**Example:**
-```
-100 trades @ $0.50 gas = $50 cost
-On $1000 stake with 1% avg profit: 5% reduction
-```
-
-**Note:** Not auto-included in Freqtrade backtests - account manually.
 
 ## Available Data
 
@@ -199,35 +158,16 @@ dataframe['atr'] = ta.ATR(dataframe, timeperiod=14)
 
 ### Funding Rates
 
-Historical funding rate data:
+**Current rates only:**
+- GMX does not provide historical funding rate data
+- Only current/real-time funding rates available
+- Rates update hourly based on long/short ratio
 
-**Availability:**
-- 8-hour snapshots (00:00, 08:00, 16:00 UTC)
-- Historical data since GMX launch (2021)
-- Per-market rates
+**Check current rates:**
+- Visit [stats.gmx.io](https://stats.gmx.io/) for real-time funding rates
+- Third-party sites ([CoinGlass](https://www.coinglass.com/funding/GMX), [Coinalyze](https://coinalyze.net/gmx/funding-rate/)) track historical rates
 
-**Usage in strategies:**
-```python
-def populate_indicators(self, dataframe, metadata):
-    # Fetch funding rates (if available)
-    funding = self.dp.get_pair_dataframe(
-        pair=metadata['pair'],
-        timeframe='8h',
-        candle_type='funding'
-    )
-
-    # Merge with main dataframe
-    dataframe = dataframe.merge(
-        funding[['date', 'funding_rate']],
-        on='date',
-        how='left'
-    )
-
-    # Avoid high funding cost positions
-    dataframe['high_funding'] = dataframe['funding_rate'] > 0.05
-
-    return dataframe
-```
+**Note:** Without historical funding data, backtests cannot accurately model funding costs. Consider using fixed estimates or external data sources.
 
 ### Open Interest
 
@@ -244,21 +184,15 @@ Track total open positions:
 - Contrarian signals (extreme OI = reversal?)
 - Liquidity assessment (high OI = more liquidity)
 
-**Example:**
+**Check via GMX Stats:**
+- Visit [stats.gmx.io](https://stats.gmx.io/) for real-time open interest data
+- Or use the freqtrade-gmx wrapper to fetch market data:
+
 ```bash
-python -c "
-from eth_defi.gmx.open_interest import fetch_open_interest
-import asyncio
-
-async def show_oi():
-    oi = await fetch_open_interest('ETH/USDC', chain='arbitrum')
-    print(f'ETH/USDC Open Interest:')
-    print(f'  Total Long: ${oi[\"total_long\"]:,.0f}')
-    print(f'  Total Short: ${oi[\"total_short\"]:,.0f}')
-    print(f'  Ratio: {oi[\"long_short_ratio\"]:.2f}')
-
-asyncio.run(show_oi())
-"
+./freqtrade-gmx test-pairlist \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --quote USDC
 ```
 
 ### Price Oracle
@@ -278,61 +212,20 @@ GMX uses Chainlink Data Streams for pricing:
 
 ### Supported Markets
 
-**Major:** ETH/USDC, BTC/USDC (most liquid), SOL/USDC, ARB/USDC, LINK/USDC
-**Alts:** DOGE/USDC, XRP/USDC, LTC/USDC, UNI/USDC, AAVE/USDC
+**95+ perpetual markets** including:
+- **Most liquid:** ETH/USDC, BTC/USDC
+- **Major:** SOL/USDC, ARB/USDC, LINK/USDC
+- **Popular alts:** DOGE/USDC, XRP/USDC, LTC/USDC, UNI/USDC, AAVE/USDC
 
-**Check current markets:**
+**List all available markets:**
 ```bash
-python -c "
-from eth_defi.gmx.constants import ARBITRUM_MARKETS
-for market in ARBITRUM_MARKETS: print(market)
-"
+# Using freqtrade-gmx
+./freqtrade-gmx test-pairlist \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json
+
+# Or check stats.gmx.io for full market list
 ```
-
-## Trading Implications
-
-### Strategy Design Considerations
-
-**1. Funding Cost Awareness**
-
-Factor funding into P&L:
-- Short-term strategies (< 1 day holds) - moderate impact
-- Medium-term (1-3 days) - significant impact
-- Long-term (> 1 week) - very significant impact (can exceed profit)
-
-**Example:**
-```
-Position: 1 ETH long at $2500, 10x leverage
-Holding period: 7 days
-Funding rate: 0.01% per hour (87.6% APR)
-
-Daily funding: $2500 × 10x × 0.01% × 24 = $60
-Weekly funding: $60 × 7 = $420
-Profit needed to break even: 16.8% (on unleveraged position)
-```
-
-**Critical**: GMX hourly funding can be 8x more expensive than CEX 8-hour funding for long holds.
-
-**2. Gas Cost Threshold**
-
-Ensure profit > gas costs:
-- Minimum profitable trade: $5-10 (on Arbitrum)
-- High-frequency strategies need larger edges
-- Consider gas in position sizing
-
-**3. Liquidity Constraints**
-
-- Small (< $10k): No issue
-- Medium ($10k-$100k): Check liquidity
-- Large (> $100k): Split or wait
-
-**4. No Volume Indicators**
-
-**Replacements:**
-- Volume SMA → Price SMA / Open Interest
-- Volume oscillators → Price oscillators
-- Volume breakouts → Price + ATR
-- OBV → Accumulation/Distribution
 
 
 ### Fee Structure
@@ -347,22 +240,6 @@ Ensure profit > gas costs:
 - **Gas**: Varies by network congestion (excess refunded)
 - **Price impact**: Only on exits, typically capped at ~0.5%
 
-**Total cost example:**
-```
-Trade: Enter + hold 1 day + exit
-Entry fee: 0.06% (imbalanced)
-Funding (24h): ~0.24% (0.01%/hour × 24)
-Borrowing fees: ~0.48% (varies)
-Exit fee: 0.06% (imbalanced)
-Gas (2 transactions): $0.50-1.00
-
-Total cost on $10,000 position:
-Fees: $84 (0.84%)
-Gas: $1.00
-Total: $85 (0.85%)
-
-Required profit to break even: 0.85%
-```
 
 **N.B.** This is a very abstract overview of the fees & may change. Always use the official documentaion for reference.
 
@@ -421,33 +298,33 @@ This project integrates GMX into Freqtrade using a **monkeypatch approach**:
 ┌──────────────────────────────────────────────┐
 │ Python Execution Environment                 │
 │                                              │
-│  ┌────────────────────────────────────┐    │
-│  │ python -m eth_defi.gmx.freqtrade   │    │
-│  │       .patched_entrypoint          │    │
-│  │ (runs before Freqtrade starts)     │    │
-│  └─────────────┬──────────────────────┘    │
+│  ┌────────────────────────────────────┐      │
+│  │ python -m eth_defi.gmx.freqtrade   │      │
+│  │       .patched_entrypoint          │      │
+│  │ (runs before Freqtrade starts)     │      │
+│  └─────────────┬──────────────────────┘      │ 
 │                │                             │
 │                ▼                             │
-│  ┌────────────────────────────────────┐    │
-│  │ CCXT Monkeypatch                   │    │
-│  │ - Inject GMX into ccxt.exchanges   │    │
-│  │ - Add ccxt.gmx class               │    │
-│  │ - Add ccxt.async_support.gmx class │    │
-│  └─────────────┬──────────────────────┘    │
+│  ┌────────────────────────────────────┐      │
+│  │ CCXT Monkeypatch                   │      │
+│  │ - Inject GMX into ccxt.exchanges   │      │
+│  │ - Add ccxt.gmx class               │      │
+│  │ - Add ccxt.async_support.gmx class │      │
+│  └─────────────┬──────────────────────┘      │
 │                │                             │
 │                ▼                             │
-│  ┌────────────────────────────────────┐    │
-│  │ Freqtrade Monkeypatch              │    │
-│  │ - Add GMX to SUPPORTED_EXCHANGES   │    │
-│  │ - Register GMXExchange class       │    │
-│  └─────────────┬──────────────────────┘    │
+│  ┌────────────────────────────────────┐      │
+│  │ Freqtrade Monkeypatch              │      │
+│  │ - Add GMX to SUPPORTED_EXCHANGES   │      │
+│  │ - Register GMXExchange class       │      │
+│  └─────────────┬──────────────────────┘      │
 │                │                             │
 │                ▼                             │
-│  ┌────────────────────────────────────┐    │
-│  │ Freqtrade (unmodified)             │    │
-│  │ - Sees GMX as native exchange      │    │
-│  │ - Uses GMX like Binance/Kraken     │    │
-│  └────────────────────────────────────┘    │
+│  ┌────────────────────────────────────┐      │
+│  │ Freqtrade (unmodified)             │      │
+│  │ - Sees GMX as native exchange      │      │
+│  │ - Uses GMX like Binance/Kraken     │      │
+│  └────────────────────────────────────┘      │
 └──────────────────────────────────────────────┘
 ```
 
@@ -564,17 +441,18 @@ Now that you understand GMX's unique characteristics:
 
 | Cost Type | Amount |
 |-----------|--------|
-| Trading fee | 0.04-0.07% (each side) |
-| Funding rate | -0.05% to +0.05% (per 8h) |
-| Borrowing fee | 0.01-0.05% (per hour) |
-| Gas cost | $0.10-0.50 (per transaction) |
+| Trading fee | 0.04-0.06% (each side, balanced/imbalanced) |
+| Funding rate | -0.01% to +0.05% (per hour, dynamic) |
+| Borrowing fee | Varies by pool utilization |
+| Price impact | Exit only, typically capped at ~0.5% |
+| Gas cost | $0.10-0.50 Arbitrum, $0.50-2.00 Avalanche |
 
 ### Supported Data
 
 - ✅ OHLCV (1m, 5m, 15m, 1h, 4h, 1d)
-- ✅ Funding rates (8h snapshots)
 - ✅ Open interest (real-time)
-- ✅ Available liquidity
+- ✅ Current funding rates (real-time only)
+- ❌ Historical funding rates (not available from GMX)
 - ❌ Volume (not available)
 - ❌ Order book (not applicable)
 
