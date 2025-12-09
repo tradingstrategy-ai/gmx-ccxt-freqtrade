@@ -31,20 +31,20 @@ git submodule update --init --recursive
 
 # Clone freqtrade
 git clone https://github.com/freqtrade/freqtrade.git
-cd freqtrade
 
-# Create and activate virtual environment
+# Create and activate virtual environment in main project directory
 uv venv .venv
 source .venv/bin/activate  # Linux/macOS (.venv\Scripts\activate on Windows)
 
 # Install freqtrade
-python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
-python3 -m pip install -e .
+uv pip install -r freqtrade/requirements.txt
+uv pip install -e freqtrade/
 
-# Return to project and install GMX integration
-cd ..
-python3 -m pip install -e deps/web3-ethereum-defi[web3v7]
+# Install GMX integration from local submodule (includes freqtrade integration)
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+
+# Install additional required dependency
+uv pip install cchecksum
 
 # Add convenience alias (optional but recommended)
 alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'

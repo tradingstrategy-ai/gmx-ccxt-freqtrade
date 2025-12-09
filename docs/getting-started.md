@@ -110,19 +110,18 @@ git submodule update --init --recursive
 ### Step 2: Clone Freqtrade
 
 ```bash
-# Clone freqtrade repository
+# Clone freqtrade repository into the project
 git clone https://github.com/freqtrade/freqtrade.git
-cd freqtrade
 
 # Verify freqtrade is cloned
-ls -la
+ls freqtrade/
 # You should see: freqtrade/, requirements.txt, setup.py, etc.
 ```
 
 ### Step 3: Create Virtual Environment
 
 ```bash
-# Create virtual environment using uv (fast!)
+# Create virtual environment in main project directory using uv (fast!)
 uv venv .venv
 
 # Activate the virtual environment
@@ -133,7 +132,7 @@ source .venv/bin/activate  # Linux/macOS
 
 # Verify venv is activated (prompt should show (.venv))
 which python
-# Should show: /path/to/freqtrade/.venv/bin/python
+# Should show: /path/to/freqtrade-gmx-demo/.venv/bin/python
 ```
 
 **Note**: Always activate your venv before running freqtrade commands.
@@ -141,17 +140,14 @@ which python
 ### Step 4: Install Freqtrade
 
 ```bash
-# Upgrade pip (recommended)
-python3 -m pip install --upgrade pip
-
 # Install freqtrade dependencies
-python3 -m pip install -r requirements.txt
+uv pip install -r freqtrade/requirements.txt
 
 # Install freqtrade in editable mode
-python3 -m pip install -e .
+uv pip install -e freqtrade/
 
 # Verify freqtrade is installed
-freqtrade --version
+python -m freqtrade --version
 ```
 
 **Expected output:**
@@ -167,21 +163,23 @@ freqtrade 2025.10
 ### Step 5: Install GMX Integration
 
 ```bash
-# Return to project directory
-cd ..  # Back to freqtrade-gmx-demo/
-
 # Ensure venv is still activated
-source freqtrade/.venv/bin/activate
+source .venv/bin/activate
 
-# Install web3-ethereum-defi with GMX support
-python3 -m pip install -e deps/web3-ethereum-defi[web3v7]
+# Install web3-ethereum-defi from local submodule (includes freqtrade integration)
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+
+# Install additional required dependency
+uv pip install cchecksum
 ```
 
 **What this installs:**
-- web3-ethereum-defi core library
-- GMX-specific modules
-- Web3 v7 dependencies
-- CCXT and Freqtrade monkeypatch code
+- web3-ethereum-defi core library (from local submodule with freqtrade integration)
+- GMX-specific modules including freqtrade monkeypatch
+- Web3 v7 dependencies (with web3v7 extra)
+- Data processing tools (with data extra)
+- CCXT integration (with ccxt extra)
+- cchecksum for address checksumming
 
 ### Step 6: Set Up Shell Alias
 
@@ -212,9 +210,9 @@ GMX registered: True
 ```
 
 If you see `False`, troubleshoot:
-1. Verify submodule: `ls deps/web3-ethereum-defi/eth_defi/gmx/`
-2. Reinstall: `python3 -m pip install -e deps/web3-ethereum-defi[web3v7] --force-reinstall`
-3. Check venv is activated: `which python`
+1. Reinstall from PyPI: `uv pip install --force-reinstall "web3>=7.12.0" "web3-ethereum-defi[web3v7]"`
+2. Check venv is activated: `which python`
+3. Verify installation: `python -c "import eth_defi.gmx"`
 
 **Test the full command:**
 ```bash
@@ -232,7 +230,7 @@ Let's backtest the **Pingpong** strategy on GMX using historical data.
 
 **Note**: Ensure your virtual environment is activated before running these commands:
 ```bash
-source freqtrade/.venv/bin/activate  # From freqtrade-gmx-demo directory
+source .venv/bin/activate  # From freqtrade-gmx-demo directory
 ```
 
 ### Step 1: Download Historical Data

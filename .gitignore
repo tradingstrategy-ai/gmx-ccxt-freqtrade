@@ -63,3 +63,5 @@ caddy/logs/
 *.pkl
 *.feather
 *.parquet
+
+freqtrade/

@@ -88,9 +88,8 @@ git submodule update --init --recursive
 ```bash
 # Clone freqtrade repository
 git clone https://github.com/freqtrade/freqtrade.git
-cd freqtrade
 
-# Create virtual environment using uv
+# Create virtual environment in main project directory using uv
 uv venv .venv
 
 # Activate the virtual environment
@@ -98,24 +97,21 @@ source .venv/bin/activate  # Linux/macOS
 # or
 .venv\Scripts\activate     # Windows
 
-# Upgrade pip
-python3 -m pip install --upgrade pip
-
 # Install freqtrade dependencies
-python3 -m pip install -r requirements.txt
+uv pip install -r freqtrade/requirements.txt
 
 # Install freqtrade itself (editable mode)
-python3 -m pip install -e .
-
-# Return to project directory
-cd ..
+uv pip install -e freqtrade/
 ```
 
 ### 3. Install GMX Integration
 
 ```bash
-# Install web3-ethereum-defi with GMX support
-python3 -m pip install -e deps/web3-ethereum-defi[web3v7]
+# Install web3-ethereum-defi from local submodule (includes freqtrade integration)
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+
+# Install additional required dependency
+uv pip install cchecksum
 
 # Verify installation
 python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
@@ -385,11 +381,10 @@ freqtrade download-data \
 
 ### GMX exchange not recognized
 ```bash
-# Verify submodule initialized
-git submodule update --init --recursive
-
-# Reinstall web3-ethereum-defi
-python3 -m pip install -e deps/web3-ethereum-defi[web3v7]
+# Reinstall web3-ethereum-defi from local submodule
+uv pip uninstall web3-ethereum-defi
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+uv pip install cchecksum
 
 # Check GMX is available
 python -c "import ccxt; print('gmx' in ccxt.exchanges)"
