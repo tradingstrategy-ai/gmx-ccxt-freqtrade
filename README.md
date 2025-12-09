@@ -76,7 +76,7 @@ brew install gettext libomp
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/freqtrade-gmx-demo.git
+git clone https://github.com/tradingstrategy-ai/freqtrade-gmx-demo.git
 cd freqtrade-gmx-demo
 
 # Initialize web3-ethereum-defi submodule
