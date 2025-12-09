@@ -65,3 +65,6 @@ caddy/logs/
 *.parquet
 
 freqtrade-develop/
+.venv/
+# vhs tape files
+*.tape
