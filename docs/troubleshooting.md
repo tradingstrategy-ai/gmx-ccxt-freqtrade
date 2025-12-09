@@ -23,15 +23,14 @@ ModuleNotFoundError: No module named 'freqtrade'
 
 **Solution:**
 ```bash
-# Activate virtual environment
-cd freqtrade
+# Activate virtual environment (from main project directory)
 source .venv/bin/activate  # Linux/macOS
 # or
 .venv\Scripts\activate     # Windows
 
 # Verify activation
 which python
-# Should show: /path/to/freqtrade/.venv/bin/python
+# Should show: /path/to/freqtrade-gmx-demo/.venv/bin/python
 ```
 
 ---
@@ -542,8 +541,10 @@ ls deps/web3-ethereum-defi/eth_defi/gmx/
 ```bash
 # Ensure venv is activated
 source .venv/bin/activate
-# Reinstall
-pip install -e deps/web3-ethereum-defi[web3v7]
+# Reinstall from local submodule
+uv pip uninstall web3-ethereum-defi
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+uv pip install cchecksum
 ```
 
 **5. Verify using patched entrypoint:**
@@ -777,14 +778,13 @@ When reporting bugs:
 3. Try the Pingpong strategy (known to work)
 4. Start fresh with clean venv:
    ```bash
-   cd freqtrade
    rm -rf .venv
    uv venv .venv
    source .venv/bin/activate
-   pip install -r requirements.txt
-   pip install -e .
-   cd ..
-   pip install -e deps/web3-ethereum-defi[web3v7]
+   uv pip install -r freqtrade/requirements.txt
+   uv pip install -e freqtrade/
+   uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+   uv pip install cchecksum
    ```
 5. Ask on Freqtrade Discord with details
 
