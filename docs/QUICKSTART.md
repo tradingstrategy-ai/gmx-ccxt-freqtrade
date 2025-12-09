@@ -60,8 +60,9 @@ uv pip install cchecksum
 ```bash
 # Download 3 months of 1h data for ETH/USDC
 ./freqtrade-gmx download-data \
-  --exchange gmx \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --exchange gmx \
   --timeframe 1h \
   --timerange 20250101-20250401
 ```
@@ -71,8 +72,9 @@ uv pip install cchecksum
 ```bash
 # Run backtest with verbose output
 ./freqtrade-gmx backtesting \
-  --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --strategy ADXMomentum \
   --timeframe 1h \
   --timerange 20250101-20250401 \
   -vv
@@ -95,12 +97,14 @@ uv pip install cchecksum
 ```bash
 # Generate interactive profit plot (equity curve, drawdowns)
 ./freqtrade-gmx plot-profit \
-  --config configs/adxmomentum_gmx.json
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json
 
 # Generate interactive candlestick charts with indicators
 ./freqtrade-gmx plot-dataframe \
-  --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --strategy ADXMomentum \
   --indicators1 adx plus_di minus_di \
   --indicators2 mom
 ```
@@ -163,6 +167,7 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 4h \
   --timerange 20250101-20250401
 
@@ -176,6 +181,7 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
   --timerange 20250101-20250401
 
@@ -183,6 +189,7 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
   --timerange 20250401-20250701
 ```
@@ -211,6 +218,7 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 ./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
   --timerange 20250101-20250701
 
@@ -218,6 +226,7 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
   --timerange 20250101-20250401 \
   -vv
@@ -235,6 +244,7 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
   --timerange 20250401-20250701 \
   -vv
@@ -256,6 +266,7 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 ./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
   --timerange YYYYMMDD-YYYYMMDD
 
@@ -263,13 +274,17 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --timerange YYYYMMDD-YYYYMMDD
 
 # Visualizations (Freqtrade built-in)
-./freqtrade-gmx plot-profit --config configs/adxmomentum_gmx.json
+./freqtrade-gmx plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json
 ./freqtrade-gmx plot-dataframe \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
   --indicators1 adx plus_di minus_di
 
 # Visualizations (Custom Python)
