@@ -569,9 +569,6 @@ uv pip uninstall web3-ethereum-defi
 # Install from local submodule (includes freqtrade integration)
 uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 
-# Install missing dependency
-uv pip install cchecksum
-
 # Verify
 ./freqtrade-gmx --version
 ```
@@ -619,7 +616,6 @@ source .venv/bin/activate
 # Reinstall from local submodule
 uv pip uninstall web3-ethereum-defi
 uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
-uv pip install cchecksum
 ```
 
 **5. Verify using patched entrypoint:**
@@ -856,10 +852,9 @@ When reporting bugs:
    rm -rf .venv
    uv venv .venv
    source .venv/bin/activate
-   uv pip install -r freqtrade/requirements.txt
-   uv pip install -e freqtrade/
+   uv pip install -r freqtrade-develop/requirements.txt
+   uv pip install -e freqtrade-develop/
    uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
-   uv pip install cchecksum
    ```
 5. Ask on Freqtrade Discord with details
 

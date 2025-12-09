@@ -115,9 +115,6 @@ uv pip install -e freqtrade-develop/
 # Install web3-ethereum-defi from local submodule (includes freqtrade integration)
 uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 
-# Install additional required dependency
-uv pip install cchecksum
-
 # Verify installation
 ./freqtrade-gmx --version
 ```
@@ -427,7 +424,6 @@ python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
 # Reinstall web3-ethereum-defi from local submodule
 uv pip uninstall web3-ethereum-defi
 uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
-uv pip install cchecksum
 
 # Check GMX is available
 python -c "import ccxt; print('gmx' in ccxt.exchanges)"

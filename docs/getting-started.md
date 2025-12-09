@@ -111,10 +111,11 @@ git submodule update --init --recursive
 
 ```bash
 # Clone freqtrade repository into the project
-git clone https://github.com/freqtrade/freqtrade.git
+# IMPORTANT: Clone to 'freqtrade-develop' to avoid Python namespace conflicts
+git clone https://github.com/freqtrade/freqtrade.git freqtrade-develop
 
 # Verify freqtrade is cloned
-ls freqtrade/
+ls freqtrade-develop/
 # You should see: freqtrade/, requirements.txt, setup.py, etc.
 ```
 
@@ -141,10 +142,10 @@ which python
 
 ```bash
 # Install freqtrade dependencies
-uv pip install -r freqtrade/requirements.txt
+uv pip install -r freqtrade-develop/requirements.txt
 
 # Install freqtrade in editable mode
-uv pip install -e freqtrade/
+uv pip install -e freqtrade-develop/
 
 # Verify freqtrade is installed
 python -m freqtrade --version
@@ -169,9 +170,6 @@ source .venv/bin/activate
 # Install web3-ethereum-defi from local submodule (includes freqtrade integration)
 uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 
-# Install additional required dependency
-uv pip install cchecksum
-
 # Verify installation
 ./freqtrade-gmx --version
 ```
@@ -182,7 +180,6 @@ uv pip install cchecksum
 - Web3 v7 dependencies (with web3v7 extra)
 - Data processing tools (with data extra)
 - CCXT integration (with ccxt extra)
-- cchecksum for address checksumming
 
 **Why install from local submodule instead of PyPI?**
 
