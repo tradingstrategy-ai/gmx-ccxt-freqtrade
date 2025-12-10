@@ -1,5 +1,7 @@
 # Architecture
 
+**Note**: The following is AI generated documentation.
+
 Technical deep dive into how GMX is integrated with Freqtrade.
 
 ## Table of Contents
@@ -21,10 +23,12 @@ This project integrates GMX (a decentralized perpetual exchange) into Freqtrade 
 ### Why Monkeypatch?
 
 GMX is not officially supported by:
+
 - **CCXT** - Cryptocurrency exchange library
 - **Freqtrade** - Algorithmic trading framework
 
 Instead of forking and maintaining custom versions, we inject GMX support at runtime:
+
 - ✅ No source code modifications
 - ✅ Freqtrade can be updated independently
 - ✅ Shared integration code via `web3-ethereum-defi`
@@ -226,6 +230,7 @@ class GMX(ccxt.Exchange):
 ### Supported CCXT Methods
 
 **Market Data:**
+
 - `fetch_markets()` - Available trading pairs
 - `fetch_ticker(symbol)` - Current price, 24h stats
 - `fetch_tickers(symbols)` - Batch ticker data
@@ -233,6 +238,7 @@ class GMX(ccxt.Exchange):
 - `fetch_trades(symbol, since, limit)` - Recent trades
 
 **Trading:**
+
 - `create_order(symbol, type, side, amount, price)` - Execute market order
 - `fetch_balance()` - Account balances
 - `fetch_positions(symbols)` - Open positions
@@ -240,6 +246,7 @@ class GMX(ccxt.Exchange):
 - `fetch_my_trades(symbol, since, limit)` - Trade history
 
 **GMX-Specific:**
+
 - `fetch_funding_rate(symbol)` - Current funding rate
 - `fetch_funding_rate_history()` - Historical funding
 - `fetch_open_interest(symbol)` - Total open positions
@@ -250,6 +257,7 @@ class GMX(ccxt.Exchange):
 GMX provides both interfaces:
 
 **Sync:** `ccxt.gmx`
+
 ```python
 import ccxt
 
@@ -258,6 +266,7 @@ markets = exchange.fetch_markets()
 ```
 
 **Async:** `ccxt.async_support.gmx`
+
 ```python
 import ccxt.async_support as ccxt
 import asyncio
@@ -335,6 +344,7 @@ def apply_freqtrade_monkeypatch():
 ```
 
 After this monkeypatch:
+
 - Freqtrade sees 'gmx' in `SUPPORTED_EXCHANGES`
 - Freqtrade can instantiate `GMXExchange`
 - All standard features work
@@ -422,250 +432,3 @@ User runs: freqtrade trade --strategy Pingpong --config configs/pingpong_gmx.jso
 │  - Transaction confirmed    │
 └─────────────────────────────┘
 ```
-
-## Extending the System
-
-### Adding New Strategies
-
-Just create a standard Freqtrade strategy - no GMX-specific code needed:
-
-```python
-# user_data/strategies/my_strategy.py
-from freqtrade.strategy import IStrategy
-
-class MyStrategy(IStrategy):
-    INTERFACE_VERSION = 3
-
-    def populate_indicators(self, dataframe, metadata):
-        # Standard indicators work
-        return dataframe
-
-    def populate_entry_trend(self, dataframe, metadata):
-        # Standard signal logic
-        return dataframe
-```
-
-### Accessing GMX-Specific Features
-
-Use the dataframe provider to access GMX data:
-
-```python
-class MyStrategy(IStrategy):
-
-    def populate_indicators(self, dataframe, metadata):
-        # Get funding rate data (if available)
-        pair = metadata['pair']
-
-        # Access via dataframe provider
-        if self.dp:
-            funding = self.dp.get_pair_dataframe(
-                pair=pair,
-                timeframe='8h',
-                candle_type='funding'
-            )
-
-            if not funding.empty:
-                dataframe = dataframe.merge(
-                    funding[['date', 'funding_rate']],
-                    on='date',
-                    how='left'
-                )
-
-        return dataframe
-```
-
-### Contributing to web3-ethereum-defi
-
-The GMX integration lives in `web3-ethereum-defi`. To contribute:
-
-1. Fork the repository
-2. Make changes in `eth_defi/gmx/`
-3. Add tests
-4. Submit pull request
-
-**Common contributions:**
-- New GMX markets
-- Bug fixes in data fetching
-- Performance improvements
-- Additional CCXT methods
-
-### Testing Changes Locally
-
-```bash
-# Edit files in deps/web3-ethereum-defi/
-cd deps/web3-ethereum-defi/
-# Make your changes...
-
-# Reinstall the modified package
-cd ../..
-pip install -e deps/web3-ethereum-defi[web3v7]
-
-# Test with backtesting
-freqtrade backtesting --strategy Pingpong --config configs/pingpong_gmx.json
-```
-
-## Configuration Deep Dive
-
-### Exchange Configuration
-
-```json
-{
-  "exchange": {
-    "name": "gmx",  // Must be "gmx"
-    "rpc_url": "https://arb1.arbitrum.io/rpc",  // RPC endpoint
-    "private_key": "0x...",  // For live trading only
-
-    "ccxt_config": {
-      "enableRateLimit": true,
-      "rateLimit": 500  // 500ms between requests
-    },
-
-    "ccxt_async_config": {
-      "enableRateLimit": true,
-      "rateLimit": 500
-    },
-
-    "pair_whitelist": [
-      "ETH/USDC:USDC",  // Explicit format
-      "BTC/USDC"        // Simplified format (both work)
-    ]
-  },
-
-  "trading_mode": "futures",  // GMX only supports futures
-  "margin_mode": "isolated"   // or "cross"
-}
-```
-
-### Data Storage
-
-All data is stored locally in the freqtrade directory:
-
-**Persistence:**
-- Historical data: `user_data/data/gmx/`
-- Backtest results: `user_data/backtest_results/`
-- Trade database: `user_data/tradesv3.sqlite`
-- Logs: `user_data/logs/freqtrade.log`
-- Strategies: `user_data/strategies/`
-- Configuration: `configs/`
-
-## Security Considerations
-
-### Private Key Handling
-
-**For live trading:**
-```json
-// configs/pingpong_gmx.secrets.json (gitignored)
-{
-  "exchange": {
-    "private_key": "0xYourPrivateKeyHere"
-  }
-}
-```
-
-**Best practices:**
-- Use dedicated trading wallets
-- Start with testnet (Arbitrum Sepolia)
-- Limit funds in hot wallet
-- Never commit secrets to git
-- Rotate keys regularly
-
-### RPC Security
-
-**Public RPCs:**
-- Fine for backtesting
-- May have rate limits
-- Not reliable for live trading
-
-**Private RPCs:**
-- Use for live trading
-- Services: Alchemy, Infura, QuickNode
-- Better reliability and rate limits
-
-## Performance Optimization
-
-### Data Caching
-
-Historical data is cached in `user_data/data/gmx/`:
-- Re-running backtests uses cached data
-- Update with `freqtrade download-data` command
-- Delete cache to force refresh
-
-### Parallel Backtesting
-
-Run multiple backtests simultaneously:
-
-```bash
-# Terminal 1
-freqtrade backtesting --strategy Strategy1 --config configs/config1.json &
-
-# Terminal 2
-freqtrade backtesting --strategy Strategy2 --config configs/config2.json &
-```
-
-### Memory Usage
-
-For large backtests:
-- Limit timerange
-- Use higher timeframes (1h vs 1m)
-- Reduce `ohlcv_candle_limit` in config
-
-## Troubleshooting
-
-### Monkeypatch Not Applied
-
-**Symptoms:**
-```
-freqtrade.exceptions.OperationalException: Exchange gmx is not supported
-```
-
-**Fix:**
-1. Verify you're using the patched entrypoint:
-   ```bash
-   # Check alias
-   alias freqtrade
-   # Should show: python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade
-   ```
-
-2. Verify web3-ethereum-defi is installed:
-   ```bash
-   python -c "import eth_defi.gmx; print('GMX module found')"
-   ```
-
-3. Reinstall if needed:
-   ```bash
-   pip install -e deps/web3-ethereum-defi[web3v7]
-   ```
-
-### GMX Not in CCXT
-
-**Check:**
-```bash
-python -c "import ccxt; print('gmx' in ccxt.exchanges)"
-```
-
-Should print: `True`
-
-### Data Download Issues
-
-**Common causes:**
-- GraphQL endpoint down
-- Rate limiting
-- Invalid timerange
-
-**Debug:**
-```bash
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201 -vvv
-```
-
-## Next Steps
-
-- **Troubleshooting** → [Troubleshooting](troubleshooting.md)
-- **Getting Started** → [Getting Started](getting-started.md)
-- **GMX Specifics** → [GMX Specifics](gmx-specifics.md)
-
-## Resources
-
-- [web3-ethereum-defi Repository](https://github.com/tradingstrategy-ai/web3-ethereum-defi)
-- [Freqtrade Documentation](https://www.freqtrade.io/en/stable/)
-- [CCXT Documentation](https://docs.ccxt.com/)
-- [GMX Documentation](https://docs.gmx.io)
