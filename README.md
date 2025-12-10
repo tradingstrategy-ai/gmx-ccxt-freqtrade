@@ -9,7 +9,7 @@ The adapter is then used with [FreqTrade](https://tradingstrategy.ai/glossary/fr
 **Note**: This is still work-in-progress development. If you intend to use this software check Support section first.
 
 **Note**: AS the writing of this, because of GMX's internal limitations, there might not be enough historical data available from GMX historical data REST API endpoint
-to perform meaningful trading or backtesting.
+to perform meaningful trading or backtesting, as the APIs are limited to 10,000 latest candles only.
 
 ## Key features
 
@@ -24,9 +24,11 @@ to perform meaningful trading or backtesting.
 
 This example repository comes with few example strategies for FreqTrade
 
-- **ADXMomentum**: Multi-indicator trend following: a basic multi-pair strategy to make modest profit in trending cryptocurrency markets
-- **Pingpong**: Rapid entry/exit testing (1m timeframe): to check that live trading with the connector works and exchange works
-- **Simple**: RSI-based momentum strategy
+- [ADX Momentum](./configs/adxmomentum_gmx.json): Multi-indicator trend following: a basic multi-pair strategy to make modest profit in trending cryptocurrency markets
+- [Ping pong](./configs/pingpong_gmx.json): Live entry/exit stress testing (1m timeframe): to check that live trading with the connector works and exchange works
+- [RSI simple](./configs/simple_gmx.json): RSI-based momentum strategy
+
+All strategies have their equivalent counterparts for Hyperliquid to review the adapter functionality side-by-side with a mature CCXT connector.
 
 ## Prerequisites
 
@@ -105,6 +107,8 @@ uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 
 ### Verify installation
 
+See that we can start `freqtrade` with our GMX monkey patches:
+
 ```bash
 ./freqtrade-gmx --version
 ```
@@ -115,9 +119,19 @@ This should output:
 
 ```
 
-### 4. Download Historical Data
+## Backtesting
 
-```bash
+In this section, we run a strategy backtest to see how FreqTrade strategy would have historically performend on GMX.
+
+**Note**: AS the writing of this, because of GMX's internal limitations, there might not be enough historical data available from GMX historical data REST API endpoint
+to perform meaningful trading or backtesting, as the APIs are limited to 10,000 latest candles only.
+
+### Download Historical Data
+
+First
+
+```bas
+h
 # 5m data for backtesting
 ./freqtrade-gmx download-data \
   --config configs/pingpong_gmx.json \
@@ -282,25 +296,6 @@ freqtrade-gmx trade \
   --strategy Pingpong
 ```
 
-## How It Works
-
-This project uses a transparent monkeypatch approach to integrate GMX into Freqtrade:
-
-1. **web3-ethereum-defi** is installed from the local `deps/` submodule (includes freqtrade integration)
-2. **patched_entrypoint** module applies monkeypatch before Freqtrade starts
-3. **GMX Exchange class** is registered in both CCXT and Freqtrade
-4. **Freqtrade** uses GMX like any other exchange
-
-### The `freqtrade-gmx` Wrapper Script
-
-The project includes a `freqtrade-gmx` bash script that:
-
-- Activates the virtual environment
-- Runs freqtrade from a clean directory to avoid Python import conflicts
-- Applies the GMX monkeypatch automatically
-
-This wrapper is needed because running `python -m eth_defi.gmx.freqtrade.patched_entrypoint` directly from the project directory causes Python to find the `freqtrade/` subdirectory as a namespace package, leading to import errors.
-
 ### The Monkeypatch
 
 The monkeypatch (`python -m eth_defi.gmx.freqtrade.patched_entrypoint`):
@@ -314,159 +309,10 @@ See [docs/architecture.md](docs/architecture.md) for technical details.
 
 ## Configuration Files
 
-Each strategy has its own configuration:
-
-- **Pingpong** → `configs/pingpong_gmx.json`
-- **Simple** → `configs/simple_gmx.json`
-- **ADXMomentum** → `configs/adxmomentum_gmx.json`
-- **Hyperliquid variants** → `configs/*_hyperliquid.json`
+Each strategy has its own configuration.
 
 Each config references:
 
 - Secrets file (`configs/<name>.secrets.json`) - RPC URLs, private keys (gitignored)
 - SQLite database (`db/<name>.sqlite`) - Trade history
 - Log file (`user_data/logs/<name>.log`) - Execution logs
-
-## Documentation
-
-### Core Guides
-
-- **[Getting Started](docs/getting-started.md)** - Detailed installation and first backtest
-- **[GMX Specifics](docs/gmx-specifics.md)** - Understanding GMX differences
-- **[Equity Curves](docs/equity-curves.md)** - Generate and analyze equity curves
-- **[Architecture](docs/architecture.md)** - Technical deep dive (developers)
-- **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
-
-## Project Structure
-
-```
-freqtrade-gmx-demo/
-├── configs/               # Freqtrade configuration files
-│   ├── pingpong_gmx.json
-│   ├── simple_gmx.json
-│   └── *.secrets.json     # RPC URLs, private keys (gitignored)
-├── deps/
-│   └── web3-ethereum-defi/  # GMX integration (git submodule)
-├── docs/                  # Documentation
-├── user_data/
-│   ├── strategies/        # Trading strategies
-│   ├── data/             # Historical OHLCV data
-│   └── backtest_results/ # Backtest outputs
-├── Dockerfile            # Container with GMX monkeypatch
-├── docker-compose.yml    # Service definitions
-└── Makefile             # Common commands
-```
-
-## Security
-
-### For Backtesting (Dry Run)
-
-- No private keys needed
-- Uses public RPC endpoints
-- Safe to experiment
-
-### For Live Trading
-
-- **Never commit private keys** to git
-- Store keys in `*.secrets.json` files (gitignored)
-- **Test on testnet first** (GMX supports Arbitrum Sepolia)
-- Use dedicated trading wallets
-- Understand gas costs and slippage
-- Start with small position sizes
-
-### Configuration Security
-
-- All `*.secrets.json` files are in `.gitignore`
-- Use environment variables for sensitive data
-- Never share RPC URLs with rate limits
-- Rotate private keys regularly
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch
-3. Make changes and test
-4. Submit a pull request
-
-For GMX integration improvements, contribute to [web3-ethereum-defi](https://github.com/tradingstrategy-ai/web3-ethereum-defi).
-
-## Troubleshooting
-
-### Virtual environment issues
-
-```bash
-# Ensure venv is activated
-source .venv/bin/activate  # Linux/macOS
-.venv\Scripts\activate     # Windows
-
-# Verify installation
-python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
-```
-
-### No data downloaded
-
-```bash
-# Check timerange format (YYYYMMDD-YYYYMMDD)
-./freqtrade-gmx download-data \
-  --exchange gmx \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
-  --timeframe 5m \
-  --timerange 20251128-20251208 \
-  -vv
-```
-
-### GMX exchange not recognized
-
-```bash
-# Reinstall web3-ethereum-defi from local submodule
-uv pip uninstall web3-ethereum-defi
-uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
-
-# Check GMX is available
-python -c "import ccxt; print('gmx' in ccxt.exchanges)"
-```
-
-See [docs/troubleshooting.md](docs/troubleshooting.md) for more issues and solutions.
-
-## Resources
-
-- **GMX Documentation**: https://docs.gmx.io
-- **Freqtrade Documentation**: https://www.freqtrade.io/en/stable/
-- **web3-ethereum-defi**: https://github.com/tradingstrategy-ai/web3-ethereum-defi
-- **CCXT**: https://docs.ccxt.com/
-
----
-
-## Alternative: Using Docker (Optional)
-
-If you prefer using Docker containers for isolated environments, you can use the provided Docker setup instead of local Python installation.
-
-### Docker Quick Start
-
-```bash
-# Build container
-docker-compose build pingpong_gmx
-
-# Download data
-make data CONTAINER=pingpong_gmx TIMERANGE=20251128-20251208
-
-# Run backtest
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20251128-20251208
-
-# Generate plots
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
-```
-
-### Docker Container List
-
-- `pingpong_gmx` - Pingpong strategy on GMX (port 9090)
-- `simple_gmx` - Simple strategy on GMX (port 9091)
-- `adxmomentum_gmx` - ADX Momentum strategy on GMX (port 9093)
-- `pingpong_hyperliquid` - Pingpong strategy on Hyperliquid (port 9090)
-- `simple_hyperliquid` - Simple strategy on Hyperliquid (port 9092)
-
-See the `Makefile` for all available Docker commands and parameters.
-
----
