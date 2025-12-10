@@ -66,7 +66,7 @@
             "method": "StaticPairList"
         }
     ],
-    "bot_name": "pingpong_gmx",
+    "bot_name": "adx_momentum_gmx",
     "initial_state": "running",
     "force_entry_enable": false,
     "experimental": {

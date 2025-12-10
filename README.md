@@ -23,6 +23,17 @@ do not use `uv` or fix the issues with the package manager yourself.
 - **Multiple timeframes** (1m, 5m, 15m, 1h, 4h, 1d)
 - **Funding rate analysis** and position tracking
 
+## Why GMX?
+
+GMX's unique [AMM](https://tradingstrategy.ai/glossary/amm) offers benefits for traders
+
+- Deep liquidity
+- Self custodial, transparent, less conterparty risk
+- Pure onchain, composable with DeFi strategies and smart contracts
+- Onchain data and execution availability ensures robust, self-hosted, API access
+
+**Note**: Currently GMX APIs does not expose volume (fills) and it is set by zero by the CCXT adapter
+
 ## Prerequisites
 
 - **Python 3.11+** (not tested with other Python versions)
@@ -41,6 +52,8 @@ This example repository comes with few example strategies for FreqTrade.
 - [ADX Momentum](./configs/adxmomentum_gmx.json): Multi-indicator trend following: a basic multi-pair strategy to make modest profit in trending cryptocurrency markets
 - [Ping pong](./configs/pingpong_gmx.json): Live entry/exit stress testing (1m timeframe): to check that live trading with the connector works and exchange works
 - [RSI simple](./configs/simple_gmx.json): RSI-based momentum strategy
+
+See [Python source code](./user_data/strategies/) for strategies.
 
 All strategies come with
 
@@ -158,182 +171,194 @@ Freqtrade Version:      freqtrade 2025.11
 
 In this section, we run a strategy backtest to see how FreqTrade strategy would have historically performend on GMX.
 
-**Note**: AS the writing of this, because of GMX's internal limitations, there might not be enough historical data available from GMX historical data REST API endpoint
-to perform meaningful trading or backtesting, as the APIs are limited to 10,000 latest candles only.
+**Note**: As the writing of this, because of GMX's internal limitations, there might not be enough historical data available from GMX historical data REST API endpoint
+to perform meaningful trading or backtesting, as the APIs are limited to 10,000 latest candles only. Also because of said limitations, this section of the tutorial
+may or may not work in the future.
+
+We use [ADX momentum strategy](./configs/adxmomentum_gmx.json) as an example
+
+- Trades majors: BTC, SOL, DOGE, ETH
+- Uses 1h timeframe
+
+## Setting up empty secrets configuration file
 
 ### Download Historical Data
 
 First we need to download a copy of historicalc GMX data we use for the backtesting.
 FreqTrade provides a command for this.
+This fetches GMX market data from GMX GraphQL endpoint and stores it locally.
 
 ```bash
-BACKTEST_TIME_RANGE=20251128-20251208
+BACKTEST_TIME_RANGE=20250701-20251208
 
-# 5m data for backtesting
 ./freqtrade-gmx download-data \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/secrets.empty.json \
   --exchange gmx \
-  --timeframe 5m \
+  --timeframe 1h \
   --timerange $BACKTEST_TIME_RANGE
 ```
 
-**Note**: Always pass both config files - the main config and the secrets config.
+Example output:
 
-This fetches GMX market data from GraphQL and stores it locally.
+```
+2025-12-10 12:20:51,030 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDC:USDC", 1h, index and store in /Users/moo/code/gmx-ccxt-freqtrade/user_data/data/gmx. From 2025-12-10T09:00:00 to
+2025-12-08T00:00:00
+2025-12-10 12:20:51,033 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDC:USDC with length 0.
+Timeframe                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3/3 100% • 0:00:01 • 0:00:00
+Downloading ETH/USDC:USDC ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4/4 100% • 0:00:01 • 0:00:00
+2025-12-10 12:20:51,111 - eth_defi.gmx.ccxt.async_support.exchange - INFO - Async GMX exchange session closed
+```
 
-#### Demo
-
-![](media/download-data.gif)
-
-### 5. Run Your First Backtest
+### Run backtest
 
 ```bash
-# Backtest the Pingpong strategy
+# Backtest the ADX momentum strategy
 ./freqtrade-gmx backtesting \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
-  --strategy Pingpong \
-  --timerange 20251128-20251208
-```
-
-You should see backtest results with trades, profit, and statistics.
-
-#### Demo
-
-![](media/backtest.gif)
-
-**Next Steps**:
-
-- Quick start with ADX strategy: [docs/QUICKSTART.md](docs/QUICKSTART.md)
-- Detailed setup: [docs/getting-started.md](docs/getting-started.md)
-
-## Usage Examples
-
-**Note**: All commands below use the `freqtrade-gmx` wrapper script.
-
-For shorter commands, add it to your PATH:
-
-```bash
-export PATH="$PWD:$PATH"
-```
-
-Then you can use `freqtrade-gmx` directly instead of `./freqtrade-gmx`.
-
-### Download Data
-
-```bash
-# Basic data download
-freqtrade-gmx download-data \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
-  --exchange gmx \
-  --timeframe 5m \
-  --timerange 20251128-20251208 \
-  --prepend
-
-# Specific timerange
-freqtrade-gmx download-data \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
-  --exchange gmx \
-  --timeframe 5m \
-  --timerange 20250801-20251001
-
-# Different timeframe (1-minute candles)
-freqtrade-gmx download-data \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
-  --exchange gmx \
-  --timeframe 1m \
-  --timerange 20251101-20251130
-```
-
-### Run Backtests
-
-```bash
-# Basic backtest
-freqtrade-gmx backtesting \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
-  --strategy Pingpong \
-  --timerange 20251128-20251208
-
-# With verbose output (-v, -vv, -vvv)
-freqtrade-gmx backtesting \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
-  --strategy Pingpong \
-  --timerange 20251128-20251208 \
-  -vv
-
-# Different strategy with hourly timeframe
-freqtrade-gmx backtesting \
   --config configs/adxmomentum_gmx.json \
-  --config configs/adxmomentum_gmx.secrets.json \
+  --config configs/secrets.empty.json \
   --strategy ADXMomentum \
-  --timeframe 1h \
-  --timerange 20241128-20251205 \
-  -vvv
+  --timerange $BACKTEST_TIME_RANGE
 ```
 
-### Generate Visualizations
+You should see backtest results with trades, profit, and statistics:
+
+```
+                                                  BACKTESTING REPORT
+┏━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃           Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ DOGE/USDC:USDC │     17 │         2.31 │           5.894 │         5.89 │  1 day, 10:39:00 │   12     0     5  70.6 │
+│  SOL/USDC:USDC │     27 │         0.93 │           3.751 │         3.75 │  1 day, 23:00:00 │   16     0    11  59.3 │
+│  ETH/USDC:USDC │     20 │         0.38 │           1.143 │         1.14 │  1 day, 18:57:00 │   10     0    10  50.0 │
+│  BTC/USDC:USDC │     15 │         0.34 │           0.773 │         0.77 │ 2 days, 22:24:00 │    5     0    10  33.3 │
+│          TOTAL │     79 │         0.97 │          11.560 │        11.56 │  1 day, 23:46:00 │   43     0    36  54.4 │
+└────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                         LEFT OPEN TRADES REPORT
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ TOTAL │      0 │          0.0 │           0.000 │          0.0 │         0:00 │    0     0     0     0 │
+└───────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                 ENTER TAG STATS
+┏━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│     OTHER │      79 │         0.97 │          11.560 │        11.56 │ 1 day, 23:46:00 │   43     0    36  54.4 │
+│     TOTAL │      79 │         0.97 │          11.560 │        11.56 │ 1 day, 23:46:00 │   43     0    36  54.4 │
+└───────────┴─────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┘
+                                                EXIT REASON STATS
+┏━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│         roi │    42 │          5.0 │          31.500 │         31.5 │ 1 day, 20:23:00 │   42     0     0   100 │
+│ exit_signal │    37 │        -3.59 │         -19.939 │       -19.94 │ 2 days, 3:36:00 │    1     0    36   2.7 │
+│       TOTAL │    79 │         0.97 │          11.560 │        11.56 │ 1 day, 23:46:00 │   43     0    36  54.4 │
+└─────────────┴───────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┘
+                                                        MIXED TAG STATS
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃ Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│           │         roi │     42 │          5.0 │          31.500 │         31.5 │ 1 day, 20:23:00 │   42     0     0   100 │
+│           │ exit_signal │     37 │        -3.59 │         -19.939 │       -19.94 │ 2 days, 3:36:00 │    1     0    36   2.7 │
+│     TOTAL │             │     79 │         0.97 │          11.560 │        11.56 │ 1 day, 23:46:00 │   43     0    36  54.4 │
+└───────────┴─────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┘
+                          SUMMARY METRICS
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                        ┃ Value                           ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from              │ 2025-07-01 20:00:00             │
+│ Backtesting to                │ 2025-12-08 00:00:00             │
+│ Trading Mode                  │ Isolated Futures                │
+│ Max open trades               │ 2                               │
+│                               │                                 │
+│ Total/Daily Avg Trades        │ 79 / 0.5                        │
+│ Starting balance              │ 100 USDC                        │
+│ Final balance                 │ 111.56 USDC                     │
+│ Absolute profit               │ 11.56 USDC                      │
+│ Total profit %                │ 11.56%                          │
+│ CAGR %                        │ 28.55%                          │
+│ Sortino                       │ 4.32                            │
+│ Sharpe                        │ 2.04                            │
+│ Calmar                        │ 20.46                           │
+│ SQN                           │ 1.89                            │
+│ Profit factor                 │ 1.58                            │
+│ Expectancy (Ratio)            │ 0.15 (0.26)                     │
+│ Avg. daily profit             │ 0.073 USDC                      │
+│ Avg. stake amount             │ 15 USDC                         │
+│ Total trade volume            │ 2384.405 USDC                   │
+│                               │                                 │
+│ Best Pair                     │ DOGE/USDC:USDC 5.89%            │
+│ Worst Pair                    │ BTC/USDC:USDC 0.77%             │
+│ Best trade                    │ SOL/USDC:USDC 5.00%             │
+│ Worst trade                   │ SOL/USDC:USDC -9.68%            │
+│ Best day                      │ 2.25 USDC                       │
+│ Worst day                     │ -1.837 USDC                     │
+│ Days win/draw/lose            │ 28 / 100 / 27                   │
+│ Min/Max/Avg. Duration Winners │ 0d 00:00 / 12d 07:00 / 1d 20:14 │
+│ Min/Max/Avg. Duration Losers  │ 0d 10:00 / 9d 12:00 / 2d 03:58  │
+│ Max Consecutive Wins / Loss   │ 11 / 8                          │
+│ Rejected Entry signals        │ 898                             │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 99.533 USDC                     │
+│ Max balance                   │ 119.053 USDC                    │
+│ Max % of account underwater   │ 6.79%                           │
+│ Absolute drawdown             │ 8.082 USDC (6.79%)              │
+│ Drawdown duration             │ 48 days 07:00:00                │
+│ Profit at drawdown start      │ 19.053 USDC                     │
+│ Profit at drawdown end        │ 10.971 USDC                     │
+│ Drawdown start                │ 2025-10-13 19:00:00             │
+│ Drawdown end                  │ 2025-12-01 02:00:00             │
+│ Market change                 │ -2.70%                          │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2025-07-01 20:00:00 -> 2025-12-08 00:00:00 | Max open trades : 2
+                                                           STRATEGY SUMMARY
+┏━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃    Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃          Drawdown ┃
+┡━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ ADXMomentum │     79 │         0.97 │          11.560 │        11.56 │ 1 day, 23:46:00 │   43     0    36  54.4 │ 8.082 USDC  6.79% │
+└─────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴───────────────────┘
+2025-12-10 13:01:36,182 - eth_defi.gmx.ccxt.async_support.exchange - INFO - Async GMX exchange session closed
+```
+
+#### Equity curve
+
+You can view the equity curve chart of the backtest results with:
 
 ```bash
-# Plot profit/equity curve (interactive HTML)
-freqtrade-gmx plot-profit \
+./freqtrade-gmx plot-profit \
   --config configs/adxmomentum_gmx.json \
-  --config configs/adxmomentum_gmx.secrets.json
-
-# Plot with auto-open in browser
-freqtrade-gmx plot-profit \
-  --config configs/adxmomentum_gmx.json \
-  --config configs/adxmomentum_gmx.secrets.json \
+  --config configs/secrets.empty.json \
   --auto-open
+```
 
-# Plot candlestick charts with entry/exit signals
-freqtrade-gmx plot-dataframe \
-  --config configs/adxmomentum_gmx.json \
-  --config configs/adxmomentum_gmx.secrets.json \
-  --strategy ADXMomentum
+![Indicator plot](./docs/equity-curve.png)
 
-# Plot with specific indicators
-freqtrade-gmx plot-dataframe \
+#### Entries and exists
+
+You can view the entries/exits chart of the strategy with.
+This will render the chart and open a new browser window to display it:
+
+```bash
+./freqtrade-gmx plot-dataframe \
   --config configs/adxmomentum_gmx.json \
-  --config configs/adxmomentum_gmx.secrets.json \
+  --config configs/secrets.empty.json \
   --strategy ADXMomentum \
   --indicators1 adx plus_di minus_di \
   --indicators2 mom
 
-# Custom Python script (generates PNG images)
-source .venv/bin/activate
-python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
+open user_data/plot/freqtrade-plot-ETH_USDC_USDC-1h.html
 ```
 
-**Output locations:**
+![Indicator plot](./docs/plot-indicators.png)
 
-- Freqtrade plots: `user_data/plot/*.html` (interactive)
-- Custom script: `user_data/backtest_results/*.png` (static images)
+## Live trading
 
-### Available Strategies
+Work in progress.
 
-- **Pingpong** (`user_data/strategies/pingpong.py`) - Entry/exit every minute
-- **Simple** (`user_data/strategies/Simple.py`) - RSI < 50 entry, RSI > 50 exit
-- **ADXMomentum** (`user_data/strategies/ADXMomentum.py`) - ADX + momentum trend following
-
-### Live Trading (Advanced)
-
-TODO: Still under progess.
-
-```bash
-# Dry run mode (paper trading)
-freqtrade-gmx trade \
-  --config configs/pingpong_gmx.json \
-  --config configs/pingpong_gmx.secrets.json \
-  --strategy Pingpong
-```
-
-### The Monkeypatch
+## About the monkey patch
 
 The monkeypatch (`python -m eth_defi.gmx.freqtrade.patched_entrypoint`):
 
@@ -344,12 +369,19 @@ The monkeypatch (`python -m eth_defi.gmx.freqtrade.patched_entrypoint`):
 
 See [docs/architecture.md](docs/architecture.md) for technical details.
 
-## Configuration Files
+## Support
 
-Each strategy has its own configuration.
+- [Join Discord for any questions](https://tradingstrategy.ai/community).
 
-Each config references:
+## Social media
 
-- Secrets file (`configs/<name>.secrets.json`) - RPC URLs, private keys (gitignored)
-- SQLite database (`db/<name>.sqlite`) - Trade history
-- Log file (`user_data/logs/<name>.log`) - Execution logs
+- [Follow on Twitter](https://twitter.com/TradingProtocol)
+- [Follow on Telegram](https://t.me/trading_protocol)
+- [Follow on LinkedIn](https://www.linkedin.com/company/trading-strategy/)
+- [Watch tutorials on YouTube](https://www.youtube.com/@tradingstrategyprotocol)
+
+## License
+
+MIT.
+
+[Created by Trading Strategy](https://tradingstrategy.ai).
