@@ -2,22 +2,19 @@
 
 This example repository shows how to use [CCXT](https://tradingstrategy.ai/glossary/ccxt)-compatible exchange adapter for [GMX](https://tradingstrategy.ai/glossary/gmx),
 a decentralised [perpetual futures](https://tradingstrategy.ai/glossary/gmx) exchange. The adapter is provided by [eth_defi](https://github.com/tradingstrategy-ai/web3-ethereum-defi#make) Python package,
-with primitives for RPC, low level smart contract interaction, onchain data ignestion and other.
+which provides necessary low-level primitives for RPC, smart contract interaction, onchain data ignestion and other.
 
-The adapter is then used with [FreqTrade](https://tradingstrategy.ai/glossary/freqtrade), an [algorithmic trading framework](https://tradingstrategy.ai/glossary/algorithmic-trading) for [Python](https://tradingstrategy.ai/glossary/python) to run an example automated trading strategy on GMX.
+The CCXT-compatible adapter is used with [FreqTrade](https://tradingstrategy.ai/glossary/freqtrade), an [algorithmic trading framework](https://tradingstrategy.ai/glossary/algorithmic-trading) for [Python](https://tradingstrategy.ai/glossary/python) to run an example automated trading strategy on GMX.
 
 **Note**: This is still work-in-progress development. If you intend to use this software check Support section first.
 
 **Note**: As the writing of this, because of GMX's internal limitations, there might not be enough historical data available from GMX historical data REST API endpoint
 to perform meaningful trading or backtesting, as the APIs are limited to 10,000 latest candles only.
 
-**Note**: AS the writing of this, `uv` Python package managers has issues and cannot correctly install packages in this tutorial. As a solution,
-do not use `uv` or fix the issues with the package manager yourself.
-
 ## Key features
 
-- **Historical backtesting** of GMX perpetual strategies
 - **CCXT-compatible interface** to GMX's on-chain data
+- **Historical backtesting** of GMX perpetual strategies
 - **Freqtrade integration** via transparent monkeypatch
 - **Real market data** from GMX's liquidity pools
 - **Multiple timeframes** (1m, 5m, 15m, 1h, 4h, 1d)
@@ -37,7 +34,6 @@ GMX's unique [AMM](https://tradingstrategy.ai/glossary/amm) offers benefits for 
 ## Prerequisites
 
 - **Python 3.11+** (not tested with other Python versions)
-- **uv**: Python package installer
 - **Git**: for cloning and submodule management
 - **10GB+ disk space**: historical data, a lot of code to check out
 - **System dependencies**: for talib - see below
@@ -85,6 +81,9 @@ brew install gettext libomp
 **For other systems or troubleshooting**, see the [official Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
 
 ## Installation
+
+**Note**: AS the writing of this, `uv` Python package managers has issues and cannot correctly install packages in this tutorial. As a solution,
+do not use `uv` or fix the issues with the package manager yourself.
 
 ### Clone
 
@@ -136,7 +135,7 @@ Show installed packages:
 pip list|grep -i web3
 ```
 
-You should see:
+You should see web3-ethereum-defi package which provides CCXT and FreqTrade monkey patches:
 
 ```bash
 web3                      7.14.0
