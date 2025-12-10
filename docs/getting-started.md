@@ -1,6 +1,6 @@
 # Getting Started
 
-Complete guide to installing the GMX Freqtrade setup and running your first backtest.
+Complete guide to installing the GMX Freqtrade setup and running your first backtest using Python and uv.
 
 ## Table of Contents
 
@@ -14,16 +14,28 @@ Complete guide to installing the GMX Freqtrade setup and running your first back
 
 ### Required Software
 
-1. **Docker and Docker Compose**
-   - Docker Desktop (Mac/Windows): https://www.docker.com/products/docker-desktop
-   - Docker Engine (Linux): https://docs.docker.com/engine/install/
-   - Verify installation:
+1. **Python 3.11+**
+   - Check your version:
      ```bash
-     docker --version  # Should be 20.10+
-     docker-compose --version  # Should be 2.0+
+     python3 --version  # Should be 3.11 or higher
      ```
+   - Install if needed:
+     - Mac: `brew install python@3.11`
+     - Ubuntu/Debian: `sudo apt install python3.11`
+     - Windows: Download from https://www.python.org/downloads/
 
-2. **Git**
+2. **uv (Python Package Installer)**
+   - Install uv:
+     ```bash
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+     ```
+   - Or via pip:
+     ```bash
+     pip install uv
+     ```
+   - Documentation: https://docs.astral.sh/uv/
+
+3. **Git**
    - Mac: Pre-installed or via Homebrew (`brew install git`)
    - Linux: `sudo apt install git` or `sudo yum install git`
    - Windows: https://git-scm.com/download/win
@@ -32,47 +44,55 @@ Complete guide to installing the GMX Freqtrade setup and running your first back
      git --version  # Should be 2.30+
      ```
 
-3. **Disk Space**
-   - Minimum: 5GB (Docker image + minimal data)
+4. **System Dependencies**
+
+   **Debian/Ubuntu:**
+   ```bash
+   sudo apt-get update
+   sudo apt install -y python3-pip python3-venv python3-dev python3-pandas git curl
+   ```
+
+   **macOS:**
+   ```bash
+   brew install gettext libomp
+   ```
+
+   **For other systems**, see [Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
+
+5. **Disk Space**
+   - Minimum: 5GB (Freqtrade + minimal data)
    - Recommended: 10GB+ (multiple strategies and historical data)
    - Check available space:
      ```bash
      df -h .  # Linux/Mac
      ```
 
-### Optional for Development
-
-- **Python 3.11+**: For local strategy development
-- **Code Editor**: VS Code, PyCharm, or similar
-- **Basic Command Line Knowledge**: Navigate directories, run commands
-
 ### System Requirements
 
 - **CPU**: 2+ cores recommended
 - **RAM**: 4GB minimum, 8GB recommended
 - **OS**: Linux, macOS, or Windows with WSL2
-- **Internet**: Required for downloading data and Docker images
+- **Internet**: Required for downloading data and packages
+
+### Optional
+
+- **Code Editor**: VS Code, PyCharm, or similar
+- **Docker**: If you prefer containerized execution (see bottom of README)
 
 ## Installation
 
-### Step 1: Clone the Repository
+### Step 1: Clone the Repositories
 
 ```bash
-# Clone the project
+# Clone the GMX demo project
 git clone https://github.com/yourusername/freqtrade-gmx-demo.git
 cd freqtrade-gmx-demo
 
 # Verify you're in the right directory
 ls -la
-# You should see: Dockerfile, docker-compose.yml, Makefile, configs/, etc.
-```
+# You should see: Dockerfile, docker-compose.yml, Makefile, configs/, deps/, etc.
 
-### Step 2: Initialize Git Submodule
-
-This project uses `web3-ethereum-defi` as a git submodule for GMX integration.
-
-```bash
-# Initialize and fetch the submodule
+# Initialize web3-ethereum-defi submodule (GMX integration)
 git submodule update --init --recursive
 
 # Verify submodule is loaded
@@ -80,54 +100,150 @@ ls deps/web3-ethereum-defi/
 # You should see Python files and directories
 ```
 
-**Troubleshooting**: If the submodule directory is empty:
+**Troubleshooting submodule**: If deps/web3-ethereum-defi/ is empty:
 ```bash
 # Force reinitialize
 git submodule deinit -f deps/web3-ethereum-defi
 git submodule update --init --recursive
 ```
 
-### Step 3: Build Docker Container
-
-Build the Freqtrade container with GMX monkeypatch:
+### Step 2: Clone Freqtrade
 
 ```bash
-# Build the pingpong_gmx container (takes 5-10 minutes first time)
-docker-compose build pingpong_gmx
+# Clone freqtrade repository into the project
+# IMPORTANT: Clone to 'freqtrade-develop' to avoid Python namespace conflicts
+git clone https://github.com/freqtrade/freqtrade.git freqtrade-develop
+
+# Verify freqtrade is cloned
+ls freqtrade-develop/
+# You should see: freqtrade/, requirements.txt, setup.py, etc.
 ```
 
-**What happens during build:**
-1. Pulls base Freqtrade image (freqtradeorg/freqtrade:2025.10)
-2. Installs build dependencies (gcc, g++, libgmp-dev, etc.)
-3. Installs web3-ethereum-defi Python package
-4. Sets up patched entrypoint for GMX integration
+### Step 3: Create Virtual Environment
+
+```bash
+# Create virtual environment in main project directory using uv (fast!)
+uv venv .venv
+
+# Activate the virtual environment
+source .venv/bin/activate  # Linux/macOS
+
+# On Windows, use:
+# .venv\Scripts\activate
+
+# Verify venv is activated (prompt should show (.venv))
+which python
+# Should show: /path/to/freqtrade-gmx-demo/.venv/bin/python
+```
+
+**Note**: Always activate your venv before running freqtrade commands.
+
+### Step 4: Install Freqtrade
+
+```bash
+# Install freqtrade dependencies
+uv pip install -r freqtrade-develop/requirements.txt
+
+# Install freqtrade in editable mode
+uv pip install -e freqtrade-develop/
+
+# Verify freqtrade is installed
+python -m freqtrade --version
+```
 
 **Expected output:**
 ```
-[+] Building 250.3s (10/10) FINISHED
- => [internal] load build definition from Dockerfile
- => => transferring dockerfile: 817B
- => [internal] load .dockerignore
- => ...
- => => naming to docker.io/library/freqtrade-gmx-demo-pingpong_gmx
+freqtrade 2025.10
 ```
 
-**Troubleshooting**: If build fails:
+**Troubleshooting**: If installation fails:
+- Ensure system dependencies are installed (see Prerequisites)
+- Check Python version: `python3 --version` (must be 3.11+)
+- Try: `python3 -m pip install --upgrade setuptools wheel`
+
+### Step 5: Install GMX Integration
+
 ```bash
-# Clean build cache and retry
-docker-compose build --no-cache pingpong_gmx
+# Ensure venv is still activated
+source .venv/bin/activate
 
-# Check Docker is running
-docker info
+# Install web3-ethereum-defi from local submodule (includes freqtrade integration)
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+
+# Verify installation
+./freqtrade-gmx --version
 ```
 
-### Step 4: Verify Installation
+**What this installs:**
+- web3-ethereum-defi core library (from local submodule with freqtrade integration)
+- GMX-specific modules including freqtrade monkeypatch
+- Web3 v7 dependencies (with web3v7 extra)
+- Data processing tools (with data extra)
+- CCXT integration (with ccxt extra)
+
+**Why install from local submodule instead of PyPI?**
+
+The PyPI version of `web3-ethereum-defi` (v0.35) doesn't include the freqtrade integration yet. The `eth_defi.gmx.freqtrade` module only exists in the development version at `deps/web3-ethereum-defi/`. Installing from PyPI would give you:
+
+```bash
+# ❌ This won't work - PyPI version missing freqtrade module
+uv pip install "web3-ethereum-defi[web3v7,data,ccxt]"
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+# Error: ModuleNotFoundError: No module named 'eth_defi.gmx.freqtrade'
+```
+
+Instead, we install from the local submodule in editable mode (`-e`) which includes the unreleased freqtrade integration code.
+
+### Step 6: Understanding the `freqtrade-gmx` Wrapper Script
+
+The project includes a `freqtrade-gmx` bash script in the project root. This wrapper is necessary due to a Python import conflict.
+
+**The Problem:**
+When you run `python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade` from the project directory, Python's import system finds the `freqtrade/` subdirectory (the cloned repo) as a namespace package before finding the installed freqtrade package. This causes:
+
+```bash
+ImportError: cannot import name '__version__' from 'freqtrade' (unknown location)
+```
+
+**The Solution:**
+The `freqtrade-gmx` wrapper script:
+1. Activates the virtual environment automatically
+2. Changes to `/tmp` before running freqtrade (avoiding the import conflict)
+3. Passes all arguments to the underlying freqtrade command
+
+**Usage:**
+```bash
+# Use the wrapper directly
+./freqtrade-gmx --version
+./freqtrade-gmx download-data --exchange gmx ...
+./freqtrade-gmx backtesting --strategy ADXMomentum ...
+
+# Or add to PATH for convenience
+export PATH="$PWD:$PATH"
+freqtrade-gmx --version
+```
+
+### Step 7: Optional - Add to PATH
+
+For convenience, add the project directory to your PATH:
+
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+echo "alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'" >> ~/.bashrc
+
+# Reload shell configuration
+source ~/.bashrc  # or source ~/.zshrc
+```
+
+Now you can use `freqtrade` instead of the full command.
+
+### Step 7: Verify Installation
 
 Check that GMX is registered as an exchange:
 
 ```bash
 # Test GMX registration
-docker-compose run --rm pingpong_gmx python -c "import ccxt; print('GMX registered:', 'gmx' in ccxt.exchanges)"
+python -c "import ccxt; print('GMX registered:', 'gmx' in ccxt.exchanges)"
 ```
 
 **Expected output:**
@@ -135,29 +251,49 @@ docker-compose run --rm pingpong_gmx python -c "import ccxt; print('GMX register
 GMX registered: True
 ```
 
-If you see `False`, the monkeypatch failed. Check:
-1. Submodule is initialized (`ls deps/web3-ethereum-defi/`)
-2. Docker build completed without errors
-3. Dockerfile has correct entrypoint
+If you see `False`, troubleshoot:
+1. Reinstall from PyPI: `uv pip install --force-reinstall "web3>=7.12.0" "web3-ethereum-defi[web3v7]"`
+2. Check venv is activated: `which python`
+3. Verify installation: `python -c "import eth_defi.gmx"`
+
+**Test the full command:**
+```bash
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+```
+
+**Expected output:**
+```
+freqtrade 2025.10
+```
 
 ## Your First Backtest
 
 Let's backtest the **Pingpong** strategy on GMX using historical data.
+
+**Note**: Ensure your virtual environment is activated before running these commands:
+```bash
+source .venv/bin/activate  # From freqtrade-gmx-demo directory
+```
 
 ### Step 1: Download Historical Data
 
 Download 1 month of 5-minute candle data:
 
 ```bash
-# Download January 2025 data
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+# Download January 2025 data using the freqtrade-gmx wrapper
+./freqtrade-gmx download-data \
+  --exchange gmx \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --timeframe 5m \
+  --timerange 20250101-20250201
 ```
 
 **What this does:**
 - Fetches OHLCV data from GMX's GraphQL API
 - Stores data in `user_data/data/gmx/`
 - Downloads for pairs in `configs/pingpong_gmx.json` (ETH/USDC by default)
-- Uses 5m timeframe (configurable in Makefile)
+- Uses 5m timeframe as specified
 
 **Expected output:**
 ```
@@ -165,14 +301,16 @@ make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
 2025-01-01 00:00:00 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDC:USDC from 2025-01-01 to 2025-02-01
 ```
 
-**Progress tracking:**
-- With `-v` flag: Basic progress
-- With `-vv` flag: Detailed progress
-- With `-vvv` flag: Debug information
-
+**Add verbosity for more details:**
 ```bash
-# Example with verbose output
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201 VERBOSE=-vv
+# Basic progress
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -v
+
+# Detailed progress
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -vv
+
+# Debug information
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -vvv
 ```
 
 **Data location:**
@@ -189,6 +327,7 @@ du -h user_data/data/gmx/
 - Check internet connection
 - Verify timerange format (YYYYMMDD-YYYYMMDD)
 - Try different timerange (GMX launched in 2021)
+- Ensure venv is activated: `which python`
 - Check GraphQL endpoint is accessible
 
 ### Step 2: Run the Backtest
@@ -197,83 +336,124 @@ Backtest the Pingpong strategy using the downloaded data:
 
 ```bash
 # Run backtest for January 2025
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-20250201
+./freqtrade-gmx backtesting \
+  --strategy Pingpong \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --timerange 20250101-20250201
+
+# With verbose output
+./freqtrade-gmx backtesting \
+  --strategy Pingpong \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --timerange 20250101-20250201 \
+  -vv
 ```
 
 **What this does:**
 - Loads historical data from `user_data/data/gmx/`
 - Simulates trades using `user_data/strategies/pingpong.py`
-- Applies GMX-specific constraints (funding fees)
+- Applies GMX-specific constraints (funding fees, market orders)
 - Generates backtest results
 
 **Expected duration:** 30 seconds to 2 minutes (depends on data size)
 
 **Expected output:**
+
+```py
+                                                BACKTESTING REPORT
+┏━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃          Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ ETH/USDC:USDC │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+│         TOTAL │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+└───────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                         LEFT OPEN TRADES REPORT
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ TOTAL │      0 │          0.0 │           0.000 │          0.0 │         0:00 │    0     0     0     0 │
+└───────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                ENTER TAG STATS
+┏━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│     OTHER │    2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+│     TOTAL │    2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+└───────────┴─────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                 EXIT REASON STATS
+┏━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃     Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ one_minute_exit │  2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+│           TOTAL │  2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+└─────────────────┴───────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                        MIXED TAG STATS
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃     Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│           │ one_minute_exit │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+│     TOTAL │                 │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │
+└───────────┴─────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                         SUMMARY METRICS
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                        ┃ Value                          ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from              │ 2025-12-01 12:19:00            │
+│ Backtesting to                │ 2025-12-05 00:00:00            │
+│ Trading Mode                  │ Isolated Futures               │
+│ Max open trades               │ 1                              │
+│                               │                                │
+│ Total/Daily Avg Trades        │ 2510 / 836.67                  │
+│ Starting balance              │ 100 USDC                       │
+│ Final balance                 │ 55.334 USDC                    │
+│ Absolute profit               │ -44.666 USDC                   │
+│ Total profit %                │ -44.67%                        │
+│ CAGR %                        │ -100.00%                       │
+│ Sortino                       │ -24037.87                      │
+│ Sharpe                        │ -18729.53                      │
+│ Calmar                        │ -636.83                        │
+│ SQN                           │ -58.69                         │
+│ Profit factor                 │ 0.06                           │
+│ Expectancy (Ratio)            │ -0.02 (-0.87)                  │
+│ Avg. daily profit             │ -14.889 USDC                   │
+│ Avg. stake amount             │ 15 USDC                        │
+│ Total trade volume            │ 75345.619 USDC                 │
+│                               │                                │
+│ Best Pair                     │ ETH/USDC:USDC -44.67%          │
+│ Worst Pair                    │ ETH/USDC:USDC -44.67%          │
+│ Best trade                    │ ETH/USDC:USDC 0.73%            │
+│ Worst trade                   │ ETH/USDC:USDC -0.80%           │
+│ Best day                      │ -6.42 USDC                     │
+│ Worst day                     │ -13.274 USDC                   │
+│ Days win/draw/lose            │ 0 / 0 / 4                      │
+│ Min/Max/Avg. Duration Winners │ 0d 00:01 / 0d 00:01 / 0d 00:01 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:01 / 0d 00:01 / 0d 00:01 │
+│ Max Consecutive Wins / Loss   │ 4 / 128                        │
+│ Rejected Entry signals        │ 0                              │
+│ Entry/Exit Timeouts           │ 0 / 0                          │
+│                               │                                │
+│ Min balance                   │ 55.334 USDC                    │
+│ Max balance                   │ 99.976 USDC                    │
+│ Max % of account underwater   │ 44.67%                         │
+│ Absolute drawdown             │ 44.666 USDC (44.67%)           │
+│ Drawdown duration             │ 3 days 11:38:00                │
+│ Profit at drawdown start      │ -0.024 USDC                    │
+│ Profit at drawdown end        │ -44.666 USDC                   │
+│ Drawdown start                │ 2025-12-01 12:21:00            │
+│ Drawdown end                  │ 2025-12-04 23:59:00            │
+│ Market change                 │ 11.14%                         │
+└───────────────────────────────┴────────────────────────────────┘
+
+Backtested 2025-12-01 12:19:00 -> 2025-12-05 00:00:00 | Max open trades : 1
+                                                         STRATEGY SUMMARY
+┏━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
+┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃            Drawdown ┃
+┡━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
+│ Pingpong │   2510 │        -0.12 │         -44.666 │       -44.67 │      0:01:00 │  202     0  2308   8.0 │ 44.666 USDC  44.67% │
+└──────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┴─────────────────────┘
 ```
-========================================================= BACKTESTING REPORT =========================================================
-|      Pair |   Entries |   Avg Profit % |   Cum Profit % |   Tot Profit USDC |   Tot Profit % |   Avg Duration |   Win  Draw  Loss  Win% |
-|-----------+-----------+----------------+----------------+-------------------+----------------+----------------+-------------------------|
-| ETH/USDC  |        45 |           0.25 |          11.25 |            112.50 |           1.13 |        0:01:00 |    27     0    18  60.0 |
-|     TOTAL |        45 |           0.25 |          11.25 |            112.50 |           1.13 |        0:01:00 |    27     0    18  60.0 |
-=============================================================== SUMMARY METRICS ========================================================
-| Metric                      | Value              |
-|-----------------------------|--------------------|
-| Backtesting from            | 2025-01-01 00:00:00|
-| Backtesting to              | 2025-02-01 00:00:00|
-| Max open trades             | 1                  |
-|                             |                    |
-| Total/Daily Avg Trades      | 45 / 1.45          |
-| Starting balance            | 10000 USDC         |
-| Final balance               | 10112.50 USDC      |
-| Absolute profit             | 112.50 USDC        |
-| Total profit %              | 1.13%              |
-| Avg. stake amount           | 1000 USDC          |
-| Total trade volume          | 45000 USDC         |
-|                             |                    |
-| Long / Short                | 45 / 0             |
-| Total profit Long %         | 1.13%              |
-| Total profit Short %        | 0.00%              |
-|                             |                    |
-| Best Pair                   | ETH/USDC 1.13%     |
-| Worst Pair                  | ETH/USDC 1.13%     |
-|                             |                    |
-| Best trade                  | 2.50%              |
-| Worst trade                 | -1.20%             |
-| Best day                    | 8.75%              |
-| Worst day                   | -3.50%             |
-| Days win/draw/lose          | 18 / 8 / 5         |
-| Avg. Duration Winners       | 0:01:00            |
-| Avg. Duration Loser         | 0:01:00            |
-| Zero Duration Trades        | 0.00%              |
-|                             |                    |
-| Max Consecutive Wins / Loss | 5 / 3              |
-| Rejected Entry signals      | 0                  |
-| Entry/Exit Timeouts         | 0 / 0              |
-|                             |                    |
-| Min balance                 | 9950 USDC          |
-| Max balance                 | 10150 USDC         |
-| Max % of account underwater | 2.5%               |
-| Absolute Drawdown (Account) | 2.5%               |
-| Drawdown                    | 50 USDC            |
-| Drawdown high               | 150 USDC           |
-| Drawdown low                | 100 USDC           |
-| Drawdown Start              | 2025-01-15 14:35:00|
-| Drawdown End                | 2025-01-16 09:10:00|
-| Market change               | 5.2%               |
-==========================================================================================================================
-```
-
-### Step 3: Understand the Results
-
-**Key Metrics Explained:**
-
-- **Total/Daily Avg Trades**: 45 trades over 31 days = 1.45 trades/day
-- **Win%**: 60% of trades were profitable (27 wins / 45 total)
-- **Total profit %**: 1.13% gain on starting balance
-- **Avg. stake amount**: Position size per trade (1000 USDC)
-- **Max Consecutive Wins/Loss**: Longest streak (5 wins, 3 losses)
-- **Max % of account underwater**: Worst drawdown (2.5%)
-- **Market change**: ETH price change during period (5.2%)
 
 **Result Files:**
 
@@ -291,9 +471,7 @@ Each backtest creates:
 - `.json` - Detailed trade list
 - `.meta.json` - Metadata and settings
 
-See [Interpreting Results](interpreting-results.md) for detailed analysis.
-
-### Step 4: Iterate and Experiment
+### Step 3: Iterate and Experiment
 
 Try different parameters:
 
@@ -615,17 +793,7 @@ Now that you have a working setup:
    - Learn how GMX differs from traditional exchanges
    - Understand funding fees and liquidity pools
 
-2. **Analyze your results** → [Interpreting Results](interpreting-results.md)
-   - Learn IStrategy v3 interface
-   - Explore example strategies
-   - Build custom indicators
-
-3. **Analyze results** → [Interpreting Results](interpreting-results.md)
-   - Deep dive into backtest metrics
-   - Identify profitable strategies
-   - Optimize parameters
-
-4. **Technical deep dive** → [Architecture](architecture.md)
+2. **Technical deep dive** → [Architecture](architecture.md)
    - Understand the monkeypatch approach
    - Explore CCXT integration
    - Extend the system

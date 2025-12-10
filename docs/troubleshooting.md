@@ -13,6 +13,64 @@ Common issues and solutions for GMX Freqtrade setup.
 
 ## Installation Issues
 
+### Virtual Environment Not Activated
+
+**Problem:**
+```bash
+python -c "import freqtrade"
+ModuleNotFoundError: No module named 'freqtrade'
+```
+
+**Solution:**
+```bash
+# Activate virtual environment (from main project directory)
+source .venv/bin/activate  # Linux/macOS
+# or
+.venv\Scripts\activate     # Windows
+
+# Verify activation
+which python
+# Should show: /path/to/freqtrade-gmx-demo/.venv/bin/python
+```
+
+---
+
+### ImportError: cannot import name '__version__' from 'freqtrade'
+
+**Problem:**
+```bash
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+# ImportError: cannot import name '__version__' from 'freqtrade' (unknown location)
+```
+
+**Cause:**
+This is a Python import conflict. When running from the project directory, Python finds the `freqtrade/` subdirectory (the cloned freqtrade repository) as a namespace package before finding the installed freqtrade package in the virtual environment.
+
+**Solution:**
+Use the `freqtrade-gmx` wrapper script instead:
+
+```bash
+# ✓ Correct - use the wrapper script
+./freqtrade-gmx --version
+
+# ✓ Or add to PATH
+export PATH="$PWD:$PATH"
+freqtrade-gmx --version
+```
+
+**Why the wrapper works:**
+The `freqtrade-gmx` script changes to `/tmp` before running freqtrade, avoiding the import conflict with the `freqtrade/` directory in your project.
+
+**Alternative (manual):**
+If you need to run the command directly without the wrapper:
+```bash
+cd /tmp
+source /path/to/freqtrade-gmx-demo/.venv/bin/activate
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+```
+
+---
+
 ### Submodule Not Initialized
 
 **Problem:**
@@ -27,7 +85,7 @@ ls deps/web3-ethereum-defi/
 git submodule update --init --recursive
 
 # Verify
-ls eth_defi/
+ls deps/web3-ethereum-defi/eth_defi/
 # Should show Python files
 ```
 
@@ -40,78 +98,83 @@ git submodule update --init --recursive
 
 ---
 
-### Docker Build Fails
-
-**Problem:**
-```bash
-docker-compose build pingpong_gmx
-ERROR: failed to solve with frontend dockerfile.v0
-```
-
-**Solutions:**
-
-**1. Clean rebuild:**
-```bash
-docker-compose build --no-cache pingpong_gmx
-```
-
-**2. Check Docker is running:**
-```bash
-docker info
-# Should show Docker daemon info
-```
-
-**3. Increase Docker resources:**
-- Docker Desktop → Settings → Resources
-- RAM: 4GB+ recommended
-- Disk: 10GB+ free space
-
-**4. Check Dockerfile syntax:**
-```bash
-docker build -f Dockerfile -t test .
-```
-
----
-
-### Build Dependency Errors
+### System Dependencies Missing
 
 **Problem:**
 ```
 ERROR: Could not build wheels for gmpy2
+ERROR: Failed building wheel for pandas
+```
+
+**Solution:**
+
+**Debian/Ubuntu:**
+```bash
+sudo apt-get update
+sudo apt install -y python3-pip python3-venv python3-dev python3-pandas \
+    build-essential gcc g++ libgmp-dev libmpfr-dev libmpc-dev git curl
+```
+
+**macOS:**
+```bash
+brew install gettext libomp
+```
+
+**For other systems**, see [Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
+
+---
+
+### Python Version Issues
+
+**Problem:**
+```bash
+python3 --version
+Python 3.9.7  # Too old!
 ```
 
 **Solution:**
 ```bash
-# The Dockerfile should install build dependencies
-# If error persists, check Dockerfile has:
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    gcc \
-    g++ \
-    python3-dev \
-    libgmp-dev \
-    libmpfr-dev \
-    libmpc-dev
+# Install Python 3.11+
+# Ubuntu/Debian:
+sudo apt install python3.11 python3.11-venv
+
+# macOS:
+brew install python@3.11
+
+# Verify:
+python3.11 --version
+# Should show 3.11.x or higher
+
+# Use python3.11 explicitly when creating venv
+python3.11 -m venv .venv
 ```
 
 ---
 
-### Permission Denied Errors
+### pip Install Fails
 
 **Problem:**
 ```bash
-docker-compose up pingpong_gmx
-ERROR: Permission denied
+pip install -e .
+ERROR: Failed to build installable wheels for some pyproject.toml based projects
 ```
 
-**Solution:**
+**Solutions:**
+
+**1. Upgrade pip, setuptools, and wheel:**
 ```bash
-# Linux: Add user to docker group
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Mac/Windows: Restart Docker Desktop
+python3 -m pip install --upgrade pip setuptools wheel
 ```
+
+**2. Ensure venv is activated:**
+```bash
+which python
+# Should show .venv path
+```
+
+**3. Check system dependencies installed** (see above)
+
+---
 
 ## Configuration Errors
 
@@ -128,7 +191,7 @@ Use correct pair format:
 {
   "pair_whitelist": [
     "ETH/USDC:USDC",  // ✅ Correct (futures format)
-    "ETH/USDC",       // ✅ Also works
+    "ETH/USDC",       // ✅ Also works. Won't work for futures
     "BTC/USDC:USDC"   // ✅ Correct
   ]
 }
@@ -225,7 +288,7 @@ ERROR: GMX only supports futures trading
 **Don't use:**
 ```json
 {
-  "trading_mode": "spot"  // ❌ GMX doesn't support spot
+  "trading_mode": "spot"  // ❌ GMX doesn't support spot. Use Swap markets
 }
 ```
 
@@ -235,7 +298,7 @@ ERROR: GMX only supports futures trading
 
 **Problem:**
 ```bash
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201
 WARNING: No data found for pair ETH/USDC
 ```
 
@@ -244,11 +307,11 @@ WARNING: No data found for pair ETH/USDC
 **1. Check timerange format:**
 ```bash
 # ✅ Correct format: YYYYMMDD-YYYYMMDD
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201
 
 # ❌ Wrong formats:
-TIMERANGE=2025-01-01-2025-02-01  # Hyphens in dates
-TIMERANGE=01012025-02012025      # Wrong order
+--timerange 2025-01-01-2025-02-01  # Hyphens in dates
+--timerange 01012025-02012025      # Wrong order
 ```
 
 **2. Verify pair exists in config:**
@@ -259,12 +322,12 @@ cat configs/pingpong_gmx.json | grep pair_whitelist
 **3. Try different timerange:**
 ```bash
 # GMX launched in 2021, try recent dates
-make data CONTAINER=pingpong_gmx TIMERANGE=20241101-20241201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20241101-20241201
 ```
 
 **4. Check with verbose output:**
 ```bash
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201 VERBOSE=-vvv
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201 -vvv
 ```
 
 ---
@@ -313,21 +376,21 @@ WARNING: Missing candles in downloaded data
 
 **Solutions:**
 
-**1. Re-download with `--prepend` flag** (added by Makefile automatically):
+**1. Re-download with `--prepend` flag:**
 ```bash
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201 --prepend
 ```
 
 **2. Delete cached data and re-download:**
 ```bash
 rm -rf user_data/data/gmx/
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201
 ```
 
 **3. Try smaller timerange:**
 ```bash
 # Instead of 1 year, try 1 month
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201
 ```
 
 ## Backtest Failures
@@ -344,7 +407,7 @@ Backtest completed: 0 trades
 **1. Check strategy logic:**
 ```bash
 # Run with very verbose output
-make backtest CONTAINER=pingpong_gmx STRATEGY=MyStrategy VERBOSE=-vvv
+freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timerange 20250101-20250201 -vvv
 ```
 
 **2. Verify indicators calculate correctly:**
@@ -396,7 +459,7 @@ ls user_data/strategies/MyStrategy.py
 
 **2. Verify Python syntax:**
 ```bash
-docker-compose run --rm pingpong_gmx python -m py_compile /freqtrade/user_data/strategies/MyStrategy.py
+python -m py_compile user_data/strategies/MyStrategy.py
 ```
 
 **3. Check class name matches filename:**
@@ -465,23 +528,59 @@ ERROR: MemoryError
 **1. Reduce timerange:**
 ```bash
 # Instead of 1 year:
-make backtest CONTAINER=pingpong_gmx STRATEGY=MyStrategy TIMERANGE=20240101-20241231
+freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timerange 20240101-20241231
 
 # Try 1 month:
-make backtest CONTAINER=pingpong_gmx STRATEGY=MyStrategy TIMERANGE=20250101-20250201
+freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timerange 20250101-20250201
 ```
 
 **2. Use higher timeframe:**
 ```bash
 # Instead of 1m, use 5m or 1h
-make backtest CONTAINER=pingpong_gmx STRATEGY=MyStrategy TIMEFRAME=1h
+freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timeframe 1h --timerange 20250101-20250201
 ```
 
-**3. Increase Docker memory:**
-- Docker Desktop → Settings → Resources
-- Increase memory to 8GB+
+**3. Increase system memory:**
+- Close unnecessary applications
+- Restart your computer if needed
 
 ## GMX-Specific Issues
+
+### ModuleNotFoundError: No module named 'eth_defi.gmx.freqtrade'
+
+**Problem:**
+```bash
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+# ModuleNotFoundError: No module named 'eth_defi.gmx.freqtrade'
+```
+
+**Cause:**
+You installed `web3-ethereum-defi` from PyPI instead of from the local submodule. The PyPI version (v0.35) doesn't include the freqtrade integration yet.
+
+**Solution:**
+Uninstall the PyPI version and install from the local submodule:
+
+```bash
+source .venv/bin/activate
+
+# Uninstall PyPI version
+uv pip uninstall web3-ethereum-defi
+
+# Install from local submodule (includes freqtrade integration)
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+
+# Verify
+./freqtrade-gmx --version
+```
+
+**Verification:**
+Check that the freqtrade module exists:
+```bash
+python -c "import eth_defi.gmx.freqtrade; print('Freqtrade integration found!')"
+# Should print: Freqtrade integration found!
+```
+
+---
 
 ### GMX Exchange Not Recognized
 
@@ -494,14 +593,14 @@ freqtrade.exceptions.OperationalException: Exchange gmx is not supported
 
 **1. Verify monkeypatch is applied:**
 ```bash
-docker-compose run --rm pingpong_gmx python -c "import ccxt; print('gmx' in ccxt.exchanges)"
-# Should print: True
+python -c "import ccxt; print('GMX registered:', 'gmx' in ccxt.exchanges)"
+# Should print: GMX registered: True
 ```
 
-**2. Check Docker entrypoint:**
+**2. Verify web3-ethereum-defi is installed:**
 ```bash
-docker inspect pingpong_gmx | grep Entrypoint
-# Should show: eth_defi.gmx.freqtrade.patched_entrypoint
+python -c "import eth_defi.gmx; print('GMX module found')"
+# Should print: GMX module found
 ```
 
 **3. Verify submodule is initialized:**
@@ -510,9 +609,20 @@ ls deps/web3-ethereum-defi/eth_defi/gmx/
 # Should show: ccxt/, freqtrade/, core/, etc.
 ```
 
-**4. Rebuild container:**
+**4. Reinstall GMX integration:**
 ```bash
-docker-compose build --no-cache pingpong_gmx
+# Ensure venv is activated
+source .venv/bin/activate
+# Reinstall from local submodule
+uv pip uninstall web3-ethereum-defi
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+```
+
+**5. Verify using patched entrypoint:**
+```bash
+# You must use the patched entrypoint
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
+# Should show freqtrade version
 ```
 
 ---
@@ -561,8 +671,6 @@ Manually account for funding:
 funding_cost = 10 × 0.03% × 1 day = 0.3% of stake
 ```
 
-See [Interpreting Results - Funding Fee Impact](interpreting-results.md#funding-fee-impact)
-
 ---
 
 ### High Slippage
@@ -586,7 +694,7 @@ Live trades have worse execution than backtest
 **2. Check position size vs liquidity:**
 ```bash
 # Check available liquidity
-docker-compose run --rm pingpong_gmx python -c "
+python -c "
 from eth_defi.gmx.available_liquidity import fetch_available_liquidity
 liquidity = fetch_available_liquidity('ETH/USDC')
 print(f'Available: {liquidity}')
@@ -628,23 +736,20 @@ minimal_roi = {
 
 **Freqtrade logs:**
 ```bash
-# Container logs (live view)
-docker-compose logs -f pingpong_gmx
-
-# Log files
-tail -f user_data/logs/pingpong_gmx.log
+# Log files (if running live or dry-run)
+tail -f user_data/logs/freqtrade.log
 ```
 
 **Backtest verbose output:**
 ```bash
-make backtest CONTAINER=pingpong_gmx STRATEGY=MyStrategy VERBOSE=-vvv
+freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json -vvv
 ```
 
 ### Diagnostic Commands
 
 **Check GMX registration:**
 ```bash
-docker-compose run --rm pingpong_gmx python -c "
+python -c "
 import ccxt
 print('CCXT exchanges:', 'gmx' in ccxt.exchanges)
 
@@ -661,13 +766,12 @@ cat user_data/data/gmx/ETH_USDC-5m.json | head -20
 
 **Check strategy syntax:**
 ```bash
-docker-compose run --rm pingpong_gmx python -m py_compile /freqtrade/user_data/strategies/MyStrategy.py
+python -m py_compile user_data/strategies/MyStrategy.py
 ```
 
 **Check config validity:**
 ```bash
-docker-compose run --rm pingpong_gmx freqtrade show-config \
-  --config /freqtrade/configs/pingpong_gmx.json
+freqtrade show-config --config configs/pingpong_gmx.json
 ```
 
 ### Collecting Debug Information
@@ -676,7 +780,7 @@ When asking for help, include:
 
 1. **Command run:**
    ```bash
-   make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-20250201
+   freqtrade backtesting --strategy Pingpong --config configs/pingpong_gmx.json --timerange 20250101-20250201
    ```
 
 2. **Error message:**
@@ -694,12 +798,14 @@ When asking for help, include:
 
 4. **Environment:**
    - OS: macOS 14.0
-   - Docker version: 24.0.6
+   - Python version: 3.11.5
+   - Virtual environment activated: Yes
    - Submodule initialized: Yes
 
 5. **Diagnostic output:**
    ```bash
-   docker-compose run --rm pingpong_gmx python -c "import ccxt; print(ccxt.exchanges)"
+   python -c "import ccxt; print('gmx' in ccxt.exchanges)"
+   python -c "import eth_defi.gmx; print('GMX module found')"
    ```
 
 ### Community Resources
@@ -717,7 +823,7 @@ When reporting bugs:
 2. Use provided templates
 3. Include reproducible steps
 4. Attach relevant logs
-5. Mention versions (Docker, Freqtrade, web3-ethereum-defi)
+5. Mention versions (Python, Freqtrade, web3-ethereum-defi)
 
 ## Common Error Messages
 
@@ -725,13 +831,13 @@ When reporting bugs:
 
 | Error | Likely Cause | Solution |
 |-------|--------------|----------|
-| `Exchange gmx is not supported` | Monkeypatch not applied | Rebuild Docker, check entrypoint |
+| `Exchange gmx is not supported` | Monkeypatch not applied | Use patched entrypoint, reinstall web3-ethereum-defi |
 | `No data found for pair` | Wrong timerange or pair | Check config, try different dates |
 | `Could not connect to RPC` | RPC endpoint down | Try alternative RPC URL |
 | `NaN values in dataframe` | Insufficient startup candles | Increase `startup_candle_count` |
 | `MemoryError` | Too much data | Reduce timerange or use higher timeframe |
 | `Strategy import failed` | Syntax error or wrong location | Check Python syntax, file location |
-| `Permission denied` | Docker permissions | Add user to docker group (Linux) |
+| `ModuleNotFoundError: freqtrade` | Virtual environment not activated | Activate venv with `source .venv/bin/activate` |
 | `Config file not found` | Missing secrets file | Create `.secrets.json` file |
 | `Pair not found` | Invalid pair format | Use `ETH/USDC:USDC` format |
 | `Backtest: 0 trades` | Strategy never triggers | Check entry conditions, add logging |
@@ -741,7 +847,15 @@ When reporting bugs:
 1. Re-read documentation carefully
 2. Check [Architecture](architecture.md) for technical details
 3. Try the Pingpong strategy (known to work)
-4. Start fresh with clean Docker build
+4. Start fresh with clean venv:
+   ```bash
+   rm -rf .venv
+   uv venv .venv
+   source .venv/bin/activate
+   uv pip install -r freqtrade-develop/requirements.txt
+   uv pip install -e freqtrade-develop/
+   uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+   ```
 5. Ask on Freqtrade Discord with details
 
 Remember: Most issues are configuration or environment-related, not bugs in the code!

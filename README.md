@@ -40,93 +40,245 @@ Perfect for traders and quants who want to validate GMX strategies before deploy
 
 ## Prerequisites
 
-- **Docker** and **docker-compose** (for containerized execution)
+- **Python 3.11+** (for running Freqtrade)
+- **uv** (Python package installer - https://docs.astral.sh/uv/)
 - **Git** (for cloning and submodule management)
 - **10GB+ disk space** (for historical data)
 - **Basic command line** knowledge
+- **System dependencies** (see below)
 
-Optional for development:
-- Python 3.11+
+Optional:
 - Familiarity with Freqtrade
+- Docker (if you prefer containerized execution - see bottom of README)
 
-## Quick Start (5 minutes)
+### System Dependencies
+
+**Debian/Ubuntu:**
+```bash
+# Update repository
+sudo apt-get update
+
+# Install packages
+sudo apt install -y python3-pip python3-venv python3-dev python3-pandas git curl
+```
+
+**macOS:**
+```bash
+# Install packages
+brew install gettext libomp
+```
+
+**For other systems or troubleshooting**, see the [official Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
+
+## Quick Start (10 minutes)
 
 ### 1. Clone and Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/freqtrade-gmx-demo.git
+git clone https://github.com/tradingstrategy-ai/freqtrade-gmx-demo.git
 cd freqtrade-gmx-demo
 
 # Initialize web3-ethereum-defi submodule
 git submodule update --init --recursive
 ```
 
-### 2. Build Docker Container
+### 2. Install Freqtrade
 
 ```bash
-# Build the GMX-enabled freqtrade container
-docker-compose build pingpong_gmx
+# Clone freqtrade repository
+# this naming is very important else python will get confused because the freqtrade command and the directory name would be same
+git clone https://github.com/freqtrade/freqtrade.git freqtrade-develop
+
+cd freqtrade-develop
+git checkout stable
+cd ..
+
+# Create virtual environment in main project directory using uv
+uv venv .venv
+
+# Activate the virtual environment
+source .venv/bin/activate  # Linux/macOS
+# or
+.venv\Scripts\activate     # Windows
+
+# Install freqtrade dependencies
+uv pip install -r freqtrade-develop/requirements.txt
+
+# Install freqtrade itself (editable mode)
+uv pip install -e freqtrade-develop/
 ```
 
-This installs `web3-ethereum-defi` and applies the GMX monkeypatch to Freqtrade.
-
-### 3. Download Historical Data
+### 3. Install GMX Integration
 
 ```bash
-# Download 1 month of 5m data for backtesting
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+# Install web3-ethereum-defi from local submodule (includes freqtrade integration)
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+
+# Verify installation
+./freqtrade-gmx --version
 ```
+
+
+**Pro Tip**: The project includes a `freqtrade-gmx` wrapper script that handles the GMX integration:
+```bash
+# Use the wrapper script directly
+./freqtrade-gmx --version
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json ...
+
+# Or add it to your PATH for convenience:
+export PATH="$PWD:$PATH"
+freqtrade-gmx --version
+```
+
+### 4. Download Historical Data
+
+
+
+```bash
+# 5m data for backtesting
+./freqtrade-gmx download-data \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --exchange gmx \
+  --timeframe 5m \
+  --timerange 20251128-20251208
+```
+
+**Note**: Always pass both config files - the main config and the secrets config.
 
 This fetches GMX market data from GraphQL and stores it locally.
 
-### 4. Run Your First Backtest
+#### Demo
+
+![](media/download-data.gif)
+
+
+### 5. Run Your First Backtest
 
 ```bash
 # Backtest the Pingpong strategy
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-20250201
+./freqtrade-gmx backtesting \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --strategy Pingpong \
+  --timerange 20251128-20251208
 ```
 
 You should see backtest results with trades, profit, and statistics.
 
-**Next Steps**: Check [docs/getting-started.md](docs/getting-started.md) for detailed installation and configuration.
+#### Demo
+
+![](media/backtest.gif)
+
+**Next Steps**:
+- Quick start with ADX strategy: [docs/QUICKSTART.md](docs/QUICKSTART.md)
+- Detailed setup: [docs/getting-started.md](docs/getting-started.md)
 
 ## Usage Examples
+
+**Note**: All commands below use the `freqtrade-gmx` wrapper script.
+
+For shorter commands, add it to your PATH:
+```bash
+export PATH="$PWD:$PATH"
+```
+
+Then you can use `freqtrade-gmx` directly instead of `./freqtrade-gmx`.
 
 ### Download Data
 
 ```bash
-# Download with default timerange (from Makefile)
-make data CONTAINER=pingpong_gmx
+# Basic data download
+freqtrade-gmx download-data \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --exchange gmx \
+  --timeframe 5m \
+  --timerange 20251128-20251208 \
+  --prepend
 
 # Specific timerange
-make data CONTAINER=pingpong_gmx TIMERANGE=20250801-20251001
+freqtrade-gmx download-data \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --exchange gmx \
+  --timeframe 5m \
+  --timerange 20250801-20251001
 
-# Different timeframe
-make data CONTAINER=pingpong_gmx TIMEFRAME=1m TIMERANGE=20251101-20251130
+# Different timeframe (1-minute candles)
+freqtrade-gmx download-data \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --exchange gmx \
+  --timeframe 1m \
+  --timerange 20251101-20251130
 ```
 
 ### Run Backtests
 
 ```bash
 # Basic backtest
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
-
-# With timerange
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250801-20251001
+freqtrade-gmx backtesting \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --strategy Pingpong \
+  --timerange 20251128-20251208
 
 # With verbose output (-v, -vv, -vvv)
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong VERBOSE=-vv
+freqtrade-gmx backtesting \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --strategy Pingpong \
+  --timerange 20251128-20251208 \
+  -vv
 
-# Different strategy and timeframe
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h VERBOSE=-vvv
-
-# To plot the equity curve of the strategy, will output to user_data/plot
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h 
-
-# To plot the strategy entry and exits for each backtested pair
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+# Different strategy with hourly timeframe
+freqtrade-gmx backtesting \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --strategy ADXMomentum \
+  --timeframe 1h \
+  --timerange 20241128-20251205 \
+  -vvv
 ```
+
+### Generate Visualizations
+
+```bash
+# Plot profit/equity curve (interactive HTML)
+freqtrade-gmx plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json
+
+# Plot with auto-open in browser
+freqtrade-gmx plot-profit \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --auto-open
+
+# Plot candlestick charts with entry/exit signals
+freqtrade-gmx plot-dataframe \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --strategy ADXMomentum
+
+# Plot with specific indicators
+freqtrade-gmx plot-dataframe \
+  --config configs/adxmomentum_gmx.json \
+  --config configs/adxmomentum_gmx.secrets.json \
+  --strategy ADXMomentum \
+  --indicators1 adx plus_di minus_di \
+  --indicators2 mom
+
+# Custom Python script (generates PNG images)
+source .venv/bin/activate
+python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
+```
+
+**Output locations:**
+- Freqtrade plots: `user_data/plot/*.html` (interactive)
+- Custom script: `user_data/backtest_results/*.png` (static images)
 
 ### Available Strategies
 
@@ -138,22 +290,33 @@ make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
 
 ```bash
 # Dry run mode (paper trading)
-docker compose up pingpong_gmx
-
-# Requires setting up configs/pingpong_gmx.secrets.json with RPC URL
-# See docs/getting-started.md for configuration details
+freqtrade-gmx trade \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --strategy Pingpong
 ```
 
 ## How It Works
 
 This project uses a transparent monkeypatch approach to integrate GMX into Freqtrade:
 
-1. **web3-ethereum-defi** is installed as a git submodule
-2. **patched_entrypoint.py** applies monkeypatch before Freqtrade starts
+1. **web3-ethereum-defi** is installed from the local `deps/` submodule (includes freqtrade integration)
+2. **patched_entrypoint** module applies monkeypatch before Freqtrade starts
 3. **GMX Exchange class** is registered in both CCXT and Freqtrade
 4. **Freqtrade** uses GMX like any other exchange
 
-The monkeypatch:
+### The `freqtrade-gmx` Wrapper Script
+
+The project includes a `freqtrade-gmx` bash script that:
+- Activates the virtual environment
+- Runs freqtrade from a clean directory to avoid Python import conflicts
+- Applies the GMX monkeypatch automatically
+
+This wrapper is needed because running `python -m eth_defi.gmx.freqtrade.patched_entrypoint` directly from the project directory causes Python to find the `freqtrade/` subdirectory as a namespace package, leading to import errors.
+
+### The Monkeypatch
+
+The monkeypatch (`python -m eth_defi.gmx.freqtrade.patched_entrypoint`):
 - Adds `ccxt.gmx` and `ccxt.async_support.gmx` classes
 - Registers GMX in Freqtrade's `SUPPORTED_EXCHANGES`
 - Provides CCXT-compatible interface to GMX's on-chain data
@@ -161,30 +324,28 @@ The monkeypatch:
 
 See [docs/architecture.md](docs/architecture.md) for technical details.
 
-## Available Containers
+## Configuration Files
 
-| Container | Strategy | Exchange | Port |
-|-----------|----------|----------|------|
-| pingpong_gmx | Pingpong | GMX | 9090 |
-| simple_gmx | Simple | GMX | 9091 |
-| adxmomentum_gmx | ADXMomentum | GMX | 9093 |
-| pingpong_hyperliquid | Pingpong | Hyperliquid | 9090 |
-| simple_hyperliquid | Simple | Hyperliquid | 9092 |
+Each strategy has its own configuration:
 
-Each container has its own:
-- Configuration file (`configs/<container>.json`)
-- Secrets file (`configs/<container>.secrets.json`)
-- SQLite database (`db/<container>.sqlite`)
-- Log file (`user_data/logs/<container>.log`)
+- **Pingpong** → `configs/pingpong_gmx.json`
+- **Simple** → `configs/simple_gmx.json`
+- **ADXMomentum** → `configs/adxmomentum_gmx.json`
+- **Hyperliquid variants** → `configs/*_hyperliquid.json`
+
+Each config references:
+- Secrets file (`configs/<name>.secrets.json`) - RPC URLs, private keys (gitignored)
+- SQLite database (`db/<name>.sqlite`) - Trade history
+- Log file (`user_data/logs/<name>.log`) - Execution logs
 
 ## Documentation
 
+### Core Guides
 - **[Getting Started](docs/getting-started.md)** - Detailed installation and first backtest
 - **[GMX Specifics](docs/gmx-specifics.md)** - Understanding GMX differences
-- **[Interpreting Results](docs/interpreting-results.md)** - Analyzing backtest output
+- **[Equity Curves](docs/equity-curves.md)** - Generate and analyze equity curves
 - **[Architecture](docs/architecture.md)** - Technical deep dive (developers)
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
-
 
 ## Project Structure
 
@@ -247,25 +408,36 @@ For GMX integration improvements, contribute to [web3-ethereum-defi](https://git
 
 ## Troubleshooting
 
-### Container won't build
+### Virtual environment issues
 ```bash
-# Clean rebuild
-docker-compose build --no-cache pingpong_gmx
+# Ensure venv is activated
+source .venv/bin/activate  # Linux/macOS
+.venv\Scripts\activate     # Windows
+
+# Verify installation
+python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
 ```
 
 ### No data downloaded
 ```bash
 # Check timerange format (YYYYMMDD-YYYYMMDD)
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201 VERBOSE=-vv
+./freqtrade-gmx download-data \
+  --exchange gmx \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --timeframe 5m \
+  --timerange 20251128-20251208 \
+  -vv
 ```
 
 ### GMX exchange not recognized
 ```bash
-# Verify submodule initialized
-git submodule update --init --recursive
+# Reinstall web3-ethereum-defi from local submodule
+uv pip uninstall web3-ethereum-defi
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 
-# Check Docker entrypoint
-docker-compose run pingpong_gmx python -c "import ccxt; print('gmx' in ccxt.exchanges)"
+# Check GMX is available
+python -c "import ccxt; print('gmx' in ccxt.exchanges)"
 ```
 
 See [docs/troubleshooting.md](docs/troubleshooting.md) for more issues and solutions.
@@ -277,6 +449,40 @@ See [docs/troubleshooting.md](docs/troubleshooting.md) for more issues and solut
 - **web3-ethereum-defi**: https://github.com/tradingstrategy-ai/web3-ethereum-defi
 - **CCXT**: https://docs.ccxt.com/
 
+---
+
+## Alternative: Using Docker (Optional)
+
+If you prefer using Docker containers for isolated environments, you can use the provided Docker setup instead of local Python installation.
+
+### Docker Quick Start
+
+```bash
+# Build container
+docker-compose build pingpong_gmx
+
+# Download data
+make data CONTAINER=pingpong_gmx TIMERANGE=20251128-20251208
+
+# Run backtest
+make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20251128-20251208
+
+# Generate plots
+make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
+```
+
+### Docker Container List
+
+- `pingpong_gmx` - Pingpong strategy on GMX (port 9090)
+- `simple_gmx` - Simple strategy on GMX (port 9091)
+- `adxmomentum_gmx` - ADX Momentum strategy on GMX (port 9093)
+- `pingpong_hyperliquid` - Pingpong strategy on Hyperliquid (port 9090)
+- `simple_hyperliquid` - Simple strategy on Hyperliquid (port 9092)
+
+See the `Makefile` for all available Docker commands and parameters.
+
+---
 
 ## Acknowledgments
 
