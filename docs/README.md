@@ -6,8 +6,15 @@ Complete documentation for GMX Freqtrade backtesting setup.
 
 New to this project? Start here:
 
+### [Quick Start](QUICKSTART.md)
+Get up and running with the ADX strategy in 10 minutes. Covers setup, downloading data, backtesting, and generating equity curves.
+
+**Start here if:** You want to see results quickly.
+
+---
+
 ### [Getting Started](getting-started.md)
-Complete installation guide and your first backtest. Covers prerequisites, Docker setup, data download, and running backtests.
+Complete installation guide and your first backtest. Covers prerequisites, Python/uv setup, data download, and running backtests.
 
 **Start here if:** You're setting up for the first time.
 
@@ -29,18 +36,16 @@ Understanding how GMX differs from traditional exchanges. Essential reading befo
 
 ---
 
-### [Interpreting Results](interpreting-results.md)
-Understanding and analyzing backtest output.
+### [Equity Curves](equity-curves.md)
+Generating and analyzing equity curves from backtest results.
 
 **Topics:**
-- Key metrics explained (win rate, profit factor, drawdown, Sharpe)
-- Performance analysis and evaluation criteria
-- Identifying overfitting
-- Comparing strategies
-- GMX-specific considerations (funding fees, gas costs, slippage)
-- Optimization guidelines
+- Creating custom equity curve visualizations with Python
+- Analyzing drawdowns and performance patterns
+- Monthly returns heatmap analysis
+- Complete example script (equity_curve.png + monthly_returns.png)
 
-**Read this if:** You want to evaluate strategy viability.
+**Read this if:** You want to visualize backtest performance over time.
 
 ---
 
@@ -65,11 +70,11 @@ Technical deep dive into how GMX integration works. For developers and advanced 
 Common issues and solutions.
 
 **Topics:**
-- Installation problems (submodule, Docker build)
+- Installation problems (venv, dependencies, system packages)
 - Configuration errors (pairs, secrets, RPC)
 - Data download issues (GraphQL, timerange)
 - Backtest failures (no trades, strategy errors)
-- GMX-specific issues (exchange not recognized, volume missing)
+- GMX-specific issues (exchange not recognized, monkeypatch)
 - Diagnostic commands
 
 **Read this if:** Something isn't working.
@@ -81,9 +86,10 @@ Common issues and solutions.
 ### By User Type
 
 **Traders/Analysts:**
-1. [Getting Started](getting-started.md) - Setup and first backtest
-2. [GMX Specifics](gmx-specifics.md) - Understand GMX differences
-3. [Interpreting Results](interpreting-results.md) - Analyze performance
+1. [Quick Start](QUICKSTART.md) - 10-minute setup with ADX strategy
+2. [Getting Started](getting-started.md) - Detailed setup guide
+3. [GMX Specifics](gmx-specifics.md) - Understand GMX differences
+4. [Equity Curves](equity-curves.md) - Visualize performance
 
 **Developers:**
 1. [Architecture](architecture.md) - Technical implementation
@@ -92,14 +98,17 @@ Common issues and solutions.
 
 ### By Task
 
+**Quick start (10 min):**
+→ [Quick Start Guide](QUICKSTART.md)
+
 **Installing:**
 → [Getting Started](getting-started.md)
 
 **First backtest:**
 → [Getting Started - Your First Backtest](getting-started.md#your-first-backtest)
 
-**Understanding results:**
-→ [Interpreting Results](interpreting-results.md)
+**Generating equity curves:**
+→ [Equity Curves](equity-curves.md)
 
 **Solving problems:**
 → [Troubleshooting](troubleshooting.md)
@@ -141,9 +150,10 @@ Common issues and solutions.
 ```
 docs/
 ├── README.md                    # This file (documentation index)
+├── QUICKSTART.md               # 10-minute ADX strategy setup
 ├── getting-started.md          # Installation and first backtest
 ├── gmx-specifics.md            # GMX differences and characteristics
-├── interpreting-results.md     # Analyzing backtest output
+├── equity-curves.md            # Generating equity curves
 ├── architecture.md             # Technical implementation
 └── troubleshooting.md          # Common issues and solutions
 ```
@@ -181,7 +191,7 @@ Found an error? Want to improve documentation?
 - What you've tried
 - Error messages (full output)
 - Configuration (sanitized)
-- Environment (OS, Docker version)
+- Environment (OS, Python version)
 
 ---
 
@@ -193,14 +203,23 @@ git clone <repo>
 cd freqtrade-gmx-demo
 git submodule update --init --recursive
 
-# 2. Build
-docker-compose build pingpong_gmx
+# 2. Clone Freqtrade (use freqtrade-develop to avoid namespace conflicts)
+git clone https://github.com/freqtrade/freqtrade.git freqtrade-develop
 
-# 3. Download data
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+# 3. Create venv in main project directory
+uv venv .venv
+source .venv/bin/activate
 
-# 4. Backtest
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-20250201
+# 4. Install Freqtrade and dependencies
+uv pip install -r freqtrade-develop/requirements.txt
+uv pip install -e freqtrade-develop/
+uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+
+# 5. Download data
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201
+
+# 6. Backtest
+./freqtrade-gmx backtesting --strategy Pingpong --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timerange 20250101-20250201
 ```
 
 See [Getting Started](getting-started.md) for detailed instructions.

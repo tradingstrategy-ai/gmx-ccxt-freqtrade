@@ -12,272 +12,162 @@ Understanding GMX's unique characteristics and how they affect backtesting and t
 
 ## What is GMX?
 
-[GMX](https://gmx.io) is a decentralized perpetual futures exchange built on Arbitrum and Avalanche blockchains. Unlike centralized exchanges (CEX) like Binance or traditional decentralized exchanges (DEX) like Uniswap, GMX uses a unique **liquidity pool model** for perpetual futures trading.
+[GMX](https://gmx.io) is a decentralized perpetual futures exchange on Arbitrum and Avalanche. Unlike CEXs (Binance) or traditional DEXs (Uniswap), GMX uses a **liquidity pool model** for perpetual trading.
 
 ### Key Characteristics
 
 1. **Decentralized & Non-Custodial**
-   - Trades execute on-chain via smart contracts
-   - You control your private keys
-   - No KYC or account registration
-   - Transparent, verifiable execution
+   - On-chain execution via smart contracts
+   - No KYC, account registration, or custody
+   - Transparent, verifiable
 
-2. **Liquidity Pool Model**
-   - Trades against GLP/GM pools (not order books)
-   - Liquidity providers earn fees + funding rates
-   - Zero price impact within available liquidity
-   - Pool composition affects slippage
+2. **Liquidity Pool Model (V2: GM Pools)**
+   - Trades against GM pools with long/short token pairs
+   - LPs earn 63% of protocol fees
+   - Entry: No price impact (oracle price)
+   - Exit: Price impact capped at ~0.5%
 
 3. **Perpetual Futures Only**
-   - No spot trading
-   - Up to 100x leverage (varies by pair)
-   - Funding rates every 8 hours
-   - Borrowing fees for leverage
+   - Up to 100x leverage
+   - Hourly funding rates (dynamic)
+   - Borrowing fees based on utilization
 
 4. **Supported Chains**
-   - **Arbitrum**: Main deployment, lower fees (~$0.10-0.50 per trade)
-   - **Avalanche**: Alternative chain, faster blocks (~2s vs ~0.25s)
+   - **Arbitrum**: Main deployment, lower fees (~$0.10-0.50/trade)
+   - **Avalanche**: Faster blocks, higher fees
 
 5. **Available Markets**
-   - Major crypto: ETH, BTC, SOL, LINK, ARB
-   - Alts: DOGE, XRP, LTC, UNI
-   - Total: 15+ perpetual markets
+   - Major: ETH, BTC, SOL, LINK, ARB
+   - Alts: DOGE, XRP, LTC, UNI, and many more
+   - 95+ perpetual markets
 
 ## Key Differences from Traditional Exchanges
 
 Understanding these differences is crucial for building effective GMX strategies.
 
-### Comparison Table
-
-| Feature | Centralized Exchange (CEX) | GMX |
-|---------|---------------------------|-----|
-| **Execution** | Order book matching | **Liquidity pool** |
-| **Order Book** | Full depth visible | **No order book** |
-| **Slippage** | Based on order book depth | **Based on pool liquidity** |
-| **Fees** | Maker (0.01-0.1%), Taker (0.02-0.2%) | **Flat 0.04-0.07%** |
-| **Funding** | Usually 8h, varies by CEX | **Always 8h cycles** |
-| **Latency** | ~50-200ms | **Block time (~0.25s Arbitrum)** |
-| **Volume Data** | Real-time tick data | **Not available** |
-| **Gas Costs** | None (centralized) | **$0.10-1.00 per transaction** |
-| **Privacy** | KYC required | **Wallet only** |
-| **Custody** | Exchange holds funds | **Self-custodial** |
 
 ### 1. No Order Book
 
-**What this means:**
-- Can't analyze order book depth
-- Can't place orders at specific price levels
-- Can't see support/resistance from order flow
-- No front-running or MEV concerns (different model)
+**Implications:**
+- No order book depth analysis
+- No limit orders at specific prices
+- No order flow support/resistance
+- No front-running/MEV (different model)
 
-**Data not available:**
-- `fetch_order_book()` - Not supported
-- Bid/ask spreads
-- Order book imbalance
-- Market depth
+**Data unavailable:**
+- `fetch_order_book()`, bid/ask spreads, market depth
 
-**Alternative indicators:**
-- Use available liquidity instead of order book depth
-- Monitor open interest for market sentiment
-- Track funding rates for long/short bias
+**Alternatives:**
+- Available liquidity → order book depth
+- Open interest → market sentiment
+- Funding rates → long/short bias
 
 ### 2. Atomic Execution
 
-**What this means:**
-- Orders execute in a single blockchain transaction
-- Either complete success or complete failure
-- No partial fills
-- No pending order management
+**Characteristics:**
+- Single blockchain transaction (all-or-nothing)
+- No partial fills or pending orders
 
 **Benefits:**
-- Simplified order logic
-- No order timeout handling
-- No cancel/replace logic
+- Simplified order logic, no timeouts/cancels
 - Deterministic execution
 
-**Limitations:**
-- Can't scale into positions gradually
 
 ### 3. Funding Rates
 
 GMX funding rates work differently than most CEXs:
 
 **GMX Funding:**
-- **8-hour cycles**: 00:00, 08:00, 16:00 UTC
-- **Borrowing fees**: Hourly cost for leverage
+- **Hourly calculation**: Funding rates update continuously based on long/short ratio (not fixed 8-hour cycles like CEXs)
+- **Borrowing fees**: Hourly cost for leverage based on pool utilization
 - **Long/short imbalance**: Affects funding direction
-- **Pool based**: Depends on GLP/GM pool composition
+- **Pool based**: Depends on GM pool composition and open interest balance
 
 **Typical rates:**
-- Balanced markets: -0.01% to +0.01% (per 8h)
-- Imbalanced markets: -0.05% to +0.05% (per 8h)
-- Extreme conditions: -0.1% to +0.1% (per 8h)
+- Balanced markets: -0.01% to +0.01% per hour
+- Imbalanced markets: -0.05% to +0.05% per hour
+- Extreme conditions: Can exceed ±0.1% per hour
 
-**Annual funding (approximation):**
-```
-Annual rate = (8h rate) × 3 (daily) × 365
-Example: 0.01% per 8h = 10.95% APR
-```
-
-**Strategy implications:**
-- Long-term positions pay significant funding
-- Consider funding in backtest P&L
-- Funding can reverse trend profitability
-- Short-term strategies less affected
-
-**Freqtrade handling:**
-```python
-# Funding fees are automatically included in backtests
-# Check funding impact:
-def custom_stake_amount(self, pair, current_time, ...):
-    # Account for funding in position sizing
-    funding_cost = self.get_funding_fees(pair, ...)
-    return adjusted_stake - funding_cost
-```
 
 ### 4. Liquidity Pools Instead of Order Books
 
 **How GMX pools work:**
-- **GLP (V1)** / **GM (V2)**: Liquidity provider tokens
-- Pools contain: 50% stablecoins, 50% crypto assets
+- **V1 (legacy)**: GLP pools - single liquidity token
+- **V2 (current)**: GM pools - individual market pools with long/short token pairs
+- GM pools aim to maintain equal worth of long and short tokens
 - Traders trade against the pool
-- LP's take opposite side of trades
+- Liquidity providers take opposite side of trades and earn 63% of protocol fees
 
-**Slippage model:**
-```
-Price impact = f(trade_size, pool_liquidity, pool_balance)
-```
-
-**Zero price impact when:**
-- Pool has sufficient liquidity
-- Pool balance isn't heavily skewed
-- Trade size is small relative to pool
+**Price impact model:**
+- **Entry positions**: No price impact - always executed at mark (oracle) price
+- **Exit positions**: Price impact applies, typically capped at ~0.5% (50 bps)
+- Impact can be positive (favorable) or negative (unfavorable)
 
 **High price impact when:**
 - Pool is imbalanced (too many longs or shorts)
-- Large trade relative to available liquidity
+- Large position relative to available liquidity
 - Extreme market conditions
 
 **Check available liquidity:**
 ```bash
-docker-compose run --rm pingpong_gmx python -c "
+# Activate your virtual environment first
+source .venv/bin/activate
+
+# Check open interest as proxy for liquidity
+python -c "
 from eth_defi.gmx.ccxt.exchange import GMX
-import asyncio
-
-async def check_liquidity():
-    gmx = GMX({'rpc_url': 'https://arb1.arbitrum.io/rpc'})
-    liquidity = await gmx.fetch_available_liquidity('ETH/USDC:USDC')
-    print(f'ETH/USDC Available Liquidity:')
-    print(f'  Long: {liquidity[\"long\"]} ETH')
-    print(f'  Short: {liquidity[\"short\"]} USDC')
-    await gmx.close()
-
-asyncio.run(check_liquidity())
+exchange = GMX()
+markets = exchange.load_markets()
+print('ETH/USD:USD Market Info:')
+market = markets.get('ETH/USD:USD')
+if market:
+    print(f\"  Contract Size: {market.get('contractSize', 'N/A')}\")
+    print(f\"  Max Leverage: {market.get('limits', {}).get('leverage', {}).get('max', 'N/A')}\")
 "
 ```
 
-### 5. Gas Costs
-
-Every trade incurs blockchain transaction fees:
-
-**Arbitrum (typical):**
-- Simple market order: $0.10 - $0.50
-- During congestion: $1.00 - $3.00
-- Complex operations: $0.50 - $2.00
-
-**Avalanche:**
-- Simple market order: $0.50 - $2.00
-- Higher than Arbitrum but more stable
-
-**Impact on strategies:**
-- High-frequency strategies pay more gas
-- Must factor gas into profitability
-- Minimum profit threshold: > $0.50 per trade
-- Gas costs reduce effective returns
-
-**Example:**
-```
-Strategy: 100 trades, 1% avg profit, $1000 stake
-Profit: $1000 (1% × 100 trades)
-Gas costs: $50 (100 trades × $0.50)
-Net profit: $950 (5% reduction)
-```
-
-**Backtesting note:**
-Gas costs are NOT automatically included in Freqtrade backtests. You must account for them manually.
 
 ## Available Data
 
 ### Historical OHLCV Data
 
-GMX provides candlestick data via GraphQL:
-
-**Timeframes:**
-- 1m, 5m, 15m, 30m (intraday)
-- 1h, 4h (hourly)
-- 1d (daily)
+**Timeframes:** 1m, 5m, 15m, 30m, 1h, 4h, 1d (via GraphQL)
 
 **Data fields:**
 ```python
 {
   "timestamp": 1704067200000,  # Unix timestamp (ms)
-  "open": 2250.50,             # Opening price
-  "high": 2265.75,             # Highest price
-  "low": 2245.20,              # Lowest price
-  "close": 2260.00,            # Closing price
+  "open": 2250.50,
+  "high": 2265.75,
+  "low": 2245.20,
+  "close": 2260.00,
   "volume": 0                  # ⚠️ Always 0 (not available)
 }
 ```
 
-**⚠️ Volume data not available:**
-- GMX doesn't track volume per candle
-- Volume-based indicators won't work
-- Use open interest or price-based indicators instead
-
-**Alternatives to volume indicators:**
+**⚠️ Volume unavailable - use alternatives:**
 ```python
-# ❌ Won't work (no volume)
+# ❌ Won't work
 dataframe['volume_sma'] = ta.SMA(dataframe['volume'], timeperiod=20)
 
-# ✅ Use open interest instead
+# ✅ Use open interest or price-based
 dataframe['oi_sma'] = ta.SMA(dataframe['open_interest'], timeperiod=20)
-
-# ✅ Or price-based indicators
 dataframe['rsi'] = ta.RSI(dataframe['close'], timeperiod=14)
 dataframe['atr'] = ta.ATR(dataframe, timeperiod=14)
 ```
 
 ### Funding Rates
 
-Historical funding rate data:
+**Current rates only:**
+- GMX does not provide historical funding rate data
+- Only current/real-time funding rates available
+- Rates update hourly based on long/short ratio
 
-**Availability:**
-- 8-hour snapshots (00:00, 08:00, 16:00 UTC)
-- Historical data since GMX launch (2021)
-- Per-market rates
+**Check current rates:**
+- Visit [stats.gmx.io](https://stats.gmx.io/) for real-time funding rates
+- Third-party sites ([CoinGlass](https://www.coinglass.com/funding/GMX), [Coinalyze](https://coinalyze.net/gmx/funding-rate/)) track historical rates
 
-**Usage in strategies:**
-```python
-def populate_indicators(self, dataframe, metadata):
-    # Fetch funding rates (if available)
-    funding = self.dp.get_pair_dataframe(
-        pair=metadata['pair'],
-        timeframe='8h',
-        candle_type='funding'
-    )
-
-    # Merge with main dataframe
-    dataframe = dataframe.merge(
-        funding[['date', 'funding_rate']],
-        on='date',
-        how='left'
-    )
-
-    # Avoid high funding cost positions
-    dataframe['high_funding'] = dataframe['funding_rate'] > 0.05
-
-    return dataframe
-```
+**Note:** Without historical funding data, backtests cannot accurately model funding costs. Consider using fixed estimates or external data sources.
 
 ### Open Interest
 
@@ -294,158 +184,64 @@ Track total open positions:
 - Contrarian signals (extreme OI = reversal?)
 - Liquidity assessment (high OI = more liquidity)
 
-**Example:**
+**Check via GMX Stats:**
+- Visit [stats.gmx.io](https://stats.gmx.io/) for real-time open interest data
+- Or use the freqtrade-gmx wrapper to fetch market data:
+
 ```bash
-docker-compose run --rm pingpong_gmx python -c "
-from eth_defi.gmx.open_interest import fetch_open_interest
-import asyncio
-
-async def show_oi():
-    oi = await fetch_open_interest('ETH/USDC', chain='arbitrum')
-    print(f'ETH/USDC Open Interest:')
-    print(f'  Total Long: ${oi[\"total_long\"]:,.0f}')
-    print(f'  Total Short: ${oi[\"total_short\"]:,.0f}')
-    print(f'  Ratio: {oi[\"long_short_ratio\"]:.2f}')
-
-asyncio.run(show_oi())
-"
+./freqtrade-gmx test-pairlist \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json \
+  --quote USDC
 ```
 
 ### Price Oracle
 
-GMX uses Chainlink oracles for pricing:
+GMX uses Chainlink Data Streams for pricing:
 
 **Characteristics:**
-- Updated every ~1-5 minutes
+- Updates: ~1-5 minutes
 - Median of multiple exchanges
-- Protection against manipulation
-- May differ from spot prices
+- Manipulation-resistant
+- May differ from spot
 
 **Implications:**
-- Backtest prices match actual execution
-- Less arbitrage opportunity
-- Oracle lag during volatility
+- Backtest prices = actual execution
+- Reduced arbitrage opportunities
+- Potential lag during volatility
 
 ### Supported Markets
 
-As of 2025, GMX supports:
+**95+ perpetual markets** including:
+- **Most liquid:** ETH/USDC, BTC/USDC
+- **Major:** SOL/USDC, ARB/USDC, LINK/USDC
+- **Popular alts:** DOGE/USDC, XRP/USDC, LTC/USDC, UNI/USDC, AAVE/USDC
 
-**Major markets:**
-- ETH/USDC (most liquid)
-- BTC/USDC (most liquid)
-- SOL/USDC
-- ARB/USDC
-- LINK/USDC
-
-**Alt markets:**
-- DOGE/USDC
-- XRP/USDC
-- LTC/USDC
-- UNI/USDC
-- AAVE/USDC
-
-**Check current markets:**
+**List all available markets:**
 ```bash
-docker-compose run --rm pingpong_gmx python -c "
-from eth_defi.gmx.constants import ARBITRUM_MARKETS
-print('GMX Arbitrum Markets:')
-for market in ARBITRUM_MARKETS:
-    print(f'  - {market}')
-"
+# Using freqtrade-gmx
+./freqtrade-gmx test-pairlist \
+  --config configs/pingpong_gmx.json \
+  --config configs/pingpong_gmx.secrets.json
+
+# Or check stats.gmx.io for full market list
 ```
 
-## Trading Implications
-
-### Strategy Design Considerations
-
-**1. Funding Cost Awareness**
-
-Factor funding into P&L:
-- Short-term strategies (< 8h holds) - minimal impact
-- Medium-term (1-3 days) - moderate impact (0.03-0.15%)
-- Long-term (> 1 week) - significant impact (0.5-2%)
-
-**Example:**
-```
-Position: 1 ETH long at $2500, 10x leverage
-Holding period: 7 days
-Funding rate: 0.01% per 8h (3% APR)
-
-Daily funding: $2500 × 10x × 0.01% × 3 = $7.50
-Weekly funding: $7.50 × 7 = $52.50
-Profit needed to break even: 2.1% (on unleveraged position)
-```
-
-**2. Gas Cost Threshold**
-
-Ensure profit > gas costs:
-- Minimum profitable trade: $5-10 (on Arbitrum)
-- High-frequency strategies need larger edges
-- Consider gas in position sizing
-
-**3. Liquidity Constraints**
-
-Check pool liquidity before large trades:
-- Small positions (< $10k): Usually no issue
-- Medium positions ($10k-$100k): Check available liquidity
-- Large positions (> $100k): May need to split or wait
-
-**4. No Volume Indicators**
-
-Replace volume-based analysis:
-- Volume SMA → Price SMA or Open Interest
-- Volume oscillators → Price oscillators
-- Volume breakouts → Price + ATR breakouts
-- OBV → Accumulation/Distribution on price
-
-### Latency Expectations
-
-**Block time = execution delay**
-
-**Arbitrum:**
-- Block time: ~0.25 seconds
-- Total execution: 0.5-2 seconds
-- Finality: ~10 minutes (L1 confirmation)
-
-**Avalanche:**
-- Block time: ~2 seconds
-- Total execution: 3-5 seconds
-- Finality: 2-3 seconds
-
-**Implications:**
-- Can't front-run millisecond movements
-- Strategies should work on minute+ timeframes
-- Signals have 0.5-2s execution lag
-- Acceptable for most crypto strategies
 
 ### Fee Structure
 
-**GMX fee tiers:**
+**GMX fee tiers (V2):**
 - **Balanced pool**: 0.04% entry + 0.04% exit = 0.08% total
 - **Imbalanced pool**: 0.06% entry + 0.06% exit = 0.12% total
-- **Extreme imbalance**: Up to 0.07% each side = 0.14% total
 
 **Additional costs:**
-- **Borrowing fees**: ~0.01-0.05% per hour (varies by leverage)
-- **Funding rates**: -0.05% to +0.05% per 8h
-- **Gas**: $0.10-0.50 per transaction
+- **Borrowing fees**: Varies by pool utilization (displayed when opening position)
+- **Funding rates**: Dynamic hourly rates based on long/short ratio
+- **Gas**: Varies by network congestion (excess refunded)
+- **Price impact**: Only on exits, typically capped at ~0.5%
 
-**Total cost example:**
-```
-Trade: Enter + hold 1 day + exit
-Entry fee: 0.05%
-Funding (3 × 8h): 0.03%
-Borrowing (24h × 0.02%/h): 0.48%
-Exit fee: 0.05%
-Gas (2 transactions): $1.00
 
-Total cost on $10,000 position:
-Fees: $61 (0.61%)
-Gas: $1.00
-Total: $62 (0.62%)
-
-Required profit to break even: 0.62%
-```
+**N.B.** This is a very abstract overview of the fees & may change. Always use the official documentaion for reference.
 
 **Compare to CEX:**
 ```
@@ -460,47 +256,34 @@ Total (taker): ~0.09%
 
 GMX fees are higher than CEX maker fees but competitive with taker fees.
 
-### Slippage Behavior
+### Slippage and Price Impact
 
-**GMX slippage model:**
-```
-Slippage = f(position_size, available_liquidity, pool_balance)
-```
+**Important distinction:**
+- **Slippage**: Difference between expected price (when submitted) and actual mark price (when executed) - caused by volatility
+- **Price impact**: Applied only to exit/decrease orders, capped at ~0.5%
 
-**Low slippage scenarios:**
-- Small positions (< 0.1% of pool)
-- Balanced pool composition
-- High available liquidity
+**Entry positions:**
+- No price impact - executed at mark (oracle) price
+- Only slippage from volatility during pending execution
+- Default allowed slippage: 1% (adjustable)
 
-**High slippage scenarios:**
-- Large positions (> 1% of pool)
+**Exit positions:**
+- Price impact applies (typically ±0.5% cap)
+- Can be positive (favorable) or negative (unfavorable)
+- Depends on pool balance and position size
+
+**High price impact on exits when:**
+- Large position relative to pool liquidity
 - Imbalanced pool (too many longs/shorts)
-- Low liquidity periods
+- Extreme market conditions
 
-**Estimate slippage:**
-```python
-def estimate_slippage(position_size_usd, available_liquidity_usd):
-    """
-    Rough slippage estimate for GMX
-    """
-    size_ratio = position_size_usd / available_liquidity_usd
-
-    if size_ratio < 0.001:  # < 0.1% of liquidity
-        return 0.01  # ~1 basis point
-    elif size_ratio < 0.01:  # 0.1-1% of liquidity
-        return 0.05  # ~5 basis points
-    elif size_ratio < 0.05:  # 1-5% of liquidity
-        return 0.20  # ~20 basis points
-    else:  # > 5% of liquidity
-        return 1.00  # ~100 basis points (avoid!)
-```
-
-**Backtest slippage:**
+**Backtest considerations:**
 ```json
 {
   "exchange": {
     "name": "gmx",
-    "slippage": 0.05  // 5 basis points = 0.05%
+    "slippage": 0.01  // Account for entry slippage only (1 basis point)
+    // Note: Exit price impact varies and is market-dependent
   }
 }
 ```
@@ -513,35 +296,58 @@ This project integrates GMX into Freqtrade using a **monkeypatch approach**:
 
 ```
 ┌──────────────────────────────────────────────┐
-│ Docker Container                             │
+│ Python Execution Environment                 │
 │                                              │
-│  ┌────────────────────────────────────┐    │
-│  │ patched_entrypoint.py              │    │
-│  │ (runs before Freqtrade starts)     │    │
-│  └─────────────┬──────────────────────┘    │
+│  ┌────────────────────────────────────┐      │
+│  │ python -m eth_defi.gmx.freqtrade   │      │
+│  │       .patched_entrypoint          │      │
+│  │ (runs before Freqtrade starts)     │      │
+│  └─────────────┬──────────────────────┘      │ 
 │                │                             │
 │                ▼                             │
-│  ┌────────────────────────────────────┐    │
-│  │ CCXT Monkeypatch                   │    │
-│  │ - Inject GMX into ccxt.exchanges   │    │
-│  │ - Add ccxt.gmx class               │    │
-│  │ - Add ccxt.async_support.gmx class │    │
-│  └─────────────┬──────────────────────┘    │
+│  ┌────────────────────────────────────┐      │
+│  │ CCXT Monkeypatch                   │      │
+│  │ - Inject GMX into ccxt.exchanges   │      │
+│  │ - Add ccxt.gmx class               │      │
+│  │ - Add ccxt.async_support.gmx class │      │
+│  └─────────────┬──────────────────────┘      │
 │                │                             │
 │                ▼                             │
-│  ┌────────────────────────────────────┐    │
-│  │ Freqtrade Monkeypatch              │    │
-│  │ - Add GMX to SUPPORTED_EXCHANGES   │    │
-│  │ - Register GMXExchange class       │    │
-│  └─────────────┬──────────────────────┘    │
+│  ┌────────────────────────────────────┐      │
+│  │ Freqtrade Monkeypatch              │      │
+│  │ - Add GMX to SUPPORTED_EXCHANGES   │      │
+│  │ - Register GMXExchange class       │      │
+│  └─────────────┬──────────────────────┘      │
 │                │                             │
 │                ▼                             │
-│  ┌────────────────────────────────────┐    │
-│  │ Freqtrade (unmodified)             │    │
-│  │ - Sees GMX as native exchange      │    │
-│  │ - Uses GMX like Binance/Kraken     │    │
-│  └────────────────────────────────────┘    │
+│  ┌────────────────────────────────────┐      │
+│  │ Freqtrade (unmodified)             │      │
+│  │ - Sees GMX as native exchange      │      │
+│  │ - Uses GMX like Binance/Kraken     │      │
+│  └────────────────────────────────────┘      │
 └──────────────────────────────────────────────┘
+```
+
+**How it works:**
+
+1. Instead of running `freqtrade` directly, you run through the patched entrypoint:
+   ```bash
+   python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade <command>
+   ```
+
+2. The patched entrypoint applies the monkeypatches before Freqtrade starts
+
+3. Freqtrade sees GMX as a native exchange and works transparently
+
+**Convenience alias:**
+```bash
+alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
+```
+
+This allows you to run commands naturally:
+```bash
+freqtrade download-data --exchange gmx ...
+freqtrade backtesting --strategy Pingpong ...
 ```
 
 ### Web3-Ethereum-DeFi Module
@@ -556,6 +362,7 @@ The GMX integration lives in the `web3-ethereum-defi` library:
 
 **Why submodule?**
 - Shared across multiple projects
+- No need to install dependencies manually
 - Active development and maintenance
 - Comprehensive GMX functionality
 - Tested and production-ready
@@ -610,12 +417,7 @@ For developers who want to understand or extend the integration:
 
 Now that you understand GMX's unique characteristics:
 
-1. **Analyze results** → [Interpreting Results](interpreting-results.md)
-   - Factor in GMX-specific costs
-   - Evaluate funding impact
-   - Optimize for gas efficiency
-
-2. **Technical details** → [Architecture](architecture.md)
+1. **Technical details** → [Architecture](architecture.md)
    - Understand the monkeypatch
    - Explore CCXT integration
    - Extend functionality
@@ -639,17 +441,18 @@ Now that you understand GMX's unique characteristics:
 
 | Cost Type | Amount |
 |-----------|--------|
-| Trading fee | 0.04-0.07% (each side) |
-| Funding rate | -0.05% to +0.05% (per 8h) |
-| Borrowing fee | 0.01-0.05% (per hour) |
-| Gas cost | $0.10-0.50 (per transaction) |
+| Trading fee | 0.04-0.06% (each side, balanced/imbalanced) |
+| Funding rate | -0.01% to +0.05% (per hour, dynamic) |
+| Borrowing fee | Varies by pool utilization |
+| Price impact | Exit only, typically capped at ~0.5% |
+| Gas cost | $0.10-0.50 Arbitrum, $0.50-2.00 Avalanche |
 
 ### Supported Data
 
 - ✅ OHLCV (1m, 5m, 15m, 1h, 4h, 1d)
-- ✅ Funding rates (8h snapshots)
 - ✅ Open interest (real-time)
-- ✅ Available liquidity
+- ✅ Current funding rates (real-time only)
+- ❌ Historical funding rates (not available from GMX)
 - ❌ Volume (not available)
 - ❌ Order book (not applicable)
 
