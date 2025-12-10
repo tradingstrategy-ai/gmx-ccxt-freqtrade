@@ -131,7 +131,7 @@ python -m pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 
 Show installed packages:
 
-````bash
+```bash
 pip list|grep -i web3
 ```
 
