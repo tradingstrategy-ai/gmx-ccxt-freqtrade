@@ -70,3 +70,21 @@ plot-profit:
 		$(if $(TIMERANGE),--timerange $(TIMERANGE)) \
 		$(if $(AUTO_OPEN),--auto-open) \
 		$(if $(filter DB,$(TRADE_SOURCE)),--db-url sqlite:////freqtrade/db/$(DB) --trade-source DB,--backtest-filename $(if $(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results/$(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results))
+
+trade:
+	@if [ -z "$(CONTAINER)" ]; then \
+		echo "Error: CONTAINER is not set. Usage: make trade CONTAINER=YourContainer STRATEGY=YourStrategy [DB=yourdb.sqlite] [FREQAI_MODEL=YourModel] [VERBOSE=-v/-vv/-vvv]"; \
+		exit 1; \
+	fi
+	@if [ -z "$(STRATEGY)" ]; then \
+		echo "Error: STRATEGY is not set. Usage: make trade CONTAINER=YourContainer STRATEGY=YourStrategy [DB=yourdb.sqlite] [FREQAI_MODEL=YourModel] [VERBOSE=-v/-vv/-vvv]"; \
+		exit 1; \
+	fi
+	docker compose run --rm $(CONTAINER) trade \
+		--config /freqtrade/configs/$(CONTAINER).json \
+		--config /freqtrade/configs/$(CONTAINER).secrets.json \
+		--strategy-path /freqtrade/strategies \
+		--strategy $(STRATEGY) \
+		$(if $(FREQAI_MODEL),--freqaimodel $(FREQAI_MODEL)) \
+		$(if $(DB),--db-url sqlite:////freqtrade/db/$(DB)) \
+		$(VERBOSE)
