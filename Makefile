@@ -16,6 +16,17 @@ data:
 		--prepend \
 		$(VERBOSE)
 
+list-pairs:
+	@if [ -z "$(CONTAINER)" ]; then \
+		echo "Error: CONTAINER is not set. Usage: make list-pairs CONTAINER=YourContainer [EXCHANGE=gmx] [VERBOSE=-v/-vv/-vvv]"; \
+		exit 1; \
+	fi
+	docker compose run --rm $(CONTAINER) list-pairs \
+		--config /freqtrade/configs/$(CONTAINER).json \
+		--config /freqtrade/configs/$(CONTAINER).secrets.json \
+		--exchange $(or $(EXCHANGE),gmx) \
+		$(VERBOSE)
+
 backtest:
 	@if [ -z "$(CONTAINER)" ]; then \
 		echo "Error: CONTAINER is not set. Usage: make backtest CONTAINER=YourContainer STRATEGY=YourStrategy [VERBOSE=-v/-vv/-vvv]"; \
