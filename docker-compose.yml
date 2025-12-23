@@ -87,3 +87,19 @@ services:
         --config /freqtrade/configs/adxmomentum_gmx.secrets.json
         --db-url sqlite:////freqtrade/db/adxmomentum_gmx.sqlite
         --logfile /freqtrade/user_data/logs/adxmomentum_gmx.log
+
+  ichiv2_gmx:
+    <<: *default-freqtradebot
+    container_name: ichiv2_gmx
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "9094:8080"
+    command: >
+      trade
+        --strategy IchiV2_LS_Live
+        --config /freqtrade/configs/ichiv2_gmx.json
+        --config /freqtrade/configs/ichiv2_gmx.secrets.json
+        --db-url sqlite:////freqtrade/db/ichiv2_gmx.sqlite
+        --logfile /freqtrade/user_data/logs/ichiv2_gmx.log
