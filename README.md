@@ -179,7 +179,23 @@ We use [ADX momentum strategy](./configs/adxmomentum_gmx.json) as an example
 - Trades majors: BTC, SOL, DOGE, ETH
 - Uses 1h timeframe
 
-## Setting up empty secrets configuration file
+## Configuration Generation
+
+Helper scripts to generate FreqTrade config files with new Ethereum wallets:
+
+**Generate full config** (recommended):
+```bash
+python scripts/generate_config.py <config_name>
+# Creates: configs/<name>.json and configs/<name>.secrets.json
+```
+
+**Generate wallet only**:
+```bash
+python scripts/generate_priv_key.py <output_file>
+# Creates minimal secrets file with new wallet
+```
+
+### Setting up empty secrets configuration file
 
 ### Download Historical Data
 
