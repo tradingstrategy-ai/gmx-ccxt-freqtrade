@@ -371,7 +371,28 @@ open user_data/plot/freqtrade-plot-ETH_USDC_USDC-1h.html
 
 ## Live trading
 
-Work in progress.
+#### Using the `freqtrade-gmx` wrapper
+
+```sh
+./freqtrade-gmx trade --strategy PingpongShort --config configs/pingpong_short_gmx.json --config configs/pingpong_sl_gmx.secrets.json --log-file freqtrade.logs
+```
+
+#### Using docker 
+
+```sh
+docker compose build --no-cache ichiv2_gmx && docker compose up ichiv2_gmx
+```
+
+**N.B.** Make sure for better stability use private RPCs & update the `.secrects.json` file and add them there. You can pass multiple RPCs like this 
+
+
+```json
+  ...
+  "rpcUrl": "https://rpc1.com https://rpc2.com"  
+  ...
+```
+
+
 
 ## About the monkey patch
 
