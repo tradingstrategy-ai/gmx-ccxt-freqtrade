@@ -91,6 +91,7 @@ do not use `uv` or fix the issues with the package manager yourself.
 # Submodules most be includedin the checkout
 git clone  --recurse-submodules  https://github.com/tradingstrategy-ai/gmx-ccxt-freqtrade.git
 cd gmx-ccxt-freqtrade
+git submodule update --remote --merge
 ```
 
 ### Install Freqtrade
