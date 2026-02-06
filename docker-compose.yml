@@ -31,7 +31,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - "9090:8080"
+      - "9095:8080"  
     command: >
       trade
         --strategy Pingpong
@@ -103,3 +103,11 @@ services:
         --config /freqtrade/configs/ichiv2_gmx.secrets.json
         --db-url sqlite:////freqtrade/db/ichiv2_gmx.sqlite
         --logfile /freqtrade/user_data/logs/ichiv2_gmx.log
+  
+  caddy:
+    image: caddy:2.4.5
+    container_name: caddy
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile

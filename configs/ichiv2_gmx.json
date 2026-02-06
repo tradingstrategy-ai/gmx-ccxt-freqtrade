@@ -31,7 +31,7 @@
             "bids_to_ask_delta": 1
         }
     },
-    "exit_pricing":{
+    "exit_pricing": {
         "price_side": "other",
         "use_order_book": false,
         "order_book_top": 1
@@ -59,7 +59,7 @@
             "enableRateLimit": true,
             "rateLimit": 500
         },
-        "pair_whitelist": [
+       "pair_whitelist": [
             "0G/USDC:USDC",
             "AAVE/USDC:USDC",
             "ADA/USDC:USDC",
@@ -102,14 +102,16 @@
             "XRP/USDC:USDC",
             "ZORA/USDC:USDC"
         ],
-        "pair_blacklist": [""]
+        "pair_blacklist": [
+            ""
+        ]
     },
     "pairlists": [
         {
             "method": "StaticPairList"
         }
     ],
-    "bot_name": "ichiv2_ls_hyperliquid_static",
+    "bot_name": "ichiv2-gmx",
     "initial_state": "running",
     "force_entry_enable": false,
     "internals": {
@@ -121,10 +123,10 @@
         "listen_port": 8080,
         "verbosity": "error",
         "enable_openapi": true,
-        "CORS_origins": []
+        "CORS_origins": ["https://fui.tradingstrategy.ai"]
     },
     "telegram": {
-        "enabled": false,
+        "enabled": true,
         "token": "",
         "chat_id": "",
         "allow_custom_messages": true,
@@ -157,9 +159,21 @@
         "reload": true,
         "balance_dust_level": 0.01,
         "keyboard": [
-            ["/daily", "/profit", "/balance"],
-            ["/status", "/status table", "/performance"],
-            ["/count", "/logs", "/help"]
+            [
+                "/daily",
+                "/profit",
+                "/balance"
+            ],
+            [
+                "/status",
+                "/status table",
+                "/performance"
+            ],
+            [
+                "/count",
+                "/logs",
+                "/help"
+            ]
         ]
     }
 }

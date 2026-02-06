@@ -1,0 +1,19 @@
+{
+    admin off
+}
+
+(freqtrade_bot) {
+    @api_paths path /api/* /openapi.json
+
+    route @api_paths {
+        reverse_proxy http://{args.0}
+    }
+
+    handle_errors {
+        respond "{http.error.status_code} {http.error.status_text}"
+    }
+}
+
+http://ichiv2-ls-gmx.tradingstrategy.ai {
+    import freqtrade_bot 127.0.0.1:9094
+}

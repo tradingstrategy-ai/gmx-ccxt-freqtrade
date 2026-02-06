@@ -1,4 +1,4 @@
-# IchiV2_LS_Live - Dual Long/Short Ichimoku Strategy (1h timeframe)
+# IchiV2_LS_1h_Merged - Dual Long/Short Ichimoku Strategy (1h timeframe)
 # Author: Gui
 # Version: 2.0
 # Description: Combines cloud crossover (long) with senkou B retest breakdown (short)
@@ -15,6 +15,7 @@ from freqtrade.persistence import Trade
 from freqtrade.enums import RunMode
 from freqtrade.strategy import informative, DecimalParameter, IntParameter
 from freqtrade.strategy.strategy_helper import stoploss_from_absolute
+from freqtrade.exchange import timeframe_to_prev_date
 import logging
 import json
 from freqtrade.optimize.space import SKDecimal 
@@ -47,6 +48,100 @@ class IchiV2_LS_Live(IStrategy):
     - No SAR exit for shorts
 
     Standard Freqtrade position sizing (no market cap scaling).
+
+                                            MIXED TAG STATS                                         
+┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃           ┃           ┃        ┃            ┃       Tot ┃            ┃           ┃            ┃
+┃           ┃      Exit ┃        ┃ Avg Profit ┃    Profit ┃ Tot Profit ┃       Avg ┃  Win  Draw ┃
+┃ Enter Tag ┃    Reason ┃ Trades ┃          % ┃      USDT ┃          % ┃  Duration ┃ Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ short_en… │ tp_veloc… │    184 │      11.93 │   702.255 │     702.25 │   2 days, │  168     0 │
+│           │           │        │            │           │            │  11:11:00 │   16  91.3 │
+│ long_ent… │ sar_exit… │   1121 │       2.38 │   606.182 │     606.18 │    1 day, │  515     0 │
+│           │           │        │            │           │            │  21:13:00 │  606  45.9 │
+│ short_en… │ tp_rsi_4… │    159 │      13.38 │   596.850 │     596.85 │   6 days, │  143     0 │
+│           │           │        │            │           │            │  15:31:00 │   16  89.9 │
+│ short_en… │ senkou_a… │    431 │        2.0 │   288.346 │     288.35 │   4 days, │  299     0 │
+│           │           │        │            │           │            │   3:47:00 │  132  69.4 │
+│ short_en… │ force_ex… │      3 │       5.33 │    15.784 │      15.78 │   5 days, │    3     0 │
+│           │           │        │            │           │            │  19:20:00 │    0   100 │
+│ long_ent… │ senkou_a… │    103 │      -0.25 │   -10.824 │     -10.82 │  19:07:00 │   42     0 │
+│           │           │        │            │           │            │           │   61  40.8 │
+│ short_en… │ trailing… │    257 │      -3.61 │  -220.982 │    -220.98 │    1 day, │    2     0 │
+│           │           │        │            │           │            │  23:23:00 │  255   0.8 │
+│ long_ent… │ stop_loss │    186 │      -7.23 │  -328.957 │    -328.96 │  16:19:00 │    0     0 │
+│           │           │        │            │           │            │           │  186     0 │
+│ short_en… │ stop_loss │    651 │      -4.13 │  -709.723 │    -709.72 │    1 day, │    0     0 │
+│           │           │        │            │           │            │  12:31:00 │  651     0 │
+│     TOTAL │           │   3095 │       0.93 │   938.931 │     938.93 │   2 days, │ 1172     0 │
+│           │           │        │            │           │            │   7:21:00 │ 1923  37.9 │
+└───────────┴───────────┴────────┴────────────┴───────────┴────────────┴───────────┴────────────┘
+                          SUMMARY METRICS                          
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                        ┃ Value                           ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from              │ 2020-10-21 20:00:00             │
+│ Backtesting to                │ 2025-12-24 00:00:00             │
+│ Trading Mode                  │ Isolated Futures                │
+│ Max open trades               │ 10                              │
+│                               │                                 │
+│ Total/Daily Avg Trades        │ 3095 / 1.64                     │
+│ Starting balance              │ 100 USDT                        │
+│ Final balance                 │ 1038.931 USDT                   │
+│ Absolute profit               │ 938.931 USDT                    │
+│ Total profit %                │ 938.93%                         │
+│ CAGR %                        │ 57.19%                          │
+│ Sortino                       │ 3.25                            │
+│ Sharpe                        │ 1.59                            │
+│ Calmar                        │ 5.32                            │
+│ SQN                           │ 4.99                            │
+│ Profit factor                 │ 1.51                            │
+│ Expectancy (Ratio)            │ 0.30 (0.32)                     │
+│ Avg. daily profit             │ 0.497 USDT                      │
+│ Avg. stake amount             │ 26.458 USDT                     │
+│ Total trade volume            │ 163397.423 USDT                 │
+│                               │                                 │
+│ Long / Short trades           │ 1410 / 1685                     │
+│ Long / Short profit %         │ 266.40% / 672.53%               │
+│ Long / Short profit USDT      │ 266.400 / 672.530               │
+│                               │                                 │
+│ Best Pair                     │ MOODENG/USDT:USDT 118.52%       │
+│ Worst Pair                    │ BNB/USDT:USDT -15.69%           │
+│ Best trade                    │ MOODENG/USDT:USDT 196.35%       │
+│ Worst trade                   │ NEAR/USDT:USDT -26.36%          │
+│ Best day                      │ 100.93 USDT                     │
+│ Worst day                     │ -28.59 USDT                     │
+│ Days win/draw/lose            │ 469 / 658 / 763                 │
+│ Min/Max/Avg. Duration Winners │ 0d 00:00 / 30d 23:00 / 3d 17:15 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 17d 09:00 / 1d 10:42 │
+│ Max Consecutive Wins / Loss   │ 17 / 24                         │
+│ Rejected Entry signals        │ 694                             │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 91.397 USDT                     │
+│ Max balance                   │ 1038.931 USDT                   │
+│ Max % of account underwater   │ 19.66%                          │
+│ Absolute drawdown             │ 89.8 USDT (10.74%)              │
+│ Drawdown duration             │ 50 days 01:00:00                │
+│ Profit at drawdown start      │ 736.105 USDT                    │
+│ Profit at drawdown end        │ 646.306 USDT                    │
+│ Drawdown start                │ 2025-08-17 16:00:00             │
+│ Drawdown end                  │ 2025-10-06 17:00:00             │
+│ Market change                 │ 353.16%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2020-10-21 20:00:00 -> 2025-12-24 00:00:00 | Max open trades : 10
+                                        STRATEGY SUMMARY                                         
+┏━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━┓
+┃           ┃        ┃            ┃       Tot ┃            ┃           ┃            ┃           ┃
+┃           ┃        ┃ Avg Profit ┃    Profit ┃ Tot Profit ┃       Avg ┃  Win  Draw ┃           ┃
+┃  Strategy ┃ Trades ┃          % ┃      USDT ┃          % ┃  Duration ┃ Loss  Win% ┃  Drawdown ┃
+┡━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━┩
+│ IchiV2_L… │   3095 │       0.93 │   938.931 │     938.93 │   2 days, │ 1172     0 │ 89.8 USDT │
+│           │        │            │           │            │   7:21:00 │ 1923  37.9 │    10.74% │
+└───────────┴────────┴────────────┴───────────┴────────────┴───────────┴────────────┴───────────┘
+➜ 
+
 
     """
 
@@ -188,7 +283,7 @@ class IchiV2_LS_Live(IStrategy):
 
     # Timeframe
     timeframe = '1h'
-    startup_candle_count = 500
+    startup_candle_count = 121
     process_only_new_candles = True
 
     # Trailing stop - DISABLED
@@ -233,46 +328,79 @@ class IchiV2_LS_Live(IStrategy):
                        current_rate: float, current_profit: float, after_fill: bool,
                        **kwargs) -> float | None:
         """
-        ATR-based stop loss for SHORTS only.
-        Returns the TIGHTER of ATR-based or base stoploss.
+        Dynamic stoploss comparing base stoploss vs strategy-specific stops.
+
+        LONGS: Compare base stoploss vs SAR level, choose the TIGHTER (higher) stop.
+        SHORTS: Compare base stoploss vs ATR stop, choose the TIGHTER (lower) stop.
         """
         if not trade.is_short:
-            return None
-
-        entry_atr = trade.get_custom_data(key='entry_atr')
-
-        if entry_atr is None:
-            custom_info_pair = self.custom_info.get(pair)
-            if custom_info_pair is not None:
-                try:
-                    entry_candle = custom_info_pair[custom_info_pair.index <= trade.open_date_utc]
-                    if not entry_candle.empty:
-                        entry_atr = entry_candle.iloc[-1]['atr']
-                        if pd.isna(entry_atr):
-                            return None
-                    else:
-                        return None
-                except (KeyError, IndexError):
-                    return None
-            else:
+            # === LONG POSITIONS: Compare base stoploss vs SAR ===
+            dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+            if dataframe.empty:
                 return None
 
-        entry_rate = trade.open_rate
-        atr_distance = self.atr_stop_multiplier.value * float(entry_atr)
+            try:
+                last_candle = dataframe.iloc[-1]
+                sar_level = last_candle.get('sar_4h')
 
-        atr_stop_price = entry_rate + atr_distance
-        fixed_stop_price = entry_rate * (1 + abs(self.stoploss))
-        
-        # Use the TIGHTER stop loss between atr and fixed stoploss
-        final_stop_price = min(atr_stop_price, fixed_stop_price)
-        
-        # Convert absolute price to stoploss distance using Freqtrade utility
-        return stoploss_from_absolute(
-            stop_rate=final_stop_price,
-            current_rate=current_rate,
-            is_short=trade.is_short,
-            leverage=trade.leverage
-        )
+                if pd.isna(sar_level):
+                    return None
+
+                # Calculate base stoploss price (below entry)
+                entry_rate = trade.open_rate
+                base_stop_price = entry_rate * (1 + self.stoploss)  # self.stoploss is negative
+
+                # For longs: Choose the HIGHER stop price (closer to current price = more conservative)
+                # SAR trails up as price goes up, so it may be higher than base stoploss
+                final_stop_price = max(base_stop_price, sar_level)
+
+                return stoploss_from_absolute(
+                    stop_rate=final_stop_price,
+                    current_rate=current_rate,
+                    is_short=False,
+                    leverage=trade.leverage
+                )
+
+            except (KeyError, IndexError) as e:
+                self.logger.warning(f"Error calculating SAR stoploss for {pair}: {e}")
+                return None
+
+        else:
+            # === SHORT POSITIONS: Compare base stoploss vs ATR stop ===
+            entry_atr = trade.get_custom_data(key='entry_atr')
+
+            if entry_atr is None:
+                dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+                if not dataframe.empty:
+                    try:
+                        trade_candle_time = timeframe_to_prev_date(self.timeframe, trade.open_date_utc)
+                        entry_candles = dataframe[dataframe['date'] <= trade_candle_time]
+                        if not entry_candles.empty:
+                            entry_atr = entry_candles.iloc[-1]['atr']
+                            if not pd.isna(entry_atr):
+                                trade.set_custom_data(key='entry_atr', value=float(entry_atr))
+                    except (KeyError, IndexError) as e:
+                        self.logger.warning(f"Failed to store entry ATR for {pair}: {e}")
+
+            if entry_atr is None:
+                return None
+
+            entry_rate = trade.open_rate
+            atr_distance = self.atr_stop_multiplier.value * float(entry_atr)
+
+            # For shorts: ATR stop is ABOVE entry price
+            atr_stop_price = entry_rate + atr_distance
+            base_stop_price = entry_rate * (1 + abs(self.stoploss))
+
+            # For shorts: Choose the LOWER stop price (closer to current price = more conservative)
+            final_stop_price = min(atr_stop_price, base_stop_price)
+
+            return stoploss_from_absolute(
+                stop_rate=final_stop_price,
+                current_rate=current_rate,
+                is_short=True,
+                leverage=trade.leverage
+            )
 
     def custom_exit(self, pair: str, trade: 'Trade', current_time: datetime,
                     current_rate: float, current_profit: float, **kwargs) -> str | bool | None:
@@ -288,19 +416,15 @@ class IchiV2_LS_Live(IStrategy):
         - OR velocity exhaustion (< -10%)
         - ATR-based stop loss (via custom_stoploss)
         """
-        custom_info_pair = self.custom_info.get(pair)
-        if custom_info_pair is None:
+        dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+        if dataframe.empty:
             return None
 
         current_mode = self.config['runmode']
         is_trading_mode = current_mode in (RunMode.LIVE, RunMode.DRY_RUN)
 
         try:
-            completed_candles = custom_info_pair.loc[custom_info_pair.index < current_time]
-            if completed_candles.empty:
-                return None
-
-            last_row = completed_candles.iloc[-1]
+            last_row = dataframe.iloc[-1]
             last_close = last_row['close']
             last_sar = last_row.get('sar_4h')
 
@@ -434,19 +558,18 @@ class IchiV2_LS_Live(IStrategy):
                            side: str, **kwargs) -> bool:
         """Store ATR at entry time for shorts and log detailed entry information."""
         trade = kwargs.get('trade')
-        custom_info_pair = self.custom_info.get(pair)
 
         # Store ATR for shorts
-        if trade is not None and side == 'short' and custom_info_pair is not None:
-            try:
-                entry_candles = custom_info_pair[custom_info_pair.index <= current_time]
-                if not entry_candles.empty:
-                    entry_row = entry_candles.iloc[-1]
-                    entry_atr = entry_row.get('atr')
+        if trade is not None and side == 'short':
+            dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+            if not dataframe.empty:
+                try:
+                    entry_candle = dataframe.iloc[-1]
+                    entry_atr = entry_candle.get('atr')
                     if not pd.isna(entry_atr):
                         trade.set_custom_data(key='entry_atr', value=float(entry_atr))
-            except (KeyError, IndexError) as e:
-                self.logger.warning(f"Failed to store entry ATR for {pair}: {e}")
+                except (KeyError, IndexError) as e:
+                    self.logger.warning(f"Failed to store entry ATR for {pair}: {e}")
 
         current_mode = self.config['runmode']
         is_trading_mode = current_mode in (RunMode.LIVE, RunMode.DRY_RUN)
@@ -522,14 +645,10 @@ class IchiV2_LS_Live(IStrategy):
             try:
                 dataframe, _ = self.dp.get_analyzed_dataframe(trade.pair, self.timeframe)
                 if not dataframe.empty:
-                    relevant_candles = dataframe[dataframe['date'] <= cycle_time]
-                    if not relevant_candles.empty:
-                        current_rate = relevant_candles.iloc[-1]['close']
-                    else:
-                        current_rate = trade.open_rate
+                    current_rate = dataframe.iloc[-1]['close']
                 else:
                     current_rate = trade.open_rate
-            except:
+            except Exception:
                 current_rate = trade.open_rate
 
             profit_ratio = trade.calc_profit_ratio(current_rate)
@@ -781,4 +900,3 @@ class IchiV2_LS_Live(IStrategy):
         dataframe['exit_tag'] = ''
         dataframe['sell'] = 0
         return dataframe
-
