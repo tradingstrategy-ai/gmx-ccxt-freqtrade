@@ -394,6 +394,13 @@ docker compose build --no-cache ichiv2_gmx && docker compose up ichiv2_gmx
 ```
 
 
+## Fees
+
+The trading fee to open a position is [`0.04%` or `0.06%`](https://docs.gmx.io/docs/trading#fees-and-rebates) of the position size, similarly there is a 0.04% or 0.06% fee when closing the position. This applies for increasing the position size of an existing position and partially decreasing a position size as well.
+
+If the trade increases the balance of longs and shorts then the fee would be 0.04%, otherwise the fee would be 0.06%.
+
+**N.B.** On top of this fees you have to pay keeper fees as well so that your trades are executed by keepers otherwise you would end up losing gas. This is where the [`executionBuffer`](configs/ichiv2_gmx.json#L57) option comes in handy. You can adjust how much fees you want to pay the keepers. From our testing we have found that if we `executionBuffer` to `2.5` as of 09.02.2026 the trades goes through and which is significantly less than the fees that we pay from GMX web UI. Anything less than that may and will cause issues. If you set the values between `1.5-1.9` you maybe able to send 1 or 2 orders but that is also very rare. What we have seen is that for each type of order the keeper fee is roughly `0.42-0.48`$. 
 
 ## About the monkey patch
 

@@ -53,7 +53,9 @@
         "secret": "",
         "ccxt_config": {
             "enableRateLimit": true,
-            "rateLimit": 500
+            "rateLimit": 500,
+            "executionBuffer": 2.5,
+            "defaultSlippage": 0.003
         },
         "ccxt_async_config": {
             "enableRateLimit": true,
