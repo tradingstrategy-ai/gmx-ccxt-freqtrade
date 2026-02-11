@@ -1,24 +1,24 @@
-# GMX Freqtrade and CCXT integration tutorial
+# GMX CCXT and FreqTrade tutorial
 
 This example repository shows how to use [CCXT](https://tradingstrategy.ai/glossary/ccxt)-compatible exchange adapter for [GMX](https://tradingstrategy.ai/glossary/gmx),
-a decentralised [perpetual futures](https://tradingstrategy.ai/glossary/gmx) exchange. The adapter is provided by [eth_defi](https://github.com/tradingstrategy-ai/web3-ethereum-defi#make) Python package,
-which provides necessary low-level primitives for RPC, smart contract interaction, onchain data ignestion and other.
+a decentralised [perpetual futures](https://tradingstrategy.ai/glossary/gmx) exchange.
 
 The CCXT-compatible adapter is used with [FreqTrade](https://tradingstrategy.ai/glossary/freqtrade), an [algorithmic trading framework](https://tradingstrategy.ai/glossary/algorithmic-trading) for [Python](https://tradingstrategy.ai/glossary/python) to run an example automated trading strategy on GMX.
+
+The example provide a handful of FreqTrade strategy modules and configs to get started.
+
+# Overview
+
+## Key features
+
+- **CCXT-compatible interface** to GMX's onchain trading
+- **FreqTrade-compatible** run our trading algorithms on deep GMX liquidity
+- **Backtest** with historical GMX data
 
 **Note**: This is still work-in-progress development. If you intend to use this software check Support section first.
 
 **Note**: As the writing of this, because of GMX's internal limitations, there might not be enough historical data available from GMX historical data REST API endpoint
 to perform meaningful trading or backtesting, as the APIs are limited to 10,000 latest candles only.
-
-## Key features
-
-- **CCXT-compatible interface** to GMX's on-chain data
-- **Historical backtesting** of GMX perpetual strategies
-- **Freqtrade integration** via transparent monkeypatch
-- **Real market data** from GMX's liquidity pools
-- **Multiple timeframes** (1m, 5m, 15m, 1h, 4h, 1d)
-- **Funding rate analysis** and position tracking
 
 ## Why GMX?
 
@@ -29,11 +29,18 @@ GMX's unique [AMM](https://tradingstrategy.ai/glossary/amm) offers benefits for 
 - Pure onchain, composable with DeFi strategies and smart contracts
 - Onchain data and execution availability ensures robust, self-hosted, API access
 
-**Note**: Currently GMX APIs does not expose volume (fills) and it is set by zero by the CCXT adapter
+## How does it work?
+
+Python package [web3-ethereum-defi](https://github.com/tradingstrategy-ai/web3-ethereum-defi) includes
+GMX-specific CCXT adapter code and monkey-patches to FreqTrade, so that you can run strategies by choosing `gmx` exchange type
+
+The adapter is provided by [eth_defi](https://github.com/tradingstrategy-ai/web3-ethereum-defi#make) Python package, which provides necessary low-level primitives for RPC, smart contract interaction, onchain data ignestion. These are mapped to CCXT/FreqTrade transparently, so that you need a minimum modifications to your algorithsm to make them run onchain.
 
 ## Prerequisites
 
-- **Python 3.11+** (not tested with other Python versions)
+To run this tutorial
+
+- **Python 3.12 only+** (see [web3-ethereum-defi README](https://github.com/tradingstrategy-ai/web3-ethereum-defi) for the status of Python version compatibility)
 - **Git**: for cloning and submodule management
 - **10GB+ disk space**: historical data, a lot of code to check out
 - **System dependencies**: for talib - see below
@@ -41,23 +48,9 @@ GMX's unique [AMM](https://tradingstrategy.ai/glossary/amm) offers benefits for 
 
 Microsoft Windows users need to use Windows Subsystem for Linux (WSL).
 
-### Included example trading strategies
-
-This example repository comes with few example strategies for FreqTrade.
-
-- [ADX Momentum](./configs/adxmomentum_gmx.json): Multi-indicator trend following: a basic multi-pair strategy to make modest profit in trending cryptocurrency markets
-- [Ping pong](./configs/pingpong_gmx.json): Live entry/exit stress testing (1m timeframe): to check that live trading with the connector works and exchange works
-- [RSI simple](./configs/simple_gmx.json): RSI-based momentum strategy
-
-See [Python source code](./user_data/strategies/) for strategies.
-
-All strategies come with
-
-- Python source code for the strategy itself
-- Config file for executing against GMX and Hyperliquid to review the adapter functionality side-by-side with a mature CCXT connector
-- Example secrets config file
-
 If you want to start building a real trading strategy, ADX momemntum is the best starting point.
+
+## Installation
 
 ### System Dependencies
 
@@ -80,12 +73,7 @@ brew install gettext libomp
 
 **For other systems or troubleshooting**, see the [official Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
 
-## Installation
-
-**Note**: AS the writing of this, `uv` Python package managers has issues and cannot correctly install packages in this tutorial. As a solution,
-do not use `uv` or fix the issues with the package manager yourself.
-
-### Clone
+### Clone the repository
 
 ```bash
 # Submodules most be includedin the checkout
@@ -141,7 +129,6 @@ You should see web3-ethereum-defi package which provides CCXT and FreqTrade monk
 ```bash
 web3                      7.14.0
 web3-ethereum-defi        0.35            /Users/moo/code/gmx-ccxt-freqtrade/deps/web3-ethereum-defi
-web3-google-hsm           0.1.0
 ```
 
 ### Verify FreqTrade installation
@@ -150,7 +137,7 @@ See that we can start `freqtrade` with our GMX monkey patches:
 
 ```bash
 ./freqtrade-gmx --version
-````
+```
 
 This should output:
 
@@ -185,12 +172,14 @@ We use [ADX momentum strategy](./configs/adxmomentum_gmx.json) as an example
 Helper scripts to generate FreqTrade config files with new Ethereum wallets:
 
 **Generate full config** (recommended):
+
 ```bash
 python scripts/generate_config.py <config_name>
 # Creates: configs/<name>.json and configs/<name>.secrets.json
 ```
 
 **Generate wallet only**:
+
 ```bash
 python scripts/generate_priv_key.py <output_file>
 # Creates minimal secrets file with new wallet
@@ -378,21 +367,19 @@ open user_data/plot/freqtrade-plot-ETH_USDC_USDC-1h.html
 ./freqtrade-gmx trade --strategy PingpongShort --config configs/pingpong_short_gmx.json --config configs/pingpong_sl_gmx.secrets.json --log-file freqtrade.logs
 ```
 
-#### Using docker 
+#### Using docker
 
 ```sh
 docker compose build --no-cache ichiv2_gmx && docker compose up ichiv2_gmx
 ```
 
-**N.B.** Make sure for better stability use private RPCs & update the `.secrects.json` file and add them there. You can pass multiple RPCs like this 
-
+**N.B.** Make sure for better stability use private RPCs & update the `.secrects.json` file and add them there. You can pass multiple RPCs like this
 
 ```json
   ...
-  "rpcUrl": "https://rpc1.com https://rpc2.com"  
+  "rpcUrl": "https://rpc1.com https://rpc2.com"
   ...
 ```
-
 
 ## Fees
 
@@ -400,7 +387,7 @@ The trading fee to open a position is [`0.04%` or `0.06%`](https://docs.gmx.io/d
 
 If the trade increases the balance of longs and shorts then the fee would be 0.04%, otherwise the fee would be 0.06%.
 
-**N.B.** On top of this fees you have to pay keeper fees as well so that your trades are executed by keepers otherwise you would end up losing gas. This is where the [`executionBuffer`](configs/ichiv2_gmx.json#L57) option comes in handy. You can adjust how much fees you want to pay the keepers. From our testing we have found that if we `executionBuffer` to `2.5` as of 09.02.2026 the trades goes through and which is significantly less than the fees that we pay from GMX web UI. Anything less than that may and will cause issues. If you set the values between `1.5-1.9` you maybe able to send 1 or 2 orders but that is also very rare. What we have seen is that for each type of order the keeper fee is roughly `0.42-0.48`$. 
+**N.B.** On top of this fees you have to pay keeper fees as well so that your trades are executed by keepers otherwise you would end up losing gas. This is where the [`executionBuffer`](configs/ichiv2_gmx.json#L57) option comes in handy. You can adjust how much fees you want to pay the keepers. From our testing we have found that if we `executionBuffer` to `2.5` as of 09.02.2026 the trades goes through and which is significantly less than the fees that we pay from GMX web UI. Anything less than that may and will cause issues. If you set the values between `1.5-1.9` you maybe able to send 1 or 2 orders but that is also very rare. What we have seen is that for each type of order the keeper fee is roughly `0.42-0.48`$.
 
 ## About the monkey patch
 
