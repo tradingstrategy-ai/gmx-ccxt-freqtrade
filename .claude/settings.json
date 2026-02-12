@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:web3-ethereum-defi.tradingstrategy.ai)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)"
     ]
   }
 }
