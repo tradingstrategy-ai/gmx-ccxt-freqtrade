@@ -3,6 +3,13 @@ TIMERANGE ?= 20250101-20251130
 # Verbosity level for freqtrade commands (empty, -v, -vv, or -vvv)
 VERBOSE ?=
 
+# Generate a table of contents for README.md from Markdown headings.
+# Places/updates the TOC above the "# Overview" section.
+toc:
+	python scripts/generate_toc.py
+
+# Download historical market data from GMX for backtesting.
+# Fetches candle data from GMX GraphQL endpoint and stores it locally.
 data:
 	@if [ -z "$(CONTAINER)" ]; then \
 		echo "Error: CONTAINER is not set. Usage: make data CONTAINER=YourContainer [VERBOSE=-v/-vv/-vvv]"; \
@@ -16,6 +23,8 @@ data:
 		--prepend \
 		$(VERBOSE)
 
+# List available trading pairs on the exchange.
+# Defaults to GMX if no EXCHANGE is specified.
 list-pairs:
 	@if [ -z "$(CONTAINER)" ]; then \
 		echo "Error: CONTAINER is not set. Usage: make list-pairs CONTAINER=YourContainer [EXCHANGE=gmx] [VERBOSE=-v/-vv/-vvv]"; \
@@ -27,6 +36,8 @@ list-pairs:
 		--exchange $(or $(EXCHANGE),gmx) \
 		$(VERBOSE)
 
+# Run a strategy backtest against historical data.
+# Requires CONTAINER and STRATEGY; uses TIMEFRAME and TIMERANGE variables.
 backtest:
 	@if [ -z "$(CONTAINER)" ]; then \
 		echo "Error: CONTAINER is not set. Usage: make backtest CONTAINER=YourContainer STRATEGY=YourStrategy [VERBOSE=-v/-vv/-vvv]"; \
@@ -46,6 +57,8 @@ backtest:
 		--cache none \
 		$(VERBOSE)
 
+# Plot strategy entry/exit signals overlaid on price and indicator data.
+# Generates an interactive HTML chart from backtest results.
 plot-dataframe:
 	@if [ -z "$(CONTAINER)" ] || [ -z "$(STRATEGY)" ]; then \
 		echo "Error: CONTAINER and STRATEGY are required. Usage: make plot-dataframe CONTAINER=YourContainer STRATEGY=YourStrategy [PAIRS='BTC/USDT ETH/USDT']"; \
@@ -64,6 +77,8 @@ plot-dataframe:
 		$(if $(INDICATORS1),--indicators1 $(INDICATORS1)) \
 		$(if $(INDICATORS2),--indicators2 $(INDICATORS2))
 
+# Plot the equity curve showing cumulative profit over time.
+# Can use backtest results or a live trading database as the data source.
 plot-profit:
 	@if [ -z "$(CONTAINER)" ] || [ -z "$(STRATEGY)" ]; then \
 		echo "Error: CONTAINER and STRATEGY are required. Usage: make plot-profit CONTAINER=YourContainer STRATEGY=YourStrategy [PAIRS='BTC/USDT ETH/USDT']"; \
@@ -82,6 +97,8 @@ plot-profit:
 		$(if $(AUTO_OPEN),--auto-open) \
 		$(if $(filter DB,$(TRADE_SOURCE)),--db-url sqlite:////freqtrade/db/$(DB) --trade-source DB,--backtest-filename $(if $(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results/$(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results))
 
+# Start live trading with a given strategy via Docker.
+# Requires CONTAINER and STRATEGY; optionally accepts DB and FREQAI_MODEL.
 trade:
 	@if [ -z "$(CONTAINER)" ]; then \
 		echo "Error: CONTAINER is not set. Usage: make trade CONTAINER=YourContainer STRATEGY=YourStrategy [DB=yourdb.sqlite] [FREQAI_MODEL=YourModel] [VERBOSE=-v/-vv/-vvv]"; \
