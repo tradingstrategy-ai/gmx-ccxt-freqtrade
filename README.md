@@ -58,7 +58,7 @@ The example provide a handful of FreqTrade strategy modules and configs to get s
 - **CCXT-compatible interface** to GMX's onchain trading
 - **FreqTrade-compatible** run our trading algorithms on deep GMX liquidity
 - **Backtest** with historical GMX data
-- **[Trading vaults](https://web3-ethereum-defi.tradingstrategy.ai/tutorials/lagoon-gmx)** for pooled asset management on GMX
+- **[Trading vaults](https://web3-ethereum-defi.tradingstrategy.ai/tutorials/lagoon-gmx)** for user-investable trading strategies and copy trading on GMX
 - **DeFi composability** and smart contract integration
 - **[Robustness](https://web3-ethereum-defi.tradingstrategy.ai/tutorials/mev-blocker)**: Arbitrum gas management, MEV blocking and RPC fallback
 
