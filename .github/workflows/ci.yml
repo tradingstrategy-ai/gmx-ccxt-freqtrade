@@ -47,6 +47,16 @@ jobs:
       - name: Verify installation
         run: ./freqtrade-gmx --version
 
+      - name: Set backtest time range
+        id: timerange
+        run: |
+          # GMX historical data API serves ~6 months of 1h candles.
+          # Compute a 5-month window ending yesterday to stay within limits.
+          START=$(date -d '5 months ago' +%Y%m%d)
+          END=$(date -d 'yesterday' +%Y%m%d)
+          echo "range=${START}-${END}" >> "$GITHUB_OUTPUT"
+          echo "Backtest time range: ${START}-${END}"
+
       - name: Download historical data
         run: |
           ./freqtrade-gmx download-data \
@@ -54,7 +64,7 @@ jobs:
             --config configs/secrets.empty.json \
             --exchange gmx \
             --timeframe 1h \
-            --timerange 20250901-20260201
+            --timerange ${{ steps.timerange.outputs.range }}
 
       - name: Run backtest
         run: |
@@ -62,4 +72,4 @@ jobs:
             --config configs/adxmomentum_gmx.json \
             --config configs/secrets.empty.json \
             --strategy ADXMomentum \
-            --timerange 20250901-20260201
+            --timerange ${{ steps.timerange.outputs.range }}
