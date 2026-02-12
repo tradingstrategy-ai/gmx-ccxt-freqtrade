@@ -7,7 +7,7 @@ a decentralised [perpetual futures](https://tradingstrategy.ai/glossary/gmx) exc
 
 The CCXT-compatible adapter is used with [FreqTrade](https://tradingstrategy.ai/glossary/freqtrade), an [algorithmic trading framework](https://tradingstrategy.ai/glossary/algorithmic-trading) for [Python](https://tradingstrategy.ai/glossary/python) to run an example automated trading strategy on GMX.
 
-![alt text](docs/screenshot.png)
+![alt text](docs/image.png)
 
 The example provide a handful of FreqTrade strategy modules and configs to get started.
 
@@ -565,7 +565,7 @@ Then visit http://localhost:8080 - the default username and password we set abov
 
 You should see the UI:
 
-![alt text](docs/screenshot.png)
+![alt text](docs/image.png)
 
 # Stale positions
 
