@@ -68,3 +68,4 @@ freqtrade-develop/
 .venv/
 # vhs tape files
 *.tape
+*.logs
