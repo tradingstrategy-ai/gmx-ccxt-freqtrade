@@ -29,21 +29,22 @@ The example provide a handful of FreqTrade strategy modules and configs to get s
     - [Download Historical Data](#download-historical-data)
     - [Run backtest](#run-backtest)
     - [Equity curve](#equity-curve)
-      - [Entries and exists](#entries-and-exists)
-  - [Live trading](#live-trading)
-    - [Creating a private key and funding](#creating-a-private-key-and-funding)
-    - [RPC provider](#rpc-provider)
-    - [Secrets management](#secrets-management)
-    - [Starting FreqTrade in live trading](#starting-freqtrade-in-live-trading)
+    - [Entries and exists](#entries-and-exists)
+- [Live trading](#live-trading)
+  - [Creating a private key and funding](#creating-a-private-key-and-funding)
+  - [RPC provider](#rpc-provider)
+  - [Secrets management](#secrets-management)
+  - [Starting FreqTrade in live trading](#starting-freqtrade-in-live-trading)
 - [FreqUI](#frequi)
 - [Stale positions](#stale-positions)
 - [Fees and tokens](#fees-and-tokens)
   - [Trading fees](#trading-fees)
   - [Gas and execution buffer](#gas-and-execution-buffer)
 - [How GMX is enabled in CCXT and FreqTrade via monkey patch](#how-gmx-is-enabled-in-ccxt-and-freqtrade-via-monkey-patch)
-  - [Support](#support)
+- [Next steps](#next-steps)
+- [Support](#support)
   - [Social media](#social-media)
-  - [License](#license)
+- [License](#license)
 
 <!-- TOC END -->
 
@@ -205,9 +206,7 @@ For a backtest you need
 - [A FreqTrade config](./configs/) that describes the exchange we connect to
 - Exchange API keys needed to download [historical data](https://tradingstrategy.ai/glossary/historical-market-data) (GMX doesn't need this as APIs are public)
 
-**Note**: As the writing of this, because of GMX's internal limitations, there might not be enough historical data available from GMX historical data REST API endpoint
-to perform meaningful trading or backtesting, as the APIs are limited to 10,000 latest candles only. Also because of said limitations, this section of the tutorial
-may or may not work in the future.
+**Note**: Because of GMX's internal limitations, the GMX historical data REST API only serves approximately 4,320 candles (about 6 months of 1h data). This means you must choose a time range within the last ~6 months for backtesting to work. The exact available range shifts forward over time. If you get `InsufficientHistoricalDataError`, adjust your start date to be more recent.
 
 Here we backtest [ADX momentum strategy](./configs/adxmomentum_gmx.json).
 
@@ -220,8 +219,10 @@ First we need to download a copy of historicalc GMX data we use for the backtest
 FreqTrade provides a command for this.
 This fetches GMX market data from GMX GraphQL endpoint and stores it locally.
 
+Choose a time range within the last ~6 months. For example, if today is February 2026:
+
 ```bash
-BACKTEST_TIME_RANGE=20250701-20251208
+BACKTEST_TIME_RANGE=20250901-20260201
 
 ./freqtrade-gmx download-data \
   --config configs/adxmomentum_gmx.json \
@@ -368,7 +369,7 @@ You can view the equity curve chart of the backtest results with:
 
 ![Indicator plot](./docs/equity-curve.png)
 
-#### Entries and exists
+### Entries and exists
 
 You can view the entries/exits chart of the strategy with.
 This will render the chart and open a new browser window to display it:
@@ -386,14 +387,14 @@ open user_data/plot/freqtrade-plot-ETH_USDC_USDC-1h.html
 
 ![Indicator plot](./docs/plot-indicators.png)
 
-## Live trading
+# Live trading
 
 For live trading you are going to need
 
 - USDC on Arbitrum (native variant) as collateral.
 - ETH for gas fees
 
-### Creating a private key and funding
+## Creating a private key and funding
 
 To to start trading we need a funded wallet on Arbitrum.
 
@@ -421,7 +422,7 @@ export GMX_PRIVATE_KEY=<...>
 
 The private key must be `0x` prefixed.
 
-### RPC provider
+## RPC provider
 
 We need to use multiple RPC providers with Arbitrum, with the Arbitrum specific sequencer being the [MEV-resistant centralised sequencer](https://ethereum.stackexchange.com/questions/162207/how-to-broadcast-a-transaction-directly-to-a-centralised-sequencer-arbitrum-opt) for broadcasting our transactions.
 
@@ -439,7 +440,7 @@ Some providers to try
 - Alchemy
 - Quicknode
 
-### Secrets management
+## Secrets management
 
 We pass secrets to FreqTrade via a separate config file that lives outside the repository, so we minimise the risk of exposing our secrets. We use [.config directory in user home](https://unix.stackexchange.com/questions/126603/is-there-a-standards-specified-location-for-user-configuration-files).
 
@@ -467,7 +468,7 @@ echo "Secret config is:"
 cat ~/.config/freqtrade.secrets.json
 ```
 
-### Starting FreqTrade in live trading
+## Starting FreqTrade in live trading
 
 We do a trading test using a ping pong strategy that opens and closes positions on both long and short side to see the trading works. Ping pong opens a long position in one cycle (candle) and closes it in the next. [See Pingpong.py here](./user_data/strategies/pingpong.py). Ping pong uses 5m candles, so it opens a position in 5 minutes and then closes it in 5 minutes.
 
@@ -592,7 +593,13 @@ The monkeypatch (`python -m eth_defi.gmx.freqtrade.patched_entrypoint`):
 
 See [docs/architecture.md](docs/architecture.md) for technical details.
 
-## Support
+# Next steps
+
+There is a simple [ADX](https://tradingstrategy.ai/glossary/average-directional-index-adx) based [trading strategy example](./user_data/strategies/ADXMomentum.py). It is a [momentum](https://tradingstrategy.ai/glossary/momentum) strategy with modest profit and risk.
+
+It's a good starting point to start working on a real strategy.
+
+# Support
 
 - [Join Discord for any questions](https://tradingstrategy.ai/community).
 
@@ -603,7 +610,7 @@ See [docs/architecture.md](docs/architecture.md) for technical details.
 - [Follow on LinkedIn](https://www.linkedin.com/company/trading-strategy/)
 - [Watch tutorials on YouTube](https://www.youtube.com/@tradingstrategyprotocol)
 
-## License
+# License
 
 MIT.
 
