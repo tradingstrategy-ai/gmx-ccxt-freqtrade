@@ -1,3 +1,5 @@
+[![Tests](https://github.com/tradingstrategy-ai/gmx-ccxt-freqtrade/actions/workflows/ci.yml/badge.svg)](https://github.com/tradingstrategy-ai/gmx-ccxt-freqtrade/actions/workflows/ci.yml)
+
 # GMX, CCXT and FreqTrade algorithmic trading tutorial
 
 This example repository shows how to use [CCXT](https://tradingstrategy.ai/glossary/ccxt)-compatible exchange adapter for [GMX](https://tradingstrategy.ai/glossary/gmx),
@@ -10,6 +12,7 @@ The CCXT-compatible adapter is used with [FreqTrade](https://tradingstrategy.ai/
 The example provide a handful of FreqTrade strategy modules and configs to get started.
 
 <!-- TOC START -->
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -26,10 +29,10 @@ The example provide a handful of FreqTrade strategy modules and configs to get s
   - [Install CCXT adapter for GMX](#install-ccxt-adapter-for-gmx)
   - [Verify FreqTrade installation](#verify-freqtrade-installation)
 - [Backtesting](#backtesting)
-    - [Download Historical Data](#download-historical-data)
-    - [Run backtest](#run-backtest)
-    - [Equity curve](#equity-curve)
-    - [Entries and exists](#entries-and-exists)
+  - [Download Historical Data](#download-historical-data)
+  - [Run backtest](#run-backtest)
+  - [Equity curve](#equity-curve)
+  - [Entries and exists](#entries-and-exists)
 - [Live trading](#live-trading)
   - [Creating a private key and funding](#creating-a-private-key-and-funding)
   - [RPC provider](#rpc-provider)
