@@ -26,6 +26,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-dev
 
+      - name: Clone freqtrade
+        run: git clone --depth 1 --branch stable https://github.com/freqtrade/freqtrade.git freqtrade-develop
+
       - name: Create virtual environment
         run: python -m venv .venv
 
