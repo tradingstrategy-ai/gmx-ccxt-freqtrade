@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-dev
+
+      - name: Create virtual environment
+        run: python -m venv .venv
+
+      - name: Install freqtrade dependencies
+        run: |
+          source .venv/bin/activate
+          pip install -r freqtrade-develop/requirements.txt
+
+      - name: Install freqtrade
+        run: |
+          source .venv/bin/activate
+          pip install -e freqtrade-develop/
+
+      - name: Install GMX CCXT adapter
+        run: |
+          source .venv/bin/activate
+          pip install "web3-ethereum-defi[data,ccxt]"
+
+      - name: Verify installation
+        run: ./freqtrade-gmx --version
+
+      - name: Download historical data
+        run: |
+          ./freqtrade-gmx download-data \
+            --config configs/adxmomentum_gmx.json \
+            --config configs/secrets.empty.json \
+            --exchange gmx \
+            --timeframe 1h \
+            --timerange 20250901-20260201
+
+      - name: Run backtest
+        run: |
+          ./freqtrade-gmx backtesting \
+            --config configs/adxmomentum_gmx.json \
+            --config configs/secrets.empty.json \
+            --strategy ADXMomentum \
+            --timerange 20250901-20260201
