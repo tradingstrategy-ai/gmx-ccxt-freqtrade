@@ -14,24 +14,11 @@ This integration bridges that gap. By wrapping GMX's onchain trading behind a fa
 
 ## What is GMX?
 
-[GMX](https://tradingstrategy.ai/glossary/gmx) is a decentralised spot and perpetual exchange that supports low price impact trades with up to 100x [leverage](https://tradingstrategy.ai/glossary/leverage). It routes orders against its own [AMM](https://tradingstrategy.ai/glossary/amm) liquidity pools (GM Pools) and uses Chainlink Data Stream [oracles](https://tradingstrategy.ai/glossary/oracle) for pricing, ensuring fair execution without traditional [order book](https://tradingstrategy.ai/glossary/order-book) manipulation risks.
+[GMX](https://tradingstrategy.ai/glossary/gmx) is the original onchain perpetual futures exchange — one of DeFi's OG perp DEXs. It is a decentralised spot and perpetual exchange that supports low price impact trades with up to 100x [leverage](https://tradingstrategy.ai/glossary/leverage). It routes orders against its own [AMM](https://tradingstrategy.ai/glossary/amm) liquidity pools (GM Pools) and uses Chainlink Data Stream [oracles](https://tradingstrategy.ai/glossary/oracle) for pricing, ensuring fair execution without traditional [order book](https://tradingstrategy.ai/glossary/order-book) manipulation risks.
 
 GMX is live on Arbitrum, Avalanche, and Botanix, offering 90+ perpetual markets and 23 swap markets.
 
-### Current GMX innovations
-
-GMX has been shipping aggressively through 2025–2026:
-
-- **Gasless transactions**: Traders sign wallet messages instead of paying gas directly. Transactions are broadcast via keeper networks like Gelato, creating a frictionless trading experience.
-- **GMX Multichain**: Users can trade GMX's full range of perpetuals directly from Ethereum, Base, and BNB Chain, with trade settlement and execution in under 1 second across chains.
-- **Express and One-Click trading**: Off-chain message signing and auto-signed local execution modes eliminate wallet popups entirely.
-- **Capped price impact**: Net [price impact](https://tradingstrategy.ai/glossary/price-impact) is calculated and charged at position closure rather than opening, enabling virtually zero price impact for highly liquid markets like BTC and ETH.
-- **TWAP orders**: [Time-weighted average price](https://tradingstrategy.ai/glossary/twap) orders for splitting large trades across time.
-
-On the roadmap (v2.3):
-
-- **Cross-collateral**: All positions share collateral — positive PnL from existing positions can be used as margin for others, boosting capital efficiency.
-- **Market aggregation**: Similar perp markets unified under single groups (e.g., ETH/USD), reducing complexity and consolidating liquidity.
+GMX has been shipping aggressively through 2025–2026. Gasless transactions let traders sign wallet messages instead of paying gas directly, with transactions broadcast via keeper networks like Gelato. GMX Multichain enables trading the full range of perpetuals directly from Ethereum, Base, and BNB Chain, with settlement and execution in under 1 second across chains. Capped [price impact](https://tradingstrategy.ai/glossary/price-impact) is calculated and charged at position closure rather than opening, enabling virtually zero price impact for highly liquid markets like BTC and ETH. [Time-weighted average price](https://tradingstrategy.ai/glossary/twap) (TWAP) orders allow splitting large trades across time. On the v2.3 roadmap, cross-collateral will let all positions share collateral — positive PnL from existing positions used as margin for others, boosting capital efficiency — and market aggregation will unify similar perp markets under single groups (e.g., ETH/USD), reducing complexity and consolidating liquidity.
 
 ## What is Trading Strategy?
 
