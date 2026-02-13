@@ -7,6 +7,8 @@ a decentralised [perpetual futures](https://tradingstrategy.ai/glossary/gmx) exc
 
 The CCXT-compatible adapter is used with [FreqTrade](https://tradingstrategy.ai/glossary/freqtrade), an [algorithmic trading framework](https://tradingstrategy.ai/glossary/algorithmic-trading) for [Python](https://tradingstrategy.ai/glossary/python) to run an example automated trading strategy on GMX.
 
+This project is funded by an [Arbitrum DAO grant](https://tradingstrategy.ai/blog/trading-strategy-receives-arbitrum-foundation-grant-to-bring-ccxt-support-to-gmx).
+
 ![alt text](docs/image.png)
 
 The example provide a handful of FreqTrade strategy modules and configs to get started.

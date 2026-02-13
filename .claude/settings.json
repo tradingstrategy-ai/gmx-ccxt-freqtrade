@@ -4,7 +4,13 @@
       "Bash(git commit:*)",
       "WebFetch(domain:web3-ethereum-defi.tradingstrategy.ai)",
       "Bash(git checkout:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "WebFetch(domain:tradingstrategy.ai)",
+      "WebFetch(domain:app.gmx.io)",
+      "WebFetch(domain:docs.google.com)",
+      "Bash(git log:*)",
+      "Bash(grep:*)",
+      "Bash(wc:*)"
     ]
   }
 }
