@@ -141,3 +141,27 @@ trade:
 		$(if $(FREQAI_MODEL),--freqaimodel $(FREQAI_MODEL)) \
 		$(if $(DB),--db-url sqlite:////freqtrade/db/$(DB)) \
 		$(VERBOSE)
+
+# ==============================================================================
+# GMX data collection (uses gmx-data-collector submodule)
+# ==============================================================================
+# Collects candles + funding from GMX, exports to user_data/data/gmx/futures/
+# Requires: source .env && make gmx-data (HYPERSYNC_API_TOKEN, JSON_RPC_ARBITRUM)
+# ==============================================================================
+
+GMX_COLLECTOR_DIR ?= ./gmx-data-collector
+GMX_FEATHER_DIR ?= $(abspath ./user_data/data)
+
+# Ensure submodule is initialized
+gmx-data-collector-init:
+	git submodule update --init --recursive gmx-data-collector
+
+# Full GMX data pipeline: collect + export into user_data/data
+# Invokes CLI directly so it works regardless of submodule Makefile version
+gmx-data: gmx-data-collector-init
+	@echo "Running GMX data collection and export..."
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli collect --update --output-dir ./data --concurrency 5
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet --resume
+	@echo "Exporting to Freqtrade format..."
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
+	@echo "GMX data ready in user_data/data/gmx/futures/"
