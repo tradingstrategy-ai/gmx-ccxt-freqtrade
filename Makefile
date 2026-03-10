@@ -151,6 +151,7 @@ trade:
 
 GMX_COLLECTOR_DIR ?= ./gmx-data-collector
 GMX_FEATHER_DIR ?= $(abspath ./user_data/data)
+CONCURRENCY ?= 5
 
 # Ensure submodule is initialized
 gmx-data-collector-init:
@@ -160,7 +161,7 @@ gmx-data-collector-init:
 # Invokes CLI directly so it works regardless of submodule Makefile version
 gmx-data: gmx-data-collector-init
 	@echo "Running GMX data collection and export..."
-	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli collect --update --output-dir ./data --concurrency 5
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli collect --update --output-dir ./data --concurrency $(CONCURRENCY)
 	@cd $(GMX_COLLECTOR_DIR) && poetry run python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet --resume
 	@echo "Exporting to Freqtrade format..."
 	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
