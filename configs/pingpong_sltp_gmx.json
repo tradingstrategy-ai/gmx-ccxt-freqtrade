@@ -1,0 +1,151 @@
+{
+    "$schema": "https://schema.freqtrade.io/schema.json",
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+    "max_open_trades": 1,
+    "stake_currency": "USDC",
+    "stake_amount": 3,
+    "tradable_balance_ratio": 0.99,
+    "fiat_display_currency": "USD",
+    "dry_run": false,
+    "dry_run_wallet": 100,
+    "timeframe": "5m",
+    // cancel_open_orders_on_exit ensures any pending SL/TP exchange orders are
+    // cancelled cleanly if the bot is stopped before the trade closes.
+    "cancel_open_orders_on_exit": true,
+    "futures_funding_rate": 0,
+    "unfilledtimeout": {
+        "entry": 10,
+        "exit": 10,
+        "exit_timeout_count": 0,
+        "unit": "minutes"
+    },
+    "entry_pricing": {
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1,
+        "price_last_balance": 0.0,
+        "check_depth_of_market": {
+            "enabled": false,
+            "bids_to_ask_delta": 1
+        }
+    },
+    "exit_pricing": {
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1
+    },
+    "order_types": {
+        "entry": "market",
+        "exit": "market",
+        "emergency_exit": "market",
+        "stoploss": "market",
+        // KEY: stoploss_on_exchange=true causes freqtrade to place a real
+        // stop-loss order on GMX immediately after the trade opens.
+        // When the trade exits via take_profit or time fallback (custom_exit),
+        // freqtrade will call exchange.cancel_order() on this pending SL order.
+        // This is the cancel-order flow being tested.
+        "stoploss_on_exchange": true,
+        // Poll the exchange every 60s to confirm the SL order is still active
+        "stoploss_on_exchange_interval": 60,
+        // Limit-ratio: place the stop order at 99% of the stop price
+        // (leaves a small buffer for GMX)
+        "stoploss_on_exchange_limit_ratio": 0.99,
+        "entry_timeout_unfilled_order_method": "market",
+        "exit_timeout_unfilled_order_method": "market"
+    },
+    "exchange": {
+        "name": "gmx",
+        "ccxt_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500,
+            "executionBuffer": 2.2
+        },
+        "ccxt_async_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500
+        },
+        "pair_whitelist": [
+            // Single liquid pair for focused cancel-order testing.
+            // Uncomment others to test multiple pairs.
+            "SOL/USDC:USDC"
+            // "ETH/USDC:USDC",
+            // "BTC/USDC:USDC"
+        ]
+    },
+    "pairlists": [
+        {
+            "method": "StaticPairList"
+        }
+    ],
+    "bot_name": "pingpong_sltp_gmx",
+    "initial_state": "running",
+    "force_entry_enable": false,
+    "experimental": {
+        "block_bad_exchanges": false
+    },
+    "internals": {
+        "process_throttle_secs": 15
+    },
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8081,
+        "verbosity": "error",
+        "enable_openapi": true
+    },
+    "telegram": {
+        "enabled": true,
+        "token": "",
+        "chat_id": "",
+        "allow_custom_messages": true,
+        "notification_settings": {
+            "status": "silent",
+            "warning": "on",
+            "startup": "off",
+            "entry": "silent",
+            "entry_fill": "on",
+            "entry_cancel": "on",
+            "exit": {
+                "roi": "silent",
+                "emergency_exit": "on",
+                "force_exit": "on",
+                "exit_signal": "silent",
+                "trailing_stop_loss": "on",
+                // Notify when SL order on exchange fires
+                "stop_loss": "on",
+                "stoploss_on_exchange": "on",
+                // Notify on all custom_exit reasons (take_profit_1pct, time_exit_5min)
+                "custom_exit": "on",
+                "partial_exit": "on",
+                "*": "off"
+            },
+            "exit_cancel": "on",
+            "exit_fill": "on",
+            "protection_trigger": "off",
+            "protection_trigger_global": "on",
+            "strategy_msg": "off",
+            "show_candle": "off"
+        },
+        "reload": true,
+        "balance_dust_level": 0.01,
+        "keyboard": [
+            [
+                "/daily",
+                "/profit",
+                "/balance",
+                "/stopentry"
+            ],
+            [
+                "/status",
+                "/status table",
+                "/performance"
+            ],
+            [
+                "/count",
+                "/logs",
+                "/help"
+            ]
+        ]
+    }
+}

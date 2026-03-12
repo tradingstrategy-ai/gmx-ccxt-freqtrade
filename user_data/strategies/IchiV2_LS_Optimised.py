@@ -63,34 +63,27 @@ class IchiV2_LS_Optimised(IStrategy):
     INTERFACE_VERSION = 3
     can_short = True
 
-    # Hyperopt-optimised parameters
+    # Base parameters — optimised values are loaded from IchiV2_LS_Optimised.json
     buy_params = {
-        'retest_lookback_window': 65,
+        'retest_lookback_window': 24,
     }
 
-    sell_params = {
-        'atr_stop_multiplier': 1.5,
-        'atr_timeperiod': 13,
-        'price_velocity_window': 10,
-        'rsi_tp_threshold': 20,
-        'use_rsi_exit': 1,
-        'velocity_tp_threshold': -0.11,
-    }
+    sell_params = {}
 
     # Short entry parameters
-    retest_lookback_window = IntParameter(4, 96, default=65, space='buy', optimize=False)
+    retest_lookback_window = IntParameter(4, 96, default=24, space='buy', optimize=False)
 
     # Short exit parameters
-    rsi_tp_threshold = IntParameter(15, 35, default=20, space='sell', optimize=False)
+    rsi_tp_threshold = IntParameter(15, 35, default=25, space='sell', optimize=False)
     use_rsi_exit = IntParameter(0, 1, default=1, space='sell', optimize=False)
 
     # ATR stop loss for shorts
-    atr_stop_multiplier = DecimalParameter(1.5, 4.0, default=1.5, decimals=1, space='sell', optimize=False)
-    atr_timeperiod = IntParameter(2, 20, default=13, space='sell', optimize=False)
+    atr_stop_multiplier = DecimalParameter(1.5, 4.0, default=3.5, decimals=1, space='sell', optimize=False)
+    atr_timeperiod = IntParameter(2, 20, default=14, space='sell', optimize=False)
 
     # Price velocity window
-    velocity_tp_threshold = DecimalParameter(-0.13, -0.06, default=-0.11, decimals=2, space='sell', optimize=False)
-    price_velocity_window = IntParameter(4, 20, default=10, space='sell', optimize=False)
+    velocity_tp_threshold = DecimalParameter(-0.13, -0.06, default=-0.1, decimals=2, space='sell', optimize=False)
+    price_velocity_window = IntParameter(4, 20, default=20, space='sell', optimize=False)
 
     custom_info = {}
 

@@ -1,0 +1,143 @@
+{
+    "$schema": "https://schema.freqtrade.io/schema.json",
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+    "max_open_trades": 2,
+    "stake_currency": "USDC",
+    "stake_amount": 3,
+    "tradable_balance_ratio": 0.99,
+    "fiat_display_currency": "USD",
+    "dry_run": false,
+    "dry_run_wallet": 100,
+    "timeframe": "1h",
+    "cancel_open_orders_on_exit": false,
+    "futures_funding_rate": 0,
+    "unfilledtimeout": {
+        "entry": 10,
+        "exit": 10,
+        "exit_timeout_count": 0,
+        "unit": "minutes"
+    },
+    "entry_pricing": {
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1,
+        "price_last_balance": 0.0,
+        "check_depth_of_market": {
+            "enabled": false,
+            "bids_to_ask_delta": 1
+        }
+    },
+    "exit_pricing":{
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1
+    },
+    "order_types": {
+        "entry": "market",
+        "exit": "market",
+        "emergency_exit": "market",
+        "stoploss": "market",
+        "stoploss_on_exchange": false,
+        "stoploss_on_exchange_interval": 60,
+        "stoploss_on_exchange_limit_ratio": 0.99,
+        "entry_timeout_unfilled_order_method": "market",
+        "exit_timeout_unfilled_order_method": "market"
+    },
+    "exchange": {
+        "name": "gmx",
+        "ccxt_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500,
+            "executionBuffer": 2.2,
+            "options": {
+                "vaultAddress": "0x4f6C246a0959712CCc5A49fDd8E1Cf8A2d827369"
+            }
+        },
+        "ccxt_async_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500
+        },
+        "lagoon_forward_eth": true,
+        "lagoon_gas_buffer": 500000,
+        "lagoon_auto_approve": true,
+        "pair_whitelist": [
+            // "BTC/USDC:USDC",
+            // "SOL/USDC:USDC",
+            // "DOGE/USDC:USDC",
+            "0G/USDC:USDC"
+        ]
+    },
+    "pairlists": [
+        {
+            "method": "StaticPairList"
+        }
+    ],
+    "bot_name": "adx_momentum_gmx",
+    "initial_state": "running",
+    "force_entry_enable": false,
+    "experimental": {
+        "block_bad_exchanges": false
+    },
+    "internals": {
+        "process_throttle_secs": 15
+    },
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8080,
+        "verbosity": "error",
+        "enable_openapi": true
+    },
+    "telegram": {
+        "enabled": true,
+        "token": "",
+        "chat_id": "",
+        "allow_custom_messages": true,
+        "notification_settings": {
+            "status": "silent",
+            "warning": "on",
+            "startup": "off",
+            "entry": "silent",
+            "entry_fill": "on",
+            "entry_cancel": "silent",
+            "exit": {
+                "roi": "silent",
+                "emergency_exit": "on",
+                "force_exit": "on",
+                "exit_signal": "silent",
+                "trailing_stop_loss": "on",
+                "stop_loss": "on",
+                "stoploss_on_exchange": "on",
+                "custom_exit": "on",
+                "partial_exit": "on",
+                "*": "off"
+            },
+            "exit_cancel": "on",
+            "exit_fill": "on",
+            "protection_trigger": "off",
+            "protection_trigger_global": "on",
+            "strategy_msg": "off",
+            "show_candle": "off"
+        },
+        "reload": true,
+        "balance_dust_level": 0.01,
+        "keyboard": [
+            [
+                "/daily",
+                "/profit",
+                "/balance"
+            ],
+            [
+                "/status",
+                "/status table",
+                "/performance"
+            ],
+            [
+                "/count",
+                "/logs",
+                "/help"
+            ]
+        ]
+    }
+}

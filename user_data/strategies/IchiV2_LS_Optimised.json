@@ -1,0 +1,33 @@
+{
+  "strategy_name": "IchiV2_LS_Optimised",
+  "params": {
+    "roi": {
+      "0": 10.0
+    },
+    "stoploss": {
+      "stoploss": -0.129
+    },
+    "trailing": {
+      "trailing_stop": false,
+      "trailing_stop_positive": null,
+      "trailing_stop_positive_offset": null,
+      "trailing_only_offset_is_reached": false
+    },
+    "max_open_trades": {
+      "max_open_trades": 10
+    },
+    "buy": {
+      "retest_lookback_window": 65
+    },
+    "sell": {
+      "atr_stop_multiplier": 1.5,
+      "atr_timeperiod": 13,
+      "price_velocity_window": 10,
+      "rsi_tp_threshold": 20,
+      "use_rsi_exit": 1,
+      "velocity_tp_threshold": -0.11
+    }
+  },
+  "ft_stratparam_v": 1,
+  "export_time": "2026-03-12 06:44:36.295392+00:00"
+}
