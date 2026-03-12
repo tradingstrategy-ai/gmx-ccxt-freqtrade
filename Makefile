@@ -97,6 +97,31 @@ plot-profit:
 		$(if $(AUTO_OPEN),--auto-open) \
 		$(if $(filter DB,$(TRADE_SOURCE)),--db-url sqlite:////freqtrade/db/$(DB) --trade-source DB,--backtest-filename $(if $(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results/$(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results))
 
+# Run hyperparameter optimization on a strategy.
+# Requires CONTAINER and STRATEGY; uses TIMEFRAME, TIMERANGE, EPOCHS, SPACES, and LOSS variables.
+EPOCHS ?= 500
+SPACES ?= buy sell
+LOSS ?= SharpeHyperOptLossDaily
+hyperopt:
+	@if [ -z "$(CONTAINER)" ]; then \
+		echo "Error: CONTAINER is not set. Usage: make hyperopt CONTAINER=YourContainer STRATEGY=YourStrategy [EPOCHS=500] [SPACES='buy sell'] [LOSS=SharpeHyperOptLossDaily] [VERBOSE=-v/-vv/-vvv]"; \
+		exit 1; \
+	fi
+	@if [ -z "$(STRATEGY)" ]; then \
+		echo "Error: STRATEGY is not set. Usage: make hyperopt CONTAINER=YourContainer STRATEGY=YourStrategy [EPOCHS=500] [SPACES='buy sell'] [LOSS=SharpeHyperOptLossDaily] [VERBOSE=-v/-vv/-vvv]"; \
+		exit 1; \
+	fi
+	docker compose run --rm $(CONTAINER) hyperopt \
+		--config /freqtrade/configs/$(CONTAINER).json \
+		--config /freqtrade/configs/$(CONTAINER).secrets.json \
+		--strategy-path /freqtrade/strategies \
+		--strategy $(STRATEGY) \
+		--hyperopt-loss $(LOSS) \
+		--spaces $(SPACES) \
+		--epochs $(EPOCHS) \
+		--timerange $(TIMERANGE) \
+		$(VERBOSE)
+
 # Start live trading with a given strategy via Docker.
 # Requires CONTAINER and STRATEGY; optionally accepts DB and FREQAI_MODEL.
 trade:
