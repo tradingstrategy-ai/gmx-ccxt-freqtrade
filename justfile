@@ -18,7 +18,6 @@ toc:
 
 # Download historical market data from GMX for backtesting.
 data config *args:
-    export JSON_RPC_ARBITRUM=$ARBITRUM_CHAIN_JSON_RPC && \
     ./freqtrade-gmx download-data \
         --config configs/{{config}}.json \
         --config configs/{{config}}.secrets.json \
@@ -29,7 +28,6 @@ data config *args:
 
 # List available trading pairs on the exchange.
 list-pairs config exchange="gmx" *args:
-    export JSON_RPC_ARBITRUM=$ARBITRUM_CHAIN_JSON_RPC && \
     ./freqtrade-gmx list-pairs \
         --config configs/{{config}}.json \
         --config configs/{{config}}.secrets.json \
@@ -38,7 +36,6 @@ list-pairs config exchange="gmx" *args:
 
 # Run a strategy backtest against historical data.
 backtest config strategy *args:
-    export JSON_RPC_ARBITRUM=$ARBITRUM_CHAIN_JSON_RPC && \
     ./freqtrade-gmx backtesting \
         --config configs/{{config}}.json \
         --config configs/{{config}}.secrets.json \
@@ -51,7 +48,6 @@ backtest config strategy *args:
 
 # Run hyperparameter optimization on a strategy.
 hyperopt config strategy *args:
-    export JSON_RPC_ARBITRUM=$ARBITRUM_CHAIN_JSON_RPC && \
     ./freqtrade-gmx hyperopt \
         --config configs/{{config}}.json \
         --config configs/{{config}}.secrets.json \
@@ -66,7 +62,6 @@ hyperopt config strategy *args:
 
 # Plot strategy entry/exit signals overlaid on price and indicator data.
 plot-dataframe config strategy pairs="" backtest_filename="" *args:
-    export JSON_RPC_ARBITRUM=$ARBITRUM_CHAIN_JSON_RPC && \
     ./freqtrade-gmx plot-dataframe \
         --config configs/{{config}}.json \
         --config configs/{{config}}.secrets.json \
@@ -80,7 +75,6 @@ plot-dataframe config strategy pairs="" backtest_filename="" *args:
 
 # Plot the equity curve showing cumulative profit over time.
 plot-profit config strategy pairs="" backtest_filename="" trade_source="" db="" *args:
-    export JSON_RPC_ARBITRUM=$ARBITRUM_CHAIN_JSON_RPC && \
     ./freqtrade-gmx plot-profit \
         --config configs/{{config}}.json \
         --config configs/{{config}}.secrets.json \
@@ -94,7 +88,6 @@ plot-profit config strategy pairs="" backtest_filename="" trade_source="" db="" 
 
 # Start live trading with a given strategy.
 trade config strategy db="" freqai_model="" *args:
-    export JSON_RPC_ARBITRUM=$ARBITRUM_CHAIN_JSON_RPC && \
     ./freqtrade-gmx trade \
         --config configs/{{config}}.json \
         --config configs/{{config}}.secrets.json \

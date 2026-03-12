@@ -1,12 +1,12 @@
 # Justfile usage guide
 
-Local (non-Docker) task runner using the `./freqtrade-gmx` wrapper script. All recipes require `$ARBITRUM_CHAIN_JSON_RPC` to be set in your environment.
+Local (non-Docker) task runner using the `./freqtrade-gmx` wrapper script. RPC configuration is loaded from the secrets config file (`configs/<config>.secrets.json`).
 
 ## Prerequisites
 
 - `just` command-line tool ([install guide](https://github.com/casey/just#installation))
 - `./freqtrade-gmx` wrapper script (activates venv and runs patched freqtrade entrypoint)
-- `$ARBITRUM_CHAIN_JSON_RPC` environment variable pointing to an Arbitrum RPC endpoint
+- A secrets config file (`configs/<config>.secrets.json`) with your Arbitrum RPC endpoint
 
 ## Variables
 

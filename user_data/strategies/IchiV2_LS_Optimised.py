@@ -25,15 +25,18 @@ class IchiV2_LS_Optimised(IStrategy):
     Dual long/short Ichimoku strategy on 1h timeframe.
     Parameters optimised via SharpeHyperOptLossDaily on 28 chainlink pairs.
 
-    Optimised results (100 epochs):
-    - 2624 trades, 715W/0D/1909L (27.3% win rate)
-    - Avg profit 0.77%, total profit 508.62%
-    - Avg duration 1 day 19:24
+    Optimised results (100 epochs, 28 chainlink pairs, all available data):
+    - 2522 trades, 679W/0D/1843L (26.9% win rate)
+    - Avg profit 0.80%, total profit 496.45%
+    - Avg duration 2 days 2:57
+    - Objective: -1.65660
 
     Key optimisation findings:
-    - Wider lookback window (54 vs 24) for short entries
+    - Wider lookback window (65 vs 24) for short entries
     - Much tighter ATR stop (1.5x vs 3.5x) for shorts
-    - Faster velocity detection (11 vs 20 candle window)
+    - Shorter ATR period (13 vs 14) for more responsive stops
+    - Faster velocity detection (10 vs 20 candle window)
+    - Stricter RSI threshold (20 vs 25) for short exits
 
     Long entries (checked at 4h boundary):
     - 4h close crosses above senkou_a_4h
@@ -47,12 +50,12 @@ class IchiV2_LS_Optimised(IStrategy):
 
     Short entries (checked on any 1h candle):
     - Cloud is bearish (senkou_a < senkou_b)
-    - Price retested senkou_b (high >= senkou_b) within 54-candle lookback
+    - Price retested senkou_b (high >= senkou_b) within 65-candle lookback
     - Current price breaks down below senkou_b
 
     Short exits:
-    - RSI 4h oversold (< 27)
-    - OR price velocity exhaustion (< -12%)
+    - RSI 4h oversold (< 20)
+    - OR price velocity exhaustion (< -11%)
     - Cloud flip to bullish
     - ATR-based stop loss (1.5x ATR from entry, locked at entry)
     """
@@ -62,32 +65,32 @@ class IchiV2_LS_Optimised(IStrategy):
 
     # Hyperopt-optimised parameters
     buy_params = {
-        'retest_lookback_window': 54,
+        'retest_lookback_window': 65,
     }
 
     sell_params = {
         'atr_stop_multiplier': 1.5,
-        'atr_timeperiod': 20,
-        'price_velocity_window': 11,
-        'rsi_tp_threshold': 27,
+        'atr_timeperiod': 13,
+        'price_velocity_window': 10,
+        'rsi_tp_threshold': 20,
         'use_rsi_exit': 1,
-        'velocity_tp_threshold': -0.12,
+        'velocity_tp_threshold': -0.11,
     }
 
     # Short entry parameters
-    retest_lookback_window = IntParameter(4, 96, default=54, space='buy', optimize=False)
+    retest_lookback_window = IntParameter(4, 96, default=65, space='buy', optimize=False)
 
     # Short exit parameters
-    rsi_tp_threshold = IntParameter(15, 35, default=27, space='sell', optimize=False)
+    rsi_tp_threshold = IntParameter(15, 35, default=20, space='sell', optimize=False)
     use_rsi_exit = IntParameter(0, 1, default=1, space='sell', optimize=False)
 
     # ATR stop loss for shorts
     atr_stop_multiplier = DecimalParameter(1.5, 4.0, default=1.5, decimals=1, space='sell', optimize=False)
-    atr_timeperiod = IntParameter(2, 20, default=20, space='sell', optimize=False)
+    atr_timeperiod = IntParameter(2, 20, default=13, space='sell', optimize=False)
 
     # Price velocity window
-    velocity_tp_threshold = DecimalParameter(-0.13, -0.06, default=-0.12, decimals=2, space='sell', optimize=False)
-    price_velocity_window = IntParameter(4, 20, default=11, space='sell', optimize=False)
+    velocity_tp_threshold = DecimalParameter(-0.13, -0.06, default=-0.11, decimals=2, space='sell', optimize=False)
+    price_velocity_window = IntParameter(4, 20, default=10, space='sell', optimize=False)
 
     custom_info = {}
 
