@@ -16,6 +16,17 @@ jobs := "-1"
 toc:
     python scripts/generate_toc.py
 
+# Download ALL GMX data: GMX API + CEX supplement + fix mark/index + clean /tmp.
+# This is the single command to run when you need fresh or complete data.
+# Pass a timerange to limit history, e.g.: just fetch-all-data 20230101-
+fetch-all-data timerange="20230101-":
+    bash scripts/fetch_all_gmx_data.sh {{timerange}}
+
+# Fix GMX data type files only (synthesise missing + refresh stale mark/index).
+# Run after any manual data edits or if backtest shows 0 trades for some pairs.
+fix-gmx-data:
+    python3 scripts/fix_gmx_data_types.py
+
 # Download historical market data from GMX for backtesting.
 data config *args:
     ./freqtrade-gmx download-data \

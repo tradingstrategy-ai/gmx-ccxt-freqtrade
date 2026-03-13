@@ -100,42 +100,15 @@ run_download "config_okx_gmx_missing.json" "OKX (OKB, OM)"
 
 copy_rename "all exchanges"
 
-# ── Step 4b: Synthesize missing mark and index files ──────────────────────
-# CEX downloads produce mark files, but GMXAPI-only tokens (e.g. APT, BOME,
-# KTA, WELL) have no CEX mark source. On GMX (oracle DEX), futures ≈ mark ≈
-# index, so we copy: futures→mark (where missing), mark→index (where missing).
+# ── Step 4b: Synthesize missing and refresh stale mark/index files ────────
+# Delegates to fix_gmx_data_types.py which handles:
+#   - missing mark (GMXAPI-only tokens with no CEX listing)
+#   - missing index (CEX exchanges don't provide index candles)
+#   - stale mark/index (CEX downloads only provide 1h mark; 4h/1d become
+#     stale after a re-download with a longer timerange)
 
-echo ">>> Synthesizing missing mark/index files ..."
-python3 - "$GMX_DIR" <<'PYEOF'
-import sys, shutil, os
-gmx = sys.argv[1]
-files = set(os.listdir(gmx))
-
-synthesized = 0
-# futures → mark (for GMXAPI-only tokens with no mark file)
-for f in list(files):
-    if "-futures.feather" not in f or "_USDC_USDC-" not in f:
-        continue
-    mark_f = f.replace("-futures.feather", "-mark.feather")
-    if mark_f not in files:
-        shutil.copy2(os.path.join(gmx, f), os.path.join(gmx, mark_f))
-        print(f"  (synth) {f}  →  {mark_f}")
-        files.add(mark_f)
-        synthesized += 1
-
-# mark → index (for all tokens; CEX exchanges don't provide index candles)
-for f in list(files):
-    if "-mark.feather" not in f or "_USDC_USDC-" not in f:
-        continue
-    index_f = f.replace("-mark.feather", "-index.feather")
-    if index_f not in files:
-        shutil.copy2(os.path.join(gmx, f), os.path.join(gmx, index_f))
-        print(f"  (synth) {f}  →  {index_f}")
-        files.add(index_f)
-        synthesized += 1
-
-print(f"  Synthesized {synthesized} files")
-PYEOF
+echo ">>> Fixing mark/index files (missing + stale) ..."
+python3 "$(dirname "$0")/fix_gmx_data_types.py" "$GMX_DIR"
 echo ""
 
 # ── Step 5: Verification ──────────────────────────────────────────────────

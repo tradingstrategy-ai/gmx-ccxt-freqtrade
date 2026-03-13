@@ -2,7 +2,7 @@
 """
 fix_gmx_data_types.py
 =====================
-Automatically repair missing data-type files in the GMX futures data directory.
+Repair missing **and stale** data-type files in the GMX futures data directory.
 
 Background
 ----------
@@ -16,11 +16,11 @@ timeframe:
                                                    liquidation price tracking)
     {TOKEN}_USDC_USDC-{tf}-funding_rate.feather — 8h funding rate
 
-If ANY of these are missing, FreqTrade silently skips the pair and it produces
-0 trades in the backtest — no error is raised.
+If ANY of these are missing OR stale, FreqTrade silently skips the pair and
+produces 0 trades in the backtest — no error is raised.
 
-Why files go missing
---------------------
+Why files go missing or become stale
+-------------------------------------
 1.  **No index from CEX downloads**
     Binance, Bybit, and OKX do not expose "index" candles via their CCXT
     download endpoints.  Only futures, mark, and funding_rate are downloaded.
@@ -34,6 +34,12 @@ Why files go missing
     Earlier download passes wrote files as {TOKEN}_USDT_USDT-* instead of the
     GMX-required {TOKEN}_USDC_USDC-* naming convention.  FreqTrade looks for
     USDC_USDC and never finds the USDT_USDT files.
+
+4.  **Stale mark/index after re-download**
+    CEX downloads only provide 1h mark candles, not 4h or 1d.  When futures
+    data is re-downloaded with a longer timerange, the 4h/1d mark and all
+    index files remain at the old (shorter) date range.  FreqTrade cannot
+    compute indicators over a gap, so these tokens produce 0 trades.
 
 Why synthesising mark / index from futures is valid on GMX
 ----------------------------------------------------------
@@ -54,13 +60,24 @@ Step 1 — Rename USDT_USDT → USDC_USDC
     version does not already exist.  Does NOT delete the USDT originals (they
     are harmless and may be needed as a source in later steps).
 
-Step 2 — Synthesise mark from futures
+Step 2 — Synthesise mark from futures (missing only)
     For every USDC_USDC futures file that has no corresponding mark file,
     copy the futures file as the mark file.  Applies across all timeframes.
 
-Step 3 — Synthesise index from mark
+Step 3 — Synthesise index from mark (missing only)
     For every USDC_USDC mark file that has no corresponding index file,
     copy the mark file as the index file.  Applies across all timeframes.
+
+Step 4 — Refresh stale mark from futures
+    CEX downloads only provide 1h mark candles.  After a re-download with a
+    longer timerange, 4h/1d mark files remain at the old shorter date range
+    while the corresponding futures file has been extended.  This step
+    overwrites any mark file whose row count is less than the corresponding
+    futures file.  Requires pandas.
+
+Step 5 — Refresh stale index from mark
+    After Steps 3/4 update mark files, any index file that no longer matches
+    the mark file's row count is overwritten.  Requires pandas.
 
 Usage
 -----
@@ -172,6 +189,76 @@ def step_synthesise_index(gmx_dir: Path, files: set[str], dry_run: bool) -> int:
     return copied
 
 
+def step_refresh_mark(gmx_dir: Path, files: set[str], dry_run: bool) -> int:
+    """
+    Step 4: Overwrite stale mark files whose row count is less than futures.
+
+    CEX downloads only provide 1h mark candles.  When data is re-downloaded
+    with a longer timerange, the futures file grows but the 4h/1d mark files
+    remain at the old shorter length.  Any mark file with fewer rows than its
+    corresponding futures file is overwritten with the futures data.
+
+    On GMX, futures price ≡ mark price (oracle DEX), so this copy is accurate.
+    Requires pandas to read row counts from feather files.
+    """
+    try:
+        import pandas as pd
+    except ImportError:
+        print("  [skip] pandas not available — skipping stale mark refresh")
+        return 0
+
+    refreshed = 0
+    futures_files = sorted(
+        f for f in files if "_USDC_USDC-" in f and f.endswith("-futures.feather")
+    )
+    for fname in futures_files:
+        mark_name = fname.replace("-futures.feather", "-mark.feather")
+        if mark_name not in files:
+            continue  # missing entirely — Step 2 handles this
+        fut_rows = len(pd.read_feather(gmx_dir / fname))
+        mark_rows = len(pd.read_feather(gmx_dir / mark_name))
+        if mark_rows < fut_rows:
+            print(f"  [refresh-mark]  {fname} ({fut_rows}) → {mark_name} (was {mark_rows})")
+            if not dry_run:
+                shutil.copy2(gmx_dir / fname, gmx_dir / mark_name)
+            refreshed += 1
+    return refreshed
+
+
+def step_refresh_index(gmx_dir: Path, files: set[str], dry_run: bool) -> int:
+    """
+    Step 5: Overwrite stale index files whose row count differs from mark.
+
+    After Steps 3/4 update mark files, the corresponding index files may be
+    left at an older shorter length.  This step overwrites any index file
+    whose row count no longer matches the mark file.
+
+    Requires pandas to read row counts from feather files.
+    """
+    try:
+        import pandas as pd
+    except ImportError:
+        print("  [skip] pandas not available — skipping stale index refresh")
+        return 0
+
+    refreshed = 0
+    mark_files = sorted(
+        f for f in files if "_USDC_USDC-" in f and f.endswith("-mark.feather")
+    )
+    for fname in mark_files:
+        index_name = fname.replace("-mark.feather", "-index.feather")
+        if index_name not in files:
+            continue  # missing entirely — Step 3 handles this
+        mark_df = pd.read_feather(gmx_dir / fname)
+        index_df = pd.read_feather(gmx_dir / index_name)
+        if len(mark_df) != len(index_df) or mark_df["date"].min() != index_df["date"].min():
+            print(f"  [refresh-index] {fname} ({len(mark_df)}) → {index_name} (was {len(index_df)})")
+            if not dry_run:
+                shutil.copy2(gmx_dir / fname, gmx_dir / index_name)
+            refreshed += 1
+    return refreshed
+
+
 def main() -> None:
     dry_run = "--dry-run" in sys.argv
     gmx_dir = resolve_gmx_dir([a for a in sys.argv[1:] if a != "--dry-run"])
@@ -206,11 +293,22 @@ def main() -> None:
     n3 = step_synthesise_index(gmx_dir, files, dry_run)
     print(f"  → {n3} files synthesised\n")
 
+    # ── Step 4 ─────────────────────────────────────────────────────────────
+    print("Step 4: Refresh stale mark files from futures ...")
+    n4 = step_refresh_mark(gmx_dir, files, dry_run)
+    print(f"  → {n4} files refreshed\n")
+
+    # ── Step 5 ─────────────────────────────────────────────────────────────
+    print("Step 5: Refresh stale index files from mark ...")
+    n5 = step_refresh_index(gmx_dir, files, dry_run)
+    print(f"  → {n5} files refreshed\n")
+
     # ── Summary ────────────────────────────────────────────────────────────
-    total = n1 + n2 + n3
-    action = "Would create" if dry_run else "Created"
+    total = n1 + n2 + n3 + n4 + n5
+    action = "Would create/refresh" if dry_run else "Created/refreshed"
     print("=" * 60)
-    print(f" {action} {total} files  (rename={n1}, mark={n2}, index={n3})")
+    print(f" {action} {total} files")
+    print(f"   rename={n1}, mark-new={n2}, index-new={n3}, mark-stale={n4}, index-stale={n5}")
     if dry_run:
         print(" Re-run without --dry-run to apply changes.")
     print("=" * 60)
