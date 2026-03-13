@@ -1,5 +1,6 @@
 {
     "$schema": "https://schema.freqtrade.io/schema.json",
+    "datadir": "user_data/data",
     "trading_mode": "futures",
     "margin_mode": "isolated",
     "max_open_trades": 10,
@@ -7,12 +8,12 @@
     "stake_amount": "unlimited",
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
-    "dry_run": false,
-    "dry_run_wallet": 100,
+    "dry_run": true,
+    "dry_run_wallet": 1000,
     "timeframe": "1h",
-    "coingecko": {
-        "api_key": "",
-        "is_demo": false
+    "trading_fees": {
+        "entry": 0.0007,
+        "exit": 0.0007
     },
     "cancel_open_orders_on_exit": false,
     "unfilledtimeout": {
@@ -49,22 +50,16 @@
     },
     "exchange": {
         "name": "gmx",
-        "key": "",
-        "secret": "",
         "ccxt_config": {
             "enableRateLimit": true,
             "rateLimit": 500,
-            "executionBuffer": 2.5,
-            "defaultSlippage": 0.003,
-            "options": {
-                "vaultAddress": "0xE3D5595707b2b75B3F25fBCc9A212A547d6E29ca"
-            }
+            "executionBuffer": 2.1
         },
         "ccxt_async_config": {
             "enableRateLimit": true,
             "rateLimit": 500
         },
-       "pair_whitelist": [
+        "pair_whitelist": [
             "0G/USDC:USDC",
             "AAVE/USDC:USDC",
             "ADA/USDC:USDC",
@@ -118,78 +113,17 @@
             "XRP/USDC:USDC",
             "ZORA/USDC:USDC"
         ],
-        "pair_blacklist": [
-            ""
-        ]
+        "pair_blacklist": []
     },
     "pairlists": [
         {
             "method": "StaticPairList"
         }
     ],
-    "bot_name": "ichiv2-gmx",
+    "bot_name": "ichiv2-ls-gmx-backtest-all",
     "initial_state": "running",
     "force_entry_enable": false,
     "internals": {
         "process_throttle_secs": 15
-    },
-    "api_server": {
-        "enabled": true,
-        "listen_ip_address": "0.0.0.0",
-        "listen_port": 8080,
-        "verbosity": "error",
-        "enable_openapi": true,
-        "CORS_origins": ["https://fui.tradingstrategy.ai"]
-    },
-    "telegram": {
-        "enabled": true,
-        "token": "",
-        "chat_id": "",
-        "allow_custom_messages": true,
-        "notification_settings": {
-            "status": "silent",
-            "warning": "on",
-            "startup": "off",
-            "entry": "silent",
-            "entry_fill": "on",
-            "entry_cancel": "silent",
-            "exit": {
-                "roi": "silent",
-                "emergency_exit": "on",
-                "force_exit": "on",
-                "exit_signal": "silent",
-                "trailing_stop_loss": "on",
-                "stop_loss": "on",
-                "stoploss_on_exchange": "on",
-                "custom_exit": "on",
-                "partial_exit": "on",
-                "*": "off"
-            },
-            "exit_cancel": "on",
-            "exit_fill": "on",
-            "protection_trigger": "off",
-            "protection_trigger_global": "on",
-            "strategy_msg": "off",
-            "show_candle": "off"
-        },
-        "reload": true,
-        "balance_dust_level": 0.01,
-        "keyboard": [
-            [
-                "/daily",
-                "/profit",
-                "/balance"
-            ],
-            [
-                "/status",
-                "/status table",
-                "/performance"
-            ],
-            [
-                "/count",
-                "/logs",
-                "/help"
-            ]
-        ]
     }
 }

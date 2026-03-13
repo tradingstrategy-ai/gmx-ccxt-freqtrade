@@ -4,6 +4,9 @@
     "roi": {
       "0": 10.0
     },
+    "stoploss": {
+      "stoploss": -0.129
+    },
     "trailing": {
       "trailing_stop": false,
       "trailing_stop_positive": null,
@@ -16,25 +19,22 @@
     "buy": {
       "retest_lookback_window": 24,
       "daily_cloud_regime_enabled": true,
-      "long_daily_cloud_filter": "green_cloud"
+      "long_daily_cloud_filter": "green_cloud",
+      "price_velocity_window": 10
     },
     "sell": {
       "atr_stop_multiplier": 3.1,
-      "atr_timeperiod": 14,
       "rsi_tp_threshold": 25,
       "use_rsi_exit": 1,
-      "price_velocity_window": 10,
       "velocity_tp_threshold": -0.098,
       "short_daily_cloud_filter": "all",
+      "short_hard_stoploss": 0.071,
       "short_atr_trailing_enabled": true,
       "short_atr_trailing_multiplier": 6.1,
       "short_atr_trailing_activation": 0.03
     },
-    "protection": {},
-    "stoploss": {
-      "stoploss": -0.071
-    }
+    "protection": {}
   },
   "ft_stratparam_v": 1,
-  "export_time": "2025-12-22 15:42:37.879121+00:00"
+  "export_time": "2026-03-10 00:00:00.000000+00:00"
 }

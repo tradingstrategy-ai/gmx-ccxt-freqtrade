@@ -17,15 +17,15 @@
       "max_open_trades": 10
     },
     "buy": {
-      "retest_lookback_window": 65
+      "retest_lookback_window": 24
     },
     "sell": {
-      "atr_stop_multiplier": 1.5,
+      "atr_stop_multiplier": 3.1,
       "atr_timeperiod": 13,
       "price_velocity_window": 10,
-      "rsi_tp_threshold": 20,
+      "rsi_tp_threshold": 25,
       "use_rsi_exit": 1,
-      "velocity_tp_threshold": -0.11
+      "velocity_tp_threshold": -0.098
     }
   },
   "ft_stratparam_v": 1,

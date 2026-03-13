@@ -371,7 +371,7 @@ def main():
 
     if args.open_browser:
         for p in [equity_path, exit_path, monthly_path]:
-            subprocess.run(['open', str(p)], check=False)
+            subprocess.Popen(['open', str(p)])
 
 
 if __name__ == '__main__':

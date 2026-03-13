@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.freqtrade.io/schema.json",
+    "datadir": "user_data/data",
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+    "max_open_trades": 2,
+    "stake_currency": "USDC",
+    "stake_amount": "unlimited",
+    "tradable_balance_ratio": 0.99,
+    "fiat_display_currency": "USD",
+    "dry_run": true,
+    "dry_run_wallet": 1000,
+    "timeframe": "1h",
+    "cancel_open_orders_on_exit": false,
+    "exchange": {
+        "name": "gmx",
+        "ccxt_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500,
+            "executionBuffer": 2.1
+        },
+        "ccxt_async_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500
+        },
+        "pair_whitelist": [
+            "KTA/USDC:USDC",
+            "WELL/USDC:USDC"
+        ],
+        "pair_blacklist": []
+    },
+    "pairlists": [
+        {
+            "method": "StaticPairList"
+        }
+    ],
+    "bot_name": "gmx-kta-well-data",
+    "initial_state": "running",
+    "force_entry_enable": false,
+    "internals": {
+        "process_throttle_secs": 15
+    }
+}
