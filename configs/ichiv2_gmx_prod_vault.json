@@ -55,7 +55,7 @@
             "enableRateLimit": true,
             "rateLimit": 500,
             "executionBuffer": 2.5,
-            "defaultSlippage": 0.01
+            "defaultSlippage": 0.003
         },
         "ccxt_async_config": {
             "enableRateLimit": true,
@@ -125,12 +125,14 @@
             "MEME/USDC:USDC",
             "MET/USDC:USDC",
             "MEW/USDC:USDC",
+            "MKR/USDC:USDC",
             "MNT/USDC:USDC",
             "MON/USDC:USDC",
             "MOODENG/USDC:USDC",
             "MORPHO/USDC:USDC",
             "NEAR/USDC:USDC",
             "OKB/USDC:USDC",
+            "OM/USDC:USDC",
             "ONDO/USDC:USDC",
             "OP/USDC:USDC",
             "ORDI/USDC:USDC",
@@ -172,9 +174,7 @@
             "ZRO/USDC:USDC"
         ],
         "pair_blacklist": [
-            "OM/USDC:USDC",
-            "MKR/USDC:USDC"
-
+            ""
         ]
     },
     "pairlists": [
