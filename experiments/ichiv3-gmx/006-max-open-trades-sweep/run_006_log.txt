@@ -1,0 +1,153 @@
+=== Experiment 006: Max Open Trades Sweep ===
+=== Started: Fri Mar 13 23:08:37 UTC 2026 ===
+
+==============================================
+=== arm_a_10trades: max_open_trades=10
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%          │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%          │
+│ Best day                      │ 25351.812 USDC                  │
+│ Worst day                     │ -9935.525 USDC                  │
+│ Days win/draw/lose            │ 294 / 920 / 465                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 05:46 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 10d 22:00 / 1d 04:34 │
+│ Max Consecutive Wins / Loss   │ 12 / 22                         │
+│ Rejected Entry signals        │ 361                             │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 92836.244 USDC                  │
+│ Max balance                   │ 264859.196 USDC                 │
+│ Max % of account underwater   │ 30.26%                          │
+│ Absolute drawdown             │ 41883.81 USDC (16.13%)          │
+│ Drawdown duration             │ 69 days 17:00:00                │
+│ Profit at drawdown start      │ 159689.071 USDC                 │
+│ Profit at drawdown end        │ 117805.262 USDC                 │
+│ Drawdown start                │ 2025-07-29 00:00:00             │
+│ Drawdown end                  │ 2025-10-06 17:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                    STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1642 │         0.66 │      146459.704 │       146.46 │ 1 day, 23:34:00 │  634     0  1008  38.6 │ 41883.81 USDC  16.13% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴───────────────────────┘
+=== arm_a_10trades DONE — saved to experiments/ichiv3-gmx/006-max-open-trades-sweep/results/arm_a_10trades.zip ===
+
+==============================================
+=== arm_b_15trades: max_open_trades=15
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%          │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%          │
+│ Best day                      │ 22262.239 USDC                  │
+│ Worst day                     │ -7271.464 USDC                  │
+│ Days win/draw/lose            │ 300 / 881 / 498                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 04:26 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 10d 22:00 / 1d 04:26 │
+│ Max Consecutive Wins / Loss   │ 15 / 25                         │
+│ Rejected Entry signals        │ 62                              │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 91812.783 USDC                  │
+│ Max balance                   │ 250574.692 USDC                 │
+│ Max % of account underwater   │ 24.29%                          │
+│ Absolute drawdown             │ 38197.291 USDC (16.38%)         │
+│ Drawdown duration             │ 69 days 17:00:00                │
+│ Profit at drawdown start      │ 133243.178 USDC                 │
+│ Profit at drawdown end        │ 95045.887 USDC                  │
+│ Drawdown start                │ 2025-07-29 00:00:00             │
+│ Drawdown end                  │ 2025-10-06 17:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 15
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1884 │         0.65 │      139265.010 │       139.27 │ 1 day, 23:06:00 │  733     0  1151  38.9 │ 38197.291 USDC  16.38% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴────────────────────────┘
+=== arm_b_15trades DONE — saved to experiments/ichiv3-gmx/006-max-open-trades-sweep/results/arm_b_15trades.zip ===
+
+==============================================
+=== arm_c_20trades: max_open_trades=20
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%          │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%          │
+│ Best day                      │ 16506.137 USDC                  │
+│ Worst day                     │ -5507.082 USDC                  │
+│ Days win/draw/lose            │ 306 / 870 / 503                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 05:03 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 10d 22:00 / 1d 04:17 │
+│ Max Consecutive Wins / Loss   │ 18 / 30                         │
+│ Rejected Entry signals        │ 9                               │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 93126.265 USDC                  │
+│ Max balance                   │ 225380.432 USDC                 │
+│ Max % of account underwater   │ 20.50%                          │
+│ Absolute drawdown             │ 29500.556 USDC (14.14%)         │
+│ Drawdown duration             │ 69 days 17:00:00                │
+│ Profit at drawdown start      │ 108669.095 USDC                 │
+│ Profit at drawdown end        │ 79168.539 USDC                  │
+│ Drawdown start                │ 2025-07-29 00:00:00             │
+│ Drawdown end                  │ 2025-10-06 17:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 20
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   2033 │         0.64 │      117545.387 │       117.55 │ 1 day, 23:16:00 │  791     0  1242  38.9 │ 29500.556 USDC  14.14% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴────────────────────────┘
+=== arm_c_20trades DONE — saved to experiments/ichiv3-gmx/006-max-open-trades-sweep/results/arm_c_20trades.zip ===
+
+==============================================
+=== arm_d_30trades: max_open_trades=30
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%          │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%          │
+│ Best day                      │ 11862.595 USDC                  │
+│ Worst day                     │ -3923.795 USDC                  │
+│ Days win/draw/lose            │ 307 / 865 / 507                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 06:45 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 10d 22:00 / 1d 04:12 │
+│ Max Consecutive Wins / Loss   │ 18 / 32                         │
+│ Rejected Entry signals        │ 0                               │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 95304.014 USDC                  │
+│ Max balance                   │ 197339.812 USDC                 │
+│ Max % of account underwater   │ 16.93%                          │
+│ Absolute drawdown             │ 19477.927 USDC (16.93%)         │
+│ Drawdown duration             │ 117 days 16:00:00               │
+│ Profit at drawdown start      │ 15020.537 USDC                  │
+│ Profit at drawdown end        │ -4457.389 USDC                  │
+│ Drawdown start                │ 2024-07-08 08:00:00             │
+│ Drawdown end                  │ 2024-11-03 00:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 30
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   2121 │         0.66 │       91641.322 │        91.64 │ 1 day, 23:57:00 │  829     0  1292  39.1 │ 19477.927 USDC  16.93% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴────────────────────────┘
+=== arm_d_30trades DONE — saved to experiments/ichiv3-gmx/006-max-open-trades-sweep/results/arm_d_30trades.zip ===
+
+=== Experiment 006 COMPLETE ===
+=== Finished: Fri Mar 13 23:24:27 UTC 2026 ===
+Results in: experiments/ichiv3-gmx/006-max-open-trades-sweep/results
+total 4428
+drwxrwxr-x 2 ubuntu ubuntu    4096 Mar 13 23:24 .
+drwxrwxr-x 4 ubuntu ubuntu    4096 Mar 13 23:08 ..
+-rw-rw-r-- 1 ubuntu ubuntu 1084101 Mar 13 23:12 arm_a_10trades.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1124488 Mar 13 23:15 arm_b_15trades.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1148243 Mar 13 23:20 arm_c_20trades.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1160550 Mar 13 23:24 arm_d_30trades.zip

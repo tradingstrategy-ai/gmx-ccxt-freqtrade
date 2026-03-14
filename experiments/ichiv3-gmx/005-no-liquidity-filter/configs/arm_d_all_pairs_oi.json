@@ -1,0 +1,250 @@
+{
+    "$schema": "https://schema.freqtrade.io/schema.json",
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+    "max_open_trades": 10,
+    "stake_currency": "USDC",
+    "stake_amount": "unlimited",
+    "tradable_balance_ratio": 0.99,
+    "fiat_display_currency": "USD",
+    "dry_run": false,
+    "dry_run_wallet": 100000,
+    "timeframe": "1h",
+    "coingecko": {
+        "api_key": "",
+        "is_demo": false
+    },
+    "cancel_open_orders_on_exit": false,
+    "unfilledtimeout": {
+        "entry": 10,
+        "exit": 10,
+        "exit_timeout_count": 0,
+        "unit": "minutes"
+    },
+    "entry_pricing": {
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1,
+        "price_last_balance": 0.0,
+        "check_depth_of_market": {
+            "enabled": false,
+            "bids_to_ask_delta": 1
+        }
+    },
+    "exit_pricing": {
+        "price_side": "other",
+        "use_order_book": false,
+        "order_book_top": 1
+    },
+    "order_types": {
+        "entry": "market",
+        "exit": "market",
+        "emergency_exit": "market",
+        "stoploss": "market",
+        "stoploss_on_exchange": false,
+        "stoploss_on_exchange_interval": 60,
+        "stoploss_on_exchange_limit_ratio": 0.99,
+        "entry_timeout_unfilled_order_method": "market",
+        "exit_timeout_unfilled_order_method": "market"
+    },
+    "exchange": {
+        "name": "gmx",
+        "key": "",
+        "secret": "",
+        "ccxt_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500,
+            "executionBuffer": 2.5,
+            "defaultSlippage": 0.003
+        },
+        "ccxt_async_config": {
+            "enableRateLimit": true,
+            "rateLimit": 500
+        },
+        "pair_whitelist": [
+            "0G/USDC:USDC",
+            "AAVE/USDC:USDC",
+            "ADA/USDC:USDC",
+            "AERO/USDC:USDC",
+            "AI16Z/USDC:USDC",
+            "AIXBT/USDC:USDC",
+            "ALGO/USDC:USDC",
+            "ANIME/USDC:USDC",
+            "APE/USDC:USDC",
+            "APT/USDC:USDC",
+            "AR/USDC:USDC",
+            "ARB/USDC:USDC",
+            "ASTER/USDC:USDC",
+            "ATOM/USDC:USDC",
+            "AVAX/USDC:USDC",
+            "AVNT/USDC:USDC",
+            "BCH/USDC:USDC",
+            "BERA/USDC:USDC",
+            "BNB/USDC:USDC",
+            "BOME/USDC:USDC",
+            "BONK/USDC:USDC",
+            "BRETT/USDC:USDC",
+            "BTC/USDC:USDC",
+            "CAKE/USDC:USDC",
+            "CC/USDC:USDC",
+            "CHZ/USDC:USDC",
+            "CRO/USDC:USDC",
+            "CRV/USDC:USDC",
+            "CVX/USDC:USDC",
+            "DASH/USDC:USDC",
+            "DOGE/USDC:USDC",
+            "DOLO/USDC:USDC",
+            "DOT/USDC:USDC",
+            "DYDX/USDC:USDC",
+            "EIGEN/USDC:USDC",
+            "ENA/USDC:USDC",
+            "ETH/USDC:USDC",
+            "FARTCOIN/USDC:USDC",
+            "FET/USDC:USDC",
+            "FIL/USDC:USDC",
+            "FLOKI/USDC:USDC",
+            "GMX/USDC:USDC",
+            "HBAR/USDC:USDC",
+            "HYPE/USDC:USDC",
+            "ICP/USDC:USDC",
+            "INJ/USDC:USDC",
+            "IP/USDC:USDC",
+            "JTO/USDC:USDC",
+            "JUP/USDC:USDC",
+            "KAS/USDC:USDC",
+            "KTA/USDC:USDC",
+            "LDO/USDC:USDC",
+            "LINEA/USDC:USDC",
+            "LINK/USDC:USDC",
+            "LIT/USDC:USDC",
+            "LTC/USDC:USDC",
+            "MELANIA/USDC:USDC",
+            "MEME/USDC:USDC",
+            "MET/USDC:USDC",
+            "MEW/USDC:USDC",
+            "MKR/USDC:USDC",
+            "MNT/USDC:USDC",
+            "MON/USDC:USDC",
+            "MOODENG/USDC:USDC",
+            "MORPHO/USDC:USDC",
+            "NEAR/USDC:USDC",
+            "OKB/USDC:USDC",
+            "OM/USDC:USDC",
+            "ONDO/USDC:USDC",
+            "OP/USDC:USDC",
+            "ORDI/USDC:USDC",
+            "PENDLE/USDC:USDC",
+            "PENGU/USDC:USDC",
+            "PEPE/USDC:USDC",
+            "PI/USDC:USDC",
+            "POL/USDC:USDC",
+            "PUMP/USDC:USDC",
+            "RENDER/USDC:USDC",
+            "S/USDC:USDC",
+            "SATS/USDC:USDC",
+            "SEI/USDC:USDC",
+            "SHIB/USDC:USDC",
+            "SKY/USDC:USDC",
+            "SOL/USDC:USDC",
+            "SPX6900/USDC:USDC",
+            "STX/USDC:USDC",
+            "SUI/USDC:USDC",
+            "SYRUP/USDC:USDC",
+            "TAO/USDC:USDC",
+            "TIA/USDC:USDC",
+            "TON/USDC:USDC",
+            "TRUMP/USDC:USDC",
+            "TRX/USDC:USDC",
+            "UNI/USDC:USDC",
+            "VIRTUAL/USDC:USDC",
+            "VVV/USDC:USDC",
+            "WELL/USDC:USDC",
+            "WIF/USDC:USDC",
+            "WLD/USDC:USDC",
+            "WLFI/USDC:USDC",
+            "XLM/USDC:USDC",
+            "XMR/USDC:USDC",
+            "XPL/USDC:USDC",
+            "XRP/USDC:USDC",
+            "ZEC/USDC:USDC",
+            "ZORA/USDC:USDC",
+            "ZRO/USDC:USDC"
+        ],
+        "pair_blacklist": [
+            ""
+        ]
+    },
+    "pairlists": [
+        {
+            "method": "StaticPairList"
+        }
+    ],
+    "bot_name": "exp005-arm-d-all-pairs-oi",
+    "initial_state": "running",
+    "force_entry_enable": false,
+    "internals": {
+        "process_throttle_secs": 15
+    },
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8080,
+        "verbosity": "error",
+        "enable_openapi": true,
+        "CORS_origins": [
+            "https://fui.tradingstrategy.ai"
+        ]
+    },
+    "telegram": {
+        "enabled": true,
+        "token": "",
+        "chat_id": "",
+        "allow_custom_messages": true,
+        "notification_settings": {
+            "status": "silent",
+            "warning": "on",
+            "startup": "off",
+            "entry": "silent",
+            "entry_fill": "on",
+            "entry_cancel": "silent",
+            "exit": {
+                "roi": "silent",
+                "emergency_exit": "on",
+                "force_exit": "on",
+                "exit_signal": "silent",
+                "trailing_stop_loss": "on",
+                "stop_loss": "on",
+                "stoploss_on_exchange": "on",
+                "custom_exit": "on",
+                "partial_exit": "on",
+                "*": "off"
+            },
+            "exit_cancel": "on",
+            "exit_fill": "on",
+            "protection_trigger": "off",
+            "protection_trigger_global": "on",
+            "strategy_msg": "off",
+            "show_candle": "off"
+        },
+        "reload": true,
+        "balance_dust_level": 0.01,
+        "keyboard": [
+            [
+                "/daily",
+                "/profit",
+                "/balance"
+            ],
+            [
+                "/status",
+                "/status table",
+                "/performance"
+            ],
+            [
+                "/count",
+                "/logs",
+                "/help"
+            ]
+        ]
+    },
+    "enable_dynamic_pairlist": false
+}

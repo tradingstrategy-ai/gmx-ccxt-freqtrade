@@ -1,0 +1,12 @@
+=== A0: IchiV2_LS_Backtest (No Filter Baseline) ===
+Timerange: 2021-07-18 16:00:00 to 2026-03-12 00:00:00 (1697 days)
+Total Profit: 248.63% (248.63 USDC)
+  Long:  24.69% (24.69 USDC)
+  Short: 223.94% (223.94 USDC)
+Sharpe: 1.8191201863273805
+Calmar: 24.249055970571458
+Sortino: 4.268850737990899
+Max DD: 11.54% (42.06 USDC)
+Trades: 3079 (L:1177, S:1902)
+Win Rate: 30.98%
+Profit Factor: 1.2179051554005964
