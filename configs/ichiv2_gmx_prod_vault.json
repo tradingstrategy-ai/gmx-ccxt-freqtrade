@@ -180,9 +180,17 @@
     "pairlists": [
         {
             "method": "StaticPairList"
+        },
+        {
+            "method": "HistoricalVolumePairList",
+            "data_source_dir": "user_data/data/binance",
+            "number_assets": 40,
+            "lookback_days": 7,
+            "min_value": 100000,
+            "pair_suffix": "_USDT_USDT"
         }
     ],
-    "bot_name": "ichiv3-gmx-vault-whalecap",
+    "bot_name": "ichiv2-gmx-vault-whalecap-top40",
     "initial_state": "running",
     "force_entry_enable": false,
     "internals": {

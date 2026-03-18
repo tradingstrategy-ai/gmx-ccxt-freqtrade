@@ -114,7 +114,7 @@ services:
       - "9096:8080"
     command: >
       trade
-        --strategy IchiV3_LS_Static_WhaleCap
+        --strategy IchiV2_LS_Static_WhaleCap
         --config /freqtrade/configs/ichiv2_gmx_prod_vault.json
         --config /freqtrade/configs/ichiv2_gmx_prod_vault.secrets.json
         --db-url sqlite:////freqtrade/db/ichiv2_gmx_vault.sqlite
