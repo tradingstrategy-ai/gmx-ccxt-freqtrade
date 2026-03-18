@@ -2,3 +2,6 @@
 	path = deps/web3-ethereum-defi
 	url = https://github.com/tradingstrategy-ai/web3-ethereum-defi
 	branch = master
+[submodule "gmx-data-collector"]
+	path = gmx-data-collector
+	url = https://github.com/tradingstrategy-ai/gmx-data-collector.git

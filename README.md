@@ -124,10 +124,16 @@ brew install gettext libomp
 ### Clone the repository
 
 ```bash
-# Submodules most be includedin the checkout
-git clone  --recurse-submodules  https://github.com/tradingstrategy-ai/gmx-ccxt-freqtrade.git
+# Submodules must be included in the checkout (includes gmx-data-collector)
+git clone --recurse-submodules https://github.com/tradingstrategy-ai/gmx-ccxt-freqtrade.git
 cd gmx-ccxt-freqtrade
-git submodule update --remote --merge
+git submodule update --init --recursive
+```
+
+If you cloned without `--recurse-submodules`, initialize submodules:
+
+```bash
+git submodule update --init --recursive
 ```
 
 ## Install Freqtrade
@@ -223,11 +229,28 @@ Here we backtest [ADX momentum strategy](./configs/adxmomentum_gmx.json).
 
 ### Download Historical Data
 
-First we need to download a copy of historicalc GMX data we use for the backtesting.
-FreqTrade provides a command for this.
-This fetches GMX market data from GMX GraphQL endpoint and stores it locally.
+You can obtain GMX historical data in two ways:
 
-Choose a time range within the last ~6 months. For example, if today is February 2026:
+#### Option A: gmx-data-collector (recommended for full history)
+
+The [gmx-data-collector](https://github.com/tradingstrategy-ai/gmx-data-collector) submodule collects candles and funding rates from GMX API, Chainlink, and on-chain oracle events, then exports directly to `user_data/data/gmx/futures/`.
+
+```bash
+# Ensure submodule is initialized
+git submodule update --init --recursive
+
+# Copy .env.example to .env and add your HYPERSYNC_API_TOKEN and JSON_RPC_ARBITRUM
+cp .env.example .env
+
+# Run full pipeline: collect + export
+source .env && make gmx-data
+```
+
+Data is written to `user_data/data/gmx/futures/`. This provides broader historical coverage than the GMX REST API alone.
+
+#### Option B: Freqtrade download-data
+
+FreqTrade provides a command that fetches GMX market data from the GMX GraphQL endpoint and stores it locally. Choose a time range within the last ~6 months. For example, if today is February 2026:
 
 ```bash
 BACKTEST_TIME_RANGE=20250901-20260201
