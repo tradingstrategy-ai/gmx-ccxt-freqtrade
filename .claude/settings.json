@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(git commit:*)",
       "WebFetch(domain:web3-ethereum-defi.tradingstrategy.ai)",
