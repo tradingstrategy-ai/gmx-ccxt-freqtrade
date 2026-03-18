@@ -5,7 +5,7 @@ Patches the freqtrade config schema to allow our custom pairlist handlers,
 then runs test-pairlist. This avoids needing to modify the base freqtrade image.
 
 Usage (inside container):
-    python -u -B /freqtrade/scripts/test_pairlist_runner.py \
+    python -u -B /freqtrade/plugins/pairlist/test_pairlist_runner.py \
         --config /freqtrade/configs/test_volume_pairlist.json \
         --config /freqtrade/configs/ichiv2_gmx.secrets.json \
         -vvv
