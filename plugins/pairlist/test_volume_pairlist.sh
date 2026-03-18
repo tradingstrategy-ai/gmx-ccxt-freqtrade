@@ -30,7 +30,7 @@ echo " Volume Pairlist Test"
 echo "============================================"
 echo ""
 echo "Image:   ${IMAGE}"
-echo "Config:  configs/test_volume_pairlist.json"
+echo "Config:  plugins/pairlist/test_volume_pairlist.json"
 echo "Secrets: configs/ichiv2_gmx.secrets.json (RPC URLs only, dry_run=true)"
 echo ""
 echo "Custom plugins mounted:"
@@ -52,10 +52,10 @@ docker run --rm \
     -v "${REPO_DIR}/configs:/freqtrade/configs" \
     -v "${PAIRLIST_DIR}/HistoricalVolumePairList.py:/freqtrade/freqtrade/plugins/pairlist/HistoricalVolumePairList.py:ro" \
     -v "${PAIRLIST_DIR}/GMXLiquidityFilter.py:/freqtrade/freqtrade/plugins/pairlist/GMXLiquidityFilter.py:ro" \
-    -v "${SCRIPTS_DIR}/test_pairlist_runner.py:/freqtrade/scripts/test_pairlist_runner.py:ro" \
+    -v "${SCRIPTS_DIR}/test_pairlist_runner.py:/freqtrade/plugins/pairlist/test_pairlist_runner.py:ro" \
     "${IMAGE}" \
-    -u -B /freqtrade/scripts/test_pairlist_runner.py \
-        --config /freqtrade/configs/test_volume_pairlist.json \
+    -u -B /freqtrade/plugins/pairlist/test_pairlist_runner.py \
+        --config /freqtrade/plugins/pairlist/test_volume_pairlist.json \
         --config /freqtrade/configs/ichiv2_gmx.secrets.json \
         -vvv
 
