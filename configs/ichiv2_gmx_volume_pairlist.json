@@ -61,10 +61,7 @@
             "enableRateLimit": true,
             "rateLimit": 500
         },
-        "lagoon_forward_eth": true,
-        "lagoon_gas_buffer": 500000,
-        "lagoon_auto_approve": true,
-        "pair_whitelist": [
+       "pair_whitelist": [
             "0G/USDC:USDC",
             "AAVE/USDC:USDC",
             "ADA/USDC:USDC",
@@ -180,9 +177,22 @@
     "pairlists": [
         {
             "method": "StaticPairList"
+        },
+        {
+            "method": "HistoricalVolumePairList",
+            "data_source_dir": "user_data/data/binance",
+            "number_assets": 75,
+            "lookback_days": 7,
+            "min_value": 100000,
+            "pair_suffix": "_USDT_USDT"
+        },
+        {
+            "method": "GMXLiquidityFilter",
+            "min_pool_liquidity": 500000
         }
     ],
-    "bot_name": "ichiv3-gmx-vault-whalecap",
+    "enable_dynamic_pairlist": true,
+    "bot_name": "ichiv2-gmx-volume-pairlist",
     "initial_state": "running",
     "force_entry_enable": false,
     "internals": {

@@ -103,7 +103,38 @@ services:
         --config /freqtrade/configs/ichiv2_gmx.secrets.json
         --db-url sqlite:////freqtrade/db/ichiv2_gmx.sqlite
         --logfile /freqtrade/user_data/logs/ichiv2_gmx.log
-  
+
+  ichiv2_gmx_vault:
+    <<: *default-freqtradebot
+    container_name: ichiv2_gmx_vault
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "9096:8080"
+    command: >
+      trade
+        --strategy IchiV3_LS_Static_WhaleCap
+        --config /freqtrade/configs/ichiv2_gmx_prod_vault.json
+        --config /freqtrade/configs/ichiv2_gmx_prod_vault.secrets.json
+        --db-url sqlite:////freqtrade/db/ichiv2_gmx_vault.sqlite
+        --logfile /freqtrade/user_data/logs/ichiv2_gmx_vault.log
+
+  ichiv2_gmx_oi_filter_backtest:
+    <<: *default-freqtradebot
+    container_name: ichiv2_gmx_oi_filter_backtest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: >
+      backtesting
+        --strategy IchiV2_LS_OI_Filter
+        --config /freqtrade/configs/ichiv2_gmx_oi_filter_backtest.json
+        --config /freqtrade/configs/ichiv2_gmx_oi_filter_backtest.secrets.json
+        --strategy-path /freqtrade/strategies
+        --datadir /freqtrade/user_data/data/gmx_complete
+        --timeframe-detail 5m
+
   caddy:
     image: caddy:2.4.5
     container_name: caddy

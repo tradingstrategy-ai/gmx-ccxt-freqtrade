@@ -1,0 +1,262 @@
+=== Experiment 019: IchiV2+WC Liquidity Threshold Sweep ===
+=== WhaleCap: pool=1.0 oi=0.05 ratio=0.10 minpos=0.01 slots=10 ===
+=== Started: Tue Mar 17 11:46:35 UTC 2026 ===
+
+==============================================
+=== arm_a_no_liq
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ TAO/USDC:USDC -9.06%             │
+│ Best day                      │ 19281.938 USDC                   │
+│ Worst day                     │ -5043.987 USDC                   │
+│ Days win/draw/lose            │ 328 / 841 / 512                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 22:24 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 321d 14:00 / 8d 17:41 │
+│ Max Consecutive Wins / Loss   │ 17 / 21                          │
+│ Rejected Entry signals        │ 900                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 89171.821 USDC                   │
+│ Max balance                   │ 232799.379 USDC                  │
+│ Max % of account underwater   │ 28.06%                           │
+│ Absolute drawdown             │ 34780.615 USDC (28.06%)          │
+│ Drawdown duration             │ 158 days 07:00:00                │
+│ Profit at drawdown start      │ 23952.435 USDC                   │
+│ Profit at drawdown end        │ -10828.179 USDC                  │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2024-12-13 15:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │   2007 │         0.62 │      129405.022 │       129.41 │ 8 days, 19:30:00 │  774     0  1233  38.6 │ 34780.615 USDC  28.06% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== arm_a_no_liq DONE — saved to experiments/ichiv2-gmx/019-liquidity-threshold-sweep/results/arm_a_no_liq.zip ===
+
+==============================================
+=== arm_b_liq100k
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%            │
+│ Worst trade                   │ TAO/USDC:USDC -8.57%              │
+│ Best day                      │ 19242.69 USDC                     │
+│ Worst day                     │ -6232.064 USDC                    │
+│ Days win/draw/lose            │ 327 / 855 / 499                   │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 543d 05:00 / 89d 12:41 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 592d 19:00 / 97d 05:58 │
+│ Max Consecutive Wins / Loss   │ 10 / 16                           │
+│ Rejected Entry signals        │ 39                                │
+│ Entry/Exit Timeouts           │ 0 / 0                             │
+│                               │                                   │
+│ Min balance                   │ 99662.754 USDC                    │
+│ Max balance                   │ 227824.962 USDC                   │
+│ Max % of account underwater   │ 13.21%                            │
+│ Absolute drawdown             │ 19185.606 USDC (8.48%)            │
+│ Drawdown duration             │ 39 days 17:00:00                  │
+│ Profit at drawdown start      │ 126124.852 USDC                   │
+│ Profit at drawdown end        │ 106939.246 USDC                   │
+│ Drawdown start                │ 2025-12-09 11:00:00               │
+│ Drawdown end                  │ 2026-01-18 04:00:00               │
+│ Market change                 │ -46.94%                           │
+└───────────────────────────────┴───────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │   1614 │         0.80 │      125330.958 │       125.33 │ 94 days, 5:04:00 │  635     0   979  39.3 │ 19185.606 USDC  8.48% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴───────────────────────┘
+=== arm_b_liq100k DONE — saved to experiments/ichiv2-gmx/019-liquidity-threshold-sweep/results/arm_b_liq100k.zip ===
+
+==============================================
+=== arm_c_liq500k
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%            │
+│ Worst trade                   │ APE/USDC:USDC -87.71%             │
+│ Best day                      │ 19533.904 USDC                    │
+│ Worst day                     │ -14900.615 USDC                   │
+│ Days win/draw/lose            │ 274 / 988 / 419                   │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 632d 00:00 / 74d 10:42 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 542d 21:00 / 93d 18:36 │
+│ Max Consecutive Wins / Loss   │ 6 / 16                            │
+│ Rejected Entry signals        │ 0                                 │
+│ Entry/Exit Timeouts           │ 0 / 0                             │
+│                               │                                   │
+│ Min balance                   │ 99662.754 USDC                    │
+│ Max balance                   │ 186574.532 USDC                   │
+│ Max % of account underwater   │ 12.16%                            │
+│ Absolute drawdown             │ 22690.782 USDC (12.16%)           │
+│ Drawdown duration             │ 53 days 06:00:00                  │
+│ Profit at drawdown start      │ 86574.532 USDC                    │
+│ Profit at drawdown end        │ 63883.75 USDC                     │
+│ Drawdown start                │ 2026-01-17 18:00:00               │
+│ Drawdown end                  │ 2026-03-12 00:00:00               │
+│ Market change                 │ -46.94%                           │
+└───────────────────────────────┴───────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                      STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃      Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │   1039 │         0.54 │       63883.750 │        63.88 │ 86 days, 10:14:00 │  395     0   644  38.0 │ 22690.782 USDC  12.16% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴───────────────────┴────────────────────────┴────────────────────────┘
+=== arm_c_liq500k DONE — saved to experiments/ichiv2-gmx/019-liquidity-threshold-sweep/results/arm_c_liq500k.zip ===
+
+==============================================
+=== arm_d_liq1m
+==============================================
+│ Best trade                    │ FARTCOIN/USDC:USDC 74.11%         │
+│ Worst trade                   │ DOGE/USDC:USDC -61.17%            │
+│ Best day                      │ 9780.576 USDC                     │
+│ Worst day                     │ -9302.474 USDC                    │
+│ Days win/draw/lose            │ 240 / 1071 / 369                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 589d 14:00 / 89d 20:22 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 617d 15:00 / 95d 19:52 │
+│ Max Consecutive Wins / Loss   │ 6 / 16                            │
+│ Rejected Entry signals        │ 0                                 │
+│ Entry/Exit Timeouts           │ 0 / 0                             │
+│                               │                                   │
+│ Min balance                   │ 99662.754 USDC                    │
+│ Max balance                   │ 159499.16 USDC                    │
+│ Max % of account underwater   │ 10.24%                            │
+│ Absolute drawdown             │ 15280.688 USDC (9.58%)            │
+│ Drawdown duration             │ 38 days 08:00:00                  │
+│ Profit at drawdown start      │ 59499.16 USDC                     │
+│ Profit at drawdown end        │ 44218.471 USDC                    │
+│ Drawdown start                │ 2026-01-30 10:00:00               │
+│ Drawdown end                  │ 2026-03-09 18:00:00               │
+│ Market change                 │ -46.94%                           │
+└───────────────────────────────┴───────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃      Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │    819 │         0.48 │       44468.607 │        44.47 │ 93 days, 12:09:00 │  318     0   501  38.8 │ 15280.688 USDC  9.58% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴───────────────────┴────────────────────────┴───────────────────────┘
+=== arm_d_liq1m DONE — saved to experiments/ichiv2-gmx/019-liquidity-threshold-sweep/results/arm_d_liq1m.zip ===
+
+==============================================
+=== arm_e_liq2m
+==============================================
+│ Best trade                    │ FARTCOIN/USDC:USDC 74.11%         │
+│ Worst trade                   │ HYPE/USDC:USDC -7.23%             │
+│ Best day                      │ 9100.682 USDC                     │
+│ Worst day                     │ -2603.319 USDC                    │
+│ Days win/draw/lose            │ 207 / 1177 / 297                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 629d 05:00 / 79d 07:21 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 545d 13:00 / 64d 06:19 │
+│ Max Consecutive Wins / Loss   │ 7 / 16                            │
+│ Rejected Entry signals        │ 0                                 │
+│ Entry/Exit Timeouts           │ 0 / 0                             │
+│                               │                                   │
+│ Min balance                   │ 99662.754 USDC                    │
+│ Max balance                   │ 155532.045 USDC                   │
+│ Max % of account underwater   │ 10.24%                            │
+│ Absolute drawdown             │ 11756.777 USDC (10.24%)           │
+│ Drawdown duration             │ 170 days 10:00:00                 │
+│ Profit at drawdown start      │ 14851.224 USDC                    │
+│ Profit at drawdown end        │ 3094.447 USDC                     │
+│ Drawdown start                │ 2023-01-05 16:00:00               │
+│ Drawdown end                  │ 2023-06-25 02:00:00               │
+│ Market change                 │ -46.94%                           │
+└───────────────────────────────┴───────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │    649 │         0.71 │       55532.045 │        55.53 │ 70 days, 4:11:00 │  255     0   394  39.3 │ 11756.777 USDC  10.24% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== arm_e_liq2m DONE — saved to experiments/ichiv2-gmx/019-liquidity-threshold-sweep/results/arm_e_liq2m.zip ===
+
+==============================================
+=== arm_f_liq5m
+==============================================
+│ Best trade                    │ XRP/USDC:USDC 27.86%              │
+│ Worst trade                   │ PEPE/USDC:USDC -7.23%             │
+│ Best day                      │ 4064.116 USDC                     │
+│ Worst day                     │ -1422.202 USDC                    │
+│ Days win/draw/lose            │ 148 / 1263 / 265                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 486d 00:00 / 72d 18:35 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 754d 03:00 / 67d 10:22 │
+│ Max Consecutive Wins / Loss   │ 6 / 17                            │
+│ Rejected Entry signals        │ 0                                 │
+│ Entry/Exit Timeouts           │ 0 / 0                             │
+│                               │                                   │
+│ Min balance                   │ 99662.754 USDC                    │
+│ Max balance                   │ 118905.558 USDC                   │
+│ Max % of account underwater   │ 10.24%                            │
+│ Absolute drawdown             │ 11756.777 USDC (10.24%)           │
+│ Drawdown duration             │ 170 days 10:00:00                 │
+│ Profit at drawdown start      │ 14851.224 USDC                    │
+│ Profit at drawdown end        │ 3094.447 USDC                     │
+│ Drawdown start                │ 2023-01-05 16:00:00               │
+│ Drawdown end                  │ 2023-06-25 02:00:00               │
+│ Market change                 │ -46.94%                           │
+└───────────────────────────────┴───────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │    518 │         0.25 │       12448.900 │        12.45 │ 69 days, 8:54:00 │  188     0   330  36.3 │ 11756.777 USDC  10.24% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== arm_f_liq5m DONE — saved to experiments/ichiv2-gmx/019-liquidity-threshold-sweep/results/arm_f_liq5m.zip ===
+
+==============================================
+=== arm_g_liq10m
+==============================================
+│ Best trade                    │ XRP/USDC:USDC 27.86%              │
+│ Worst trade                   │ PEPE/USDC:USDC -7.23%             │
+│ Best day                      │ 3129.19 USDC                      │
+│ Worst day                     │ -1422.202 USDC                    │
+│ Days win/draw/lose            │ 123 / 1338 / 220                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 739d 13:00 / 59d 20:42 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 347d 02:00 / 55d 00:42 │
+│ Max Consecutive Wins / Loss   │ 6 / 16                            │
+│ Rejected Entry signals        │ 0                                 │
+│ Entry/Exit Timeouts           │ 0 / 0                             │
+│                               │                                   │
+│ Min balance                   │ 99662.754 USDC                    │
+│ Max balance                   │ 120731.883 USDC                   │
+│ Max % of account underwater   │ 10.24%                            │
+│ Absolute drawdown             │ 11756.777 USDC (10.24%)           │
+│ Drawdown duration             │ 170 days 10:00:00                 │
+│ Profit at drawdown start      │ 14851.224 USDC                    │
+│ Profit at drawdown end        │ 3094.447 USDC                     │
+│ Drawdown start                │ 2023-01-05 16:00:00               │
+│ Drawdown end                  │ 2023-06-25 02:00:00               │
+│ Market change                 │ -46.94%                           │
+└───────────────────────────────┴───────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                      STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃      Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │    429 │         0.34 │       15127.859 │        15.13 │ 56 days, 18:21:00 │  154     0   275  35.9 │ 11756.777 USDC  10.24% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴───────────────────┴────────────────────────┴────────────────────────┘
+=== arm_g_liq10m DONE — saved to experiments/ichiv2-gmx/019-liquidity-threshold-sweep/results/arm_g_liq10m.zip ===
+
+=== Experiment 019 COMPLETE ===
+=== Finished: Tue Mar 17 12:05:37 UTC 2026 ===
+total 6604
+drwxrwxr-x 2 ubuntu ubuntu    4096 Mar 17 12:05 .
+drwxrwxr-x 4 ubuntu ubuntu    4096 Mar 17 11:46 ..
+-rw-rw-r-- 1 ubuntu ubuntu 1141863 Mar 17 11:51 arm_a_no_liq.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1079867 Mar 17 11:55 arm_b_liq100k.zip
+-rw-rw-r-- 1 ubuntu ubuntu  971554 Mar 17 11:57 arm_c_liq500k.zip
+-rw-rw-r-- 1 ubuntu ubuntu  929455 Mar 17 12:00 arm_d_liq1m.zip
+-rw-rw-r-- 1 ubuntu ubuntu  895575 Mar 17 12:02 arm_e_liq2m.zip
+-rw-rw-r-- 1 ubuntu ubuntu  870669 Mar 17 12:03 arm_f_liq5m.zip
+-rw-rw-r-- 1 ubuntu ubuntu  852140 Mar 17 12:05 arm_g_liq10m.zip
+Cleaned up user_data/strategies/IchiV2_LS_Static_WhaleCap.json

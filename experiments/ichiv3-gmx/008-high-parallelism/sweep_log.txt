@@ -1,0 +1,13 @@
+=== arm_a_10trades (strategy=IchiV3_LS_Static_WhaleCap) ===
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1605 │         0.66 │      143764.798 │       143.76 │ 7 days, 19:52:00 │  613     0   992  38.2 │ 38123.252 USDC  26.03% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== arm_a_10trades DONE — saved to experiments/ichiv3-gmx/008-high-parallelism/results/arm_a_10trades.zip ===
+=== arm_b_30trades (strategy=IchiV3_LS_Static_HighPar) ===
+2026-03-13 23:54:17,980 - IchiV3_LS_Static_HighPar - INFO - DUST SKIP | JUP/USDC:USDC | intent=$17,762 | capped=$368 | ratio=2.1% < min=10% | OI=$14,718 | pool_liq=$73,048
+2026-03-13 23:54:18,238 - IchiV3_LS_Static_HighPar - INFO - DUST SKIP | XMR/USDC:USDC | intent=$17,762 | capped=$1,753 | ratio=9.9% < min=10% | OI=$126,550 | pool_liq=$87,670
+2026-03-13 23:54:18,598 - HistoricalVolumePairList - INFO - HistoricalVolumePairList [2025-06-27]: 106 in -> 83 out. Top 5: ['BTC', 'ETH', 'SOL', 'XRP', 'PEPE']
+2026-03-13 23:54:18,606 - freqtrade.plugins.pairlistmanager - INFO - Pairlist refresh [2025-06-27]: 83 pairs: ['BTC', 'ETH', 'SOL', 'XRP', 'PEPE', 'DOGE', 'SUI', 'FARTCOIN', 'SEI', 'HYPE']...
+./freqtrade-gmx: line 12: 265139 Killed                  python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade "$@"

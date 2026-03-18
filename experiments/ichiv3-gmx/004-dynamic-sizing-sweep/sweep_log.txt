@@ -1,0 +1,406 @@
+=== PHASE 1: pool_share × oi_share sweep (min_stake_ratio=0.05) ===
+=== SKIP pool0.02_oi0.01_ratio0.05 (result exists) ===
+
+==============================================
+=== pool0.02_oi0.025_ratio0.05: pool=0.02 oi=0.025 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 15997.613 USDC                   │
+│ Worst day                     │ -8084.414 USDC                   │
+│ Days win/draw/lose            │ 328 / 852 / 499                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 05:47 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 319d 07:00 / 7d 12:32 │
+│ Max Consecutive Wins / Loss   │ 17 / 23                          │
+│ Rejected Entry signals        │ 607                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 93525.537 USDC                   │
+│ Max balance                   │ 254055.397 USDC                  │
+│ Max % of account underwater   │ 28.66%                           │
+│ Absolute drawdown             │ 41958.209 USDC (28.66%)          │
+│ Drawdown duration             │ 194 days 01:00:00                │
+│ Profit at drawdown start      │ 46403.998 USDC                   │
+│ Profit at drawdown end        │ 4445.788 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-18 09:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1871 │         0.70 │      139157.901 │       139.16 │ 7 days, 19:15:00 │  729     0  1142  39.0 │ 41958.209 USDC  28.66% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== pool0.02_oi0.025_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.02_oi0.025_ratio0.05.zip ===
+
+==============================================
+=== pool0.02_oi0.05_ratio0.05: pool=0.02 oi=0.05 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 19386.708 USDC                   │
+│ Worst day                     │ -8182.011 USDC                   │
+│ Days win/draw/lose            │ 332 / 845 / 504                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 7d 19:49 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 319d 07:00 / 7d 08:30 │
+│ Max Consecutive Wins / Loss   │ 19 / 19                          │
+│ Rejected Entry signals        │ 605                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 93731.927 USDC                   │
+│ Max balance                   │ 272166.087 USDC                  │
+│ Max % of account underwater   │ 30.03%                           │
+│ Absolute drawdown             │ 44578.18 USDC (30.03%)           │
+│ Drawdown duration             │ 194 days 01:00:00                │
+│ Profit at drawdown start      │ 48429.612 USDC                   │
+│ Profit at drawdown end        │ 3851.433 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-18 09:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1928 │         0.68 │      157755.359 │       157.76 │ 7 days, 12:55:00 │  753     0  1175  39.1 │ 44578.18 USDC  30.03% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴───────────────────────┘
+=== pool0.02_oi0.05_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.02_oi0.05_ratio0.05.zip ===
+
+==============================================
+=== pool0.04_oi0.01_ratio0.05: pool=0.04 oi=0.01 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 14033.061 USDC                   │
+│ Worst day                     │ -5420.791 USDC                   │
+│ Days win/draw/lose            │ 291 / 901 / 487                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 08:14 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 320d 10:00 / 7d 11:09 │
+│ Max Consecutive Wins / Loss   │ 14 / 20                          │
+│ Rejected Entry signals        │ 509                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92988.945 USDC                   │
+│ Max balance                   │ 211655.65 USDC                   │
+│ Max % of account underwater   │ 27.87%                           │
+│ Absolute drawdown             │ 36573.087 USDC (25.68%)          │
+│ Drawdown duration             │ 194 days 01:00:00                │
+│ Profit at drawdown start      │ 42431.035 USDC                   │
+│ Profit at drawdown end        │ 5857.948 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-18 09:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1683 │         0.72 │      100289.559 │       100.29 │ 7 days, 19:19:00 │  652     0  1031  38.7 │ 36573.087 USDC  25.68% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== pool0.04_oi0.01_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.04_oi0.01_ratio0.05.zip ===
+
+==============================================
+=== pool0.04_oi0.025_ratio0.05: pool=0.04 oi=0.025 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 17743.873 USDC                   │
+│ Worst day                     │ -7814.945 USDC                   │
+│ Days win/draw/lose            │ 329 / 854 / 496                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 07:21 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 321d 14:00 / 7d 13:53 │
+│ Max Consecutive Wins / Loss   │ 17 / 23                          │
+│ Rejected Entry signals        │ 617                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92762.036 USDC                   │
+│ Max balance                   │ 264989.904 USDC                  │
+│ Max % of account underwater   │ 29.82%                           │
+│ Absolute drawdown             │ 43990.826 USDC (29.82%)          │
+│ Drawdown duration             │ 194 days 01:00:00                │
+│ Profit at drawdown start      │ 47516.489 USDC                   │
+│ Profit at drawdown end        │ 3525.663 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-18 09:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1875 │         0.70 │      152040.329 │       152.04 │ 7 days, 20:43:00 │  733     0  1142  39.1 │ 43990.826 USDC  29.82% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== pool0.04_oi0.025_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.04_oi0.025_ratio0.05.zip ===
+
+==============================================
+=== pool0.04_oi0.05_ratio0.05: pool=0.04 oi=0.05 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 22091.01 USDC                    │
+│ Worst day                     │ -6986.56 USDC                    │
+│ Days win/draw/lose            │ 330 / 841 / 510                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 13:36 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 321d 14:00 / 8d 20:15 │
+│ Max Consecutive Wins / Loss   │ 19 / 19                          │
+│ Rejected Entry signals        │ 655                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 93067.331 USDC                   │
+│ Max balance                   │ 304836.038 USDC                  │
+│ Max % of account underwater   │ 32.32%                           │
+│ Absolute drawdown             │ 50357.214 USDC (17.78%)          │
+│ Drawdown duration             │ 69 days 20:00:00                 │
+│ Profit at drawdown start      │ 183189.043 USDC                  │
+│ Profit at drawdown end        │ 132831.829 USDC                  │
+│ Drawdown start                │ 2025-07-29 00:00:00              │
+│ Drawdown end                  │ 2025-10-06 20:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1940 │         0.66 │      196045.074 │       196.05 │ 8 days, 17:40:00 │  755     0  1185  38.9 │ 50357.214 USDC  17.78% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== pool0.04_oi0.05_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.04_oi0.05_ratio0.05.zip ===
+
+==============================================
+=== pool0.06_oi0.01_ratio0.05: pool=0.06 oi=0.01 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 14033.061 USDC                   │
+│ Worst day                     │ -5420.791 USDC                   │
+│ Days win/draw/lose            │ 291 / 901 / 487                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 08:14 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 320d 10:00 / 7d 11:09 │
+│ Max Consecutive Wins / Loss   │ 14 / 20                          │
+│ Rejected Entry signals        │ 509                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92988.945 USDC                   │
+│ Max balance                   │ 211655.65 USDC                   │
+│ Max % of account underwater   │ 27.87%                           │
+│ Absolute drawdown             │ 36573.087 USDC (25.68%)          │
+│ Drawdown duration             │ 194 days 01:00:00                │
+│ Profit at drawdown start      │ 42431.035 USDC                   │
+│ Profit at drawdown end        │ 5857.948 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-18 09:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1683 │         0.72 │      100289.559 │       100.29 │ 7 days, 19:19:00 │  652     0  1031  38.7 │ 36573.087 USDC  25.68% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== pool0.06_oi0.01_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.06_oi0.01_ratio0.05.zip ===
+
+==============================================
+=== pool0.06_oi0.025_ratio0.05: pool=0.06 oi=0.025 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 17743.873 USDC                   │
+│ Worst day                     │ -7832.666 USDC                   │
+│ Days win/draw/lose            │ 329 / 853 / 497                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 07:24 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 321d 14:00 / 7d 13:28 │
+│ Max Consecutive Wins / Loss   │ 17 / 23                          │
+│ Rejected Entry signals        │ 621                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92748.677 USDC                   │
+│ Max balance                   │ 262232.454 USDC                  │
+│ Max % of account underwater   │ 30.10%                           │
+│ Absolute drawdown             │ 44524.86 USDC (30.10%)           │
+│ Drawdown duration             │ 194 days 01:00:00                │
+│ Profit at drawdown start      │ 47921.343 USDC                   │
+│ Profit at drawdown end        │ 3396.483 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-18 09:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1878 │         0.69 │      149051.422 │       149.05 │ 7 days, 20:28:00 │  733     0  1145  39.0 │ 44524.86 USDC  30.10% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴───────────────────────┘
+=== pool0.06_oi0.025_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.06_oi0.025_ratio0.05.zip ===
+
+==============================================
+=== pool0.06_oi0.05_ratio0.05: pool=0.06 oi=0.05 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 22075.188 USDC                   │
+│ Worst day                     │ -9614.185 USDC                   │
+│ Days win/draw/lose            │ 334 / 842 / 505                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 13:41 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 321d 14:00 / 8d 20:58 │
+│ Max Consecutive Wins / Loss   │ 19 / 19                          │
+│ Rejected Entry signals        │ 585                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92918.493 USDC                   │
+│ Max balance                   │ 304377.456 USDC                  │
+│ Max % of account underwater   │ 35.09%                           │
+│ Absolute drawdown             │ 52394.24 USDC (18.48%)           │
+│ Drawdown duration             │ 69 days 20:00:00                 │
+│ Profit at drawdown start      │ 183456.169 USDC                  │
+│ Profit at drawdown end        │ 131061.929 USDC                  │
+│ Drawdown start                │ 2025-07-29 00:00:00              │
+│ Drawdown end                  │ 2025-10-06 20:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1935 │         0.64 │      193362.764 │       193.36 │ 8 days, 18:08:00 │  755     0  1180  39.0 │ 52394.24 USDC  18.48% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴───────────────────────┘
+=== pool0.06_oi0.05_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.06_oi0.05_ratio0.05.zip ===
+
+==============================================
+=== pool0.08_oi0.01_ratio0.05: pool=0.08 oi=0.01 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 14033.061 USDC                   │
+│ Worst day                     │ -5420.791 USDC                   │
+│ Days win/draw/lose            │ 291 / 901 / 487                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 08:14 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 320d 10:00 / 7d 11:09 │
+│ Max Consecutive Wins / Loss   │ 14 / 20                          │
+│ Rejected Entry signals        │ 509                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92988.945 USDC                   │
+│ Max balance                   │ 211655.65 USDC                   │
+│ Max % of account underwater   │ 27.87%                           │
+│ Absolute drawdown             │ 36573.087 USDC (25.68%)          │
+│ Drawdown duration             │ 194 days 01:00:00                │
+│ Profit at drawdown start      │ 42431.035 USDC                   │
+│ Profit at drawdown end        │ 5857.948 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-18 09:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1683 │         0.72 │      100289.559 │       100.29 │ 7 days, 19:19:00 │  652     0  1031  38.7 │ 36573.087 USDC  25.68% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== pool0.08_oi0.01_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.08_oi0.01_ratio0.05.zip ===
+
+==============================================
+=== pool0.08_oi0.025_ratio0.05: pool=0.08 oi=0.025 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 17743.873 USDC                   │
+│ Worst day                     │ -7918.428 USDC                   │
+│ Days win/draw/lose            │ 329 / 853 / 497                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 07:24 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 321d 14:00 / 7d 13:18 │
+│ Max Consecutive Wins / Loss   │ 17 / 23                          │
+│ Rejected Entry signals        │ 621                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92749.818 USDC                   │
+│ Max balance                   │ 261976.28 USDC                   │
+│ Max % of account underwater   │ 30.12%                           │
+│ Absolute drawdown             │ 44560.579 USDC (30.12%)          │
+│ Drawdown duration             │ 194 days 01:00:00                │
+│ Profit at drawdown start      │ 47923.151 USDC                   │
+│ Profit at drawdown end        │ 3362.572 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-18 09:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1879 │         0.69 │      148501.987 │        148.5 │ 7 days, 20:22:00 │  733     0  1146  39.0 │ 44560.579 USDC  30.12% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== pool0.08_oi0.025_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.08_oi0.025_ratio0.05.zip ===
+
+==============================================
+=== pool0.08_oi0.05_ratio0.05: pool=0.08 oi=0.05 ratio=0.05
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 22039.094 USDC                   │
+│ Worst day                     │ -6960.828 USDC                   │
+│ Days win/draw/lose            │ 334 / 843 / 504                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 13:59 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 321d 14:00 / 8d 21:20 │
+│ Max Consecutive Wins / Loss   │ 19 / 19                          │
+│ Rejected Entry signals        │ 616                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92650.22 USDC                    │
+│ Max balance                   │ 301415.056 USDC                  │
+│ Max % of account underwater   │ 35.49%                           │
+│ Absolute drawdown             │ 53399.546 USDC (18.88%)          │
+│ Drawdown duration             │ 69 days 20:00:00                 │
+│ Profit at drawdown start      │ 182898.405 USDC                  │
+│ Profit at drawdown end        │ 129498.859 USDC                  │
+│ Drawdown start                │ 2025-07-29 00:00:00              │
+│ Drawdown end                  │ 2025-10-06 20:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1933 │         0.66 │      195658.555 │       195.66 │ 8 days, 18:27:00 │  755     0  1178  39.1 │ 53399.546 USDC  18.88% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== pool0.08_oi0.05_ratio0.05 DONE — saved to experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results/pool0.08_oi0.05_ratio0.05.zip ===
+
+=== PHASE 1 COMPLETE ===
+Results in: experiments/ichiv3-gmx/004-dynamic-sizing-sweep/results
+total 13124
+drwxrwxr-x 2 ubuntu ubuntu    4096 Mar 13 19:29 .
+drwxrwxr-x 4 ubuntu ubuntu    4096 Mar 13 18:47 ..
+-rw-rw-r-- 1 ubuntu ubuntu 1092183 Mar 13 18:48 pool0.02_oi0.01_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1124768 Mar 13 18:52 pool0.02_oi0.025_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1134141 Mar 13 18:56 pool0.02_oi0.05_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1091172 Mar 13 18:59 pool0.04_oi0.01_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1125488 Mar 13 19:03 pool0.04_oi0.025_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1136356 Mar 13 19:07 pool0.04_oi0.05_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1091174 Mar 13 19:10 pool0.06_oi0.01_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1126114 Mar 13 19:14 pool0.06_oi0.025_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1135457 Mar 13 19:18 pool0.06_oi0.05_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1091174 Mar 13 19:21 pool0.08_oi0.01_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1126178 Mar 13 19:25 pool0.08_oi0.025_ratio0.05.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1135259 Mar 13 19:29 pool0.08_oi0.05_ratio0.05.zip
+Cleaned up user_data/strategies/IchiV3_LS_Static_WhaleCap.json

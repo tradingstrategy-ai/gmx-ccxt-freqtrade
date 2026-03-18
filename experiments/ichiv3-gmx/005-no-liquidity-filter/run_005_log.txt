@@ -1,0 +1,119 @@
+=== Experiment 005: No Liquidity Filter ===
+=== Started: Fri Mar 13 22:42:59 UTC 2026 ===
+=== SKIP arm_a_vol75_liq_oi (result exists) ===
+
+==============================================
+=== arm_b_vol75_oi: pool=1.0 oi=0.025 ratio=0.10 minpos=0.01
+==============================================
+│ Best trade                    │ FARTCOIN/USDC:USDC 74.11%        │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 20298.054 USDC                   │
+│ Worst day                     │ -7521.408 USDC                   │
+│ Days win/draw/lose            │ 292 / 910 / 477                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 9d 08:23 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 320d 10:00 / 8d 05:21 │
+│ Max Consecutive Wins / Loss   │ 12 / 22                          │
+│ Rejected Entry signals        │ 236                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92805.413 USDC                   │
+│ Max balance                   │ 245543.708 USDC                  │
+│ Max % of account underwater   │ 28.78%                           │
+│ Absolute drawdown             │ 42629.923 USDC (28.78%)          │
+│ Drawdown duration             │ 194 days 16:00:00                │
+│ Profit at drawdown start      │ 48135.102 USDC                   │
+│ Profit at drawdown end        │ 5505.179 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-19 00:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1634 │         0.56 │      131473.931 │       131.47 │ 8 days, 15:46:00 │  629     0  1005  38.5 │ 42629.923 USDC  28.78% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== arm_b_vol75_oi DONE — saved to experiments/ichiv3-gmx/005-no-liquidity-filter/results/arm_b_vol75_oi.zip ===
+
+==============================================
+=== arm_c_vol100_oi: pool=1.0 oi=0.025 ratio=0.10 minpos=0.01
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%           │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%           │
+│ Best day                      │ 26597.8 USDC                     │
+│ Worst day                     │ -8803.137 USDC                   │
+│ Days win/draw/lose            │ 299 / 902 / 478                  │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 322d 21:00 / 8d 15:54 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 320d 10:00 / 7d 12:36 │
+│ Max Consecutive Wins / Loss   │ 11 / 22                          │
+│ Rejected Entry signals        │ 327                              │
+│ Entry/Exit Timeouts           │ 0 / 0                            │
+│                               │                                  │
+│ Min balance                   │ 92805.413 USDC                   │
+│ Max balance                   │ 263919.223 USDC                  │
+│ Max % of account underwater   │ 28.71%                           │
+│ Absolute drawdown             │ 42525.614 USDC (28.71%)          │
+│ Drawdown duration             │ 194 days 16:00:00                │
+│ Profit at drawdown start      │ 48135.102 USDC                   │
+│ Profit at drawdown end        │ 5609.488 USDC                    │
+│ Drawdown start                │ 2024-07-08 08:00:00              │
+│ Drawdown end                  │ 2025-01-19 00:00:00              │
+│ Market change                 │ -46.94%                          │
+└───────────────────────────────┴──────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1645 │         0.65 │      148282.298 │       148.28 │ 7 days, 23:03:00 │  630     0  1015  38.3 │ 42525.614 USDC  28.71% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴────────────────────────┘
+=== arm_c_vol100_oi DONE — saved to experiments/ichiv3-gmx/005-no-liquidity-filter/results/arm_c_vol100_oi.zip ===
+
+==============================================
+=== arm_d_all_pairs_oi: pool=1.0 oi=0.025 ratio=0.10 minpos=0.01
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%          │
+│ Worst trade                   │ SHIB/USDC:USDC -13.00%          │
+│ Best day                      │ 25351.812 USDC                  │
+│ Worst day                     │ -9935.525 USDC                  │
+│ Days win/draw/lose            │ 294 / 920 / 465                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 05:46 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 10d 22:00 / 1d 04:34 │
+│ Max Consecutive Wins / Loss   │ 12 / 22                         │
+│ Rejected Entry signals        │ 361                             │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 92836.244 USDC                  │
+│ Max balance                   │ 264859.196 USDC                 │
+│ Max % of account underwater   │ 30.26%                          │
+│ Absolute drawdown             │ 41883.81 USDC (16.13%)          │
+│ Drawdown duration             │ 69 days 17:00:00                │
+│ Profit at drawdown start      │ 159689.071 USDC                 │
+│ Profit at drawdown end        │ 117805.262 USDC                 │
+│ Drawdown start                │ 2025-07-29 00:00:00             │
+│ Drawdown end                  │ 2025-10-06 17:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                    STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1642 │         0.66 │      146459.704 │       146.46 │ 1 day, 23:34:00 │  634     0  1008  38.6 │ 41883.81 USDC  16.13% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴───────────────────────┘
+=== arm_d_all_pairs_oi DONE — saved to experiments/ichiv3-gmx/005-no-liquidity-filter/results/arm_d_all_pairs_oi.zip ===
+
+=== Experiment 005 COMPLETE ===
+=== Finished: Fri Mar 13 22:53:11 UTC 2026 ===
+Results in: experiments/ichiv3-gmx/005-no-liquidity-filter/results
+total 4136
+drwxrwxr-x 2 ubuntu ubuntu    4096 Mar 13 22:53 .
+drwxrwxr-x 4 ubuntu ubuntu    4096 Mar 13 20:45 ..
+-rw-rw-r-- 1 ubuntu ubuntu  963203 Mar 13 20:58 arm_a_vol75_liq_oi.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1082573 Mar 13 22:46 arm_b_vol75_oi.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1086139 Mar 13 22:49 arm_c_vol100_oi.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1084112 Mar 13 22:53 arm_d_all_pairs_oi.zip

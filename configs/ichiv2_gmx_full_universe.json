@@ -61,10 +61,7 @@
             "enableRateLimit": true,
             "rateLimit": 500
         },
-        "lagoon_forward_eth": true,
-        "lagoon_gas_buffer": 500000,
-        "lagoon_auto_approve": true,
-        "pair_whitelist": [
+       "pair_whitelist": [
             "0G/USDC:USDC",
             "AAVE/USDC:USDC",
             "ADA/USDC:USDC",
@@ -182,7 +179,7 @@
             "method": "StaticPairList"
         }
     ],
-    "bot_name": "ichiv3-gmx-vault-whalecap",
+    "bot_name": "ichiv2-gmx-full-universe",
     "initial_state": "running",
     "force_entry_enable": false,
     "internals": {

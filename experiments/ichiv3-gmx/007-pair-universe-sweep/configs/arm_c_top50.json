@@ -8,7 +8,7 @@
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
     "dry_run": false,
-    "dry_run_wallet": 100,
+    "dry_run_wallet": 100000,
     "timeframe": "1h",
     "coingecko": {
         "api_key": "",
@@ -61,9 +61,6 @@
             "enableRateLimit": true,
             "rateLimit": 500
         },
-        "lagoon_forward_eth": true,
-        "lagoon_gas_buffer": 500000,
-        "lagoon_auto_approve": true,
         "pair_whitelist": [
             "0G/USDC:USDC",
             "AAVE/USDC:USDC",
@@ -180,71 +177,33 @@
     "pairlists": [
         {
             "method": "StaticPairList"
+        },
+        {
+            "method": "HistoricalVolumePairList",
+            "data_source_dir": "user_data/data/binance",
+            "number_assets": 50,
+            "lookback_days": 7,
+            "min_value": 100000,
+            "pair_suffix": "_USDT_USDT"
         }
     ],
-    "bot_name": "ichiv3-gmx-vault-whalecap",
+    "bot_name": "exp007-arm_c_top50",
     "initial_state": "running",
     "force_entry_enable": false,
     "internals": {
         "process_throttle_secs": 15
     },
+    "enable_dynamic_pairlist": true,
+    "telegram": {
+        "enabled": false,
+        "token": "",
+        "chat_id": ""
+    },
     "api_server": {
-        "enabled": true,
+        "enabled": false,
         "listen_ip_address": "0.0.0.0",
         "listen_port": 8080,
-        "verbosity": "error",
-        "enable_openapi": true,
-        "CORS_origins": ["https://fui.tradingstrategy.ai"]
-    },
-    "telegram": {
-        "enabled": true,
-        "token": "",
-        "chat_id": "",
-        "allow_custom_messages": true,
-        "notification_settings": {
-            "status": "silent",
-            "warning": "on",
-            "startup": "off",
-            "entry": "silent",
-            "entry_fill": "on",
-            "entry_cancel": "silent",
-            "exit": {
-                "roi": "silent",
-                "emergency_exit": "on",
-                "force_exit": "on",
-                "exit_signal": "silent",
-                "trailing_stop_loss": "on",
-                "stop_loss": "on",
-                "stoploss_on_exchange": "on",
-                "custom_exit": "on",
-                "partial_exit": "on",
-                "*": "off"
-            },
-            "exit_cancel": "on",
-            "exit_fill": "on",
-            "protection_trigger": "off",
-            "protection_trigger_global": "on",
-            "strategy_msg": "off",
-            "show_candle": "off"
-        },
-        "reload": true,
-        "balance_dust_level": 0.01,
-        "keyboard": [
-            [
-                "/daily",
-                "/profit",
-                "/balance"
-            ],
-            [
-                "/status",
-                "/status table",
-                "/performance"
-            ],
-            [
-                "/count",
-                "/logs",
-                "/help"
-            ]
-        ]
+        "username": "",
+        "password": ""
     }
 }

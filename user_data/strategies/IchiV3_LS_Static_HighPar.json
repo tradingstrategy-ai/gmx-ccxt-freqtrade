@@ -1,0 +1,53 @@
+{
+  "strategy_name": "IchiV3_LS_Static_HighPar",
+  "params": {
+    "roi": {
+      "0": 10.0
+    },
+    "stoploss": {
+      "stoploss": -0.129
+    },
+    "trailing": {
+      "trailing_stop": false,
+      "trailing_stop_positive": null,
+      "trailing_stop_positive_offset": null,
+      "trailing_only_offset_is_reached": false
+    },
+    "max_open_trades": {
+      "max_open_trades": 10
+    },
+    "buy": {
+      "daily_cloud_regime_enabled": true,
+      "long_daily_cloud_filter": "green_cloud",
+      "mcap_blue_chip_multiplier": 1.0,
+      "mcap_blue_chip_threshold": 100.0,
+      "mcap_degen_multiplier": 1.5,
+      "mcap_large_cap_multiplier": 2.0,
+      "mcap_large_cap_threshold": 10.0,
+      "mcap_mid_cap_multiplier": 2.0,
+      "mcap_mid_cap_threshold": 1.0,
+      "per_pair_cap_pct": 0.2,
+      "price_velocity_window": 10,
+      "retest_lookback_window": 24,
+      "max_pool_share": 0.02,
+      "max_oi_share": 0.025,
+      "min_stake_ratio": 0.1,
+      "min_position_pct": 0.01,
+      "base_stake_pct": 0.05
+    },
+    "sell": {
+      "atr_stop_multiplier": 3.1,
+      "rsi_tp_threshold": 25,
+      "short_atr_trailing_activation": 0.03,
+      "short_atr_trailing_enabled": true,
+      "short_atr_trailing_multiplier": 6.1,
+      "short_daily_cloud_filter": "all",
+      "short_hard_stoploss": 0.071,
+      "use_rsi_exit": 1,
+      "velocity_tp_threshold": -0.098
+    },
+    "protection": {}
+  },
+  "ft_stratparam_v": 1,
+  "export_time": "2026-03-06 17:59:23.444875+00:00"
+}
