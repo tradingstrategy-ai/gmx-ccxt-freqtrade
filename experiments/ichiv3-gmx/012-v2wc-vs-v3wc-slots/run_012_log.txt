@@ -1,0 +1,155 @@
+=== Experiment 012: IchiV2+WC vs IchiV3+WC — 6-slot vs 10-slot ===
+=== WhaleCap: OI=0.025 pool=0.02 min_stake=0.10 min_pos=0.01 ===
+=== Started: Mon Mar 16 11:09:00 UTC 2026 ===
+
+==============================================
+=== arm_a_v2wc_10slots (strategy=IchiV2_LS_Static_WhaleCap)
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%          │
+│ Worst trade                   │ TAO/USDC:USDC -9.06%            │
+│ Best day                      │ 13696.194 USDC                  │
+│ Worst day                     │ -5232.919 USDC                  │
+│ Days win/draw/lose            │ 306 / 847 / 526                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 06:34 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 18d 03:00 / 1d 04:17 │
+│ Max Consecutive Wins / Loss   │ 17 / 23                         │
+│ Rejected Entry signals        │ 835                             │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 92625.407 USDC                  │
+│ Max balance                   │ 212823.904 USDC                 │
+│ Max % of account underwater   │ 21.90%                          │
+│ Absolute drawdown             │ 27598.915 USDC (21.90%)         │
+│ Drawdown duration             │ 155 days 07:00:00               │
+│ Profit at drawdown start      │ 26029.453 USDC                  │
+│ Profit at drawdown end        │ -1569.462 USDC                  │
+│ Drawdown start                │ 2024-07-08 08:00:00             │
+│ Drawdown end                  │ 2024-12-10 15:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │   1937 │         0.64 │      108389.918 │       108.39 │ 1 day, 23:30:00 │  740     0  1197  38.2 │ 27598.915 USDC  21.90% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴────────────────────────┘
+=== arm_a_v2wc_10slots DONE — saved to experiments/ichiv3-gmx/012-v2wc-vs-v3wc-slots/results/arm_a_v2wc_10slots.zip ===
+
+==============================================
+=== arm_b_v2wc_6slots (strategy=IchiV2_LS_Static_WhaleCap)
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%          │
+│ Worst trade                   │ TAO/USDC:USDC -9.06%            │
+│ Best day                      │ 22296.063 USDC                  │
+│ Worst day                     │ -5599.717 USDC                  │
+│ Days win/draw/lose            │ 296 / 913 / 470                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 07:34 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 18d 03:00 / 1d 04:14 │
+│ Max Consecutive Wins / Loss   │ 12 / 21                         │
+│ Rejected Entry signals        │ 1550                            │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 92141.618 USDC                  │
+│ Max balance                   │ 273016.224 USDC                 │
+│ Max % of account underwater   │ 29.21%                          │
+│ Absolute drawdown             │ 38011.554 USDC (29.21%)         │
+│ Drawdown duration             │ 415 days 19:00:00               │
+│ Profit at drawdown start      │ 30153.173 USDC                  │
+│ Profit at drawdown end        │ -7858.382 USDC                  │
+│ Drawdown start                │ 2023-02-05 04:00:00             │
+│ Drawdown end                  │ 2024-03-26 23:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 6
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV2_LS_Static_WhaleCap │   1508 │         0.65 │      162204.809 │        162.2 │ 1 day, 23:50:00 │  576     0   932  38.2 │ 38011.554 USDC  29.21% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴────────────────────────┘
+=== arm_b_v2wc_6slots DONE — saved to experiments/ichiv3-gmx/012-v2wc-vs-v3wc-slots/results/arm_b_v2wc_6slots.zip ===
+
+==============================================
+=== arm_c_v3wc_10slots (strategy=IchiV3_LS_Static_WhaleCap)
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 169.36%          │
+│ Worst trade                   │ SPX6900/USDC:USDC -13.04%       │
+│ Best day                      │ 22963.136 USDC                  │
+│ Worst day                     │ -8506.729 USDC                  │
+│ Days win/draw/lose            │ 286 / 925 / 468                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 05:21 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 10d 22:00 / 1d 05:05 │
+│ Max Consecutive Wins / Loss   │ 12 / 22                         │
+│ Rejected Entry signals        │ 516                             │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 95451.449 USDC                  │
+│ Max balance                   │ 268384.753 USDC                 │
+│ Max % of account underwater   │ 28.58%                          │
+│ Absolute drawdown             │ 39374.287 USDC (26.39%)         │
+│ Drawdown duration             │ 114 days 06:00:00               │
+│ Profit at drawdown start      │ 49221.465 USDC                  │
+│ Profit at drawdown end        │ 9847.178 USDC                   │
+│ Drawdown start                │ 2024-07-08 08:00:00             │
+│ Drawdown end                  │ 2024-10-30 14:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 10
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1626 │         0.69 │      149790.375 │       149.79 │ 1 day, 23:51:00 │  632     0   994  38.9 │ 39374.287 USDC  26.39% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴────────────────────────┘
+=== arm_c_v3wc_10slots DONE — saved to experiments/ichiv3-gmx/012-v2wc-vs-v3wc-slots/results/arm_c_v3wc_10slots.zip ===
+
+==============================================
+=== arm_d_v3wc_6slots (strategy=IchiV3_LS_Static_WhaleCap)
+==============================================
+│ Best trade                    │ DOLO/USDC:USDC 121.42%          │
+│ Worst trade                   │ SPX6900/USDC:USDC -13.04%       │
+│ Best day                      │ 23253.62 USDC                   │
+│ Worst day                     │ -10736.047 USDC                 │
+│ Days win/draw/lose            │ 269 / 980 / 430                 │
+│ Min/Max/Avg. Duration Winners │ 0d 01:00 / 20d 19:00 / 3d 04:21 │
+│ Min/Max/Avg. Duration Losers  │ 0d 00:00 / 10d 11:00 / 1d 04:23 │
+│ Max Consecutive Wins / Loss   │ 10 / 22                         │
+│ Rejected Entry signals        │ 1050                            │
+│ Entry/Exit Timeouts           │ 0 / 0                           │
+│                               │                                 │
+│ Min balance                   │ 97896.268 USDC                  │
+│ Max balance                   │ 300185.576 USDC                 │
+│ Max % of account underwater   │ 38.40%                          │
+│ Absolute drawdown             │ 62410.818 USDC (38.40%)         │
+│ Drawdown duration             │ 415 days 14:00:00               │
+│ Profit at drawdown start      │ 62547.797 USDC                  │
+│ Profit at drawdown end        │ 136.979 USDC                    │
+│ Drawdown start                │ 2023-02-05 04:00:00             │
+│ Drawdown end                  │ 2024-03-26 18:00:00             │
+│ Market change                 │ -46.94%                         │
+└───────────────────────────────┴─────────────────────────────────┘
+
+Backtested 2021-07-18 16:00:00 -> 2026-03-12 00:00:00 | Max open trades : 6
+                                                                     STRATEGY SUMMARY                                                                     
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDC ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ IchiV3_LS_Static_WhaleCap │   1300 │         0.68 │      177273.896 │       177.27 │ 1 day, 22:46:00 │  498     0   802  38.3 │ 62410.818 USDC  38.40% │
+└───────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴────────────────────────┘
+=== arm_d_v3wc_6slots DONE — saved to experiments/ichiv3-gmx/012-v2wc-vs-v3wc-slots/results/arm_d_v3wc_6slots.zip ===
+
+=== Experiment 012 COMPLETE ===
+=== Finished: Mon Mar 16 11:24:11 UTC 2026 ===
+Results in: experiments/ichiv3-gmx/012-v2wc-vs-v3wc-slots/results
+total 4212
+drwxrwxr-x 2 ubuntu ubuntu    4096 Mar 16 11:24 .
+drwxrwxr-x 4 ubuntu ubuntu    4096 Mar 16 11:09 ..
+-rw-rw-r-- 1 ubuntu ubuntu 1130391 Mar 16 11:13 arm_a_v2wc_10slots.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1058998 Mar 16 11:17 arm_b_v2wc_6slots.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1081960 Mar 16 11:21 arm_c_v3wc_10slots.zip
+-rw-rw-r-- 1 ubuntu ubuntu 1024941 Mar 16 11:24 arm_d_v3wc_6slots.zip
+Restored strategy JSONs.
