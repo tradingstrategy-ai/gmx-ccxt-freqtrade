@@ -26,6 +26,10 @@ RUN pip install --user --force-reinstall "/tmp/web3-ethereum-defi[web3v7]"
 # Install plotly for freqtrade plotting commands
 RUN pip install --user plotly
 
+# Install custom pairlist plugins into freqtrade's plugin directory
+COPY plugins/pairlist/HistoricalVolumePairList.py /freqtrade/freqtrade/plugins/pairlist/
+COPY plugins/pairlist/GMXLiquidityFilter.py /freqtrade/freqtrade/plugins/pairlist/
+
 # Use the patched entrypoint
 ENTRYPOINT ["python", "-u", "-B", "-m", "eth_defi.gmx.freqtrade.patched_entrypoint", "freqtrade"]
 # Default to trade mode
