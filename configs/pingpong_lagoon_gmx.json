@@ -1,8 +1,10 @@
 {
     "$schema": "https://schema.freqtrade.io/schema.json",
+    "strategy": "Pingpong",
     "trading_mode": "futures",
     "margin_mode": "isolated",
-    "max_open_trades": 1,
+    // 2 pairs × 2 sides (long + short) = 4 simultaneous positions
+    "max_open_trades": 4,
     "stake_currency": "USDC",
     // Small stake for testnet — adjust to your vault's USDC balance
     "stake_amount": 3,
@@ -10,7 +12,7 @@
     "fiat_display_currency": "USD",
     "dry_run": false,
     "dry_run_wallet": 100,
-    "timeframe": "5m",
+    "timeframe": "1m",
     "cancel_open_orders_on_exit": false,
     "futures_funding_rate": 0,
     "unfilledtimeout": {
@@ -51,10 +53,12 @@
             "enableRateLimit": true,
             "rateLimit": 500,
             "executionBuffer": 2.2,
+            "defaultSlippage": 0.01,
             "options": {
                 // Lagoon vault deployed on Arbitrum (GMX test)
                 // "vaultAddress": "0x05Ec266b7b85F8a28A271041c9b40a15941Bf81F"
-                "vaultAddress": "0x4f6C246a0959712CCc5A49fDd8E1Cf8A2d827369"
+                // "vaultAddress": "0x4f6C246a0959712CCc5A49fDd8E1Cf8A2d827369"
+                "vaultAddress": "0xE3D5595707b2b75B3F25fBCc9A212A547d6E29ca"
             }
         },
         "ccxt_async_config": {
@@ -69,7 +73,8 @@
         "lagoon_auto_approve": true,
         // Arbitrum Sepolia testnet — only ETH market is whitelisted in the guard
         "pair_whitelist": [
-            "0G/USDC:USDC"
+            "XAUT/USDC:USDC",
+            "GMX/USDC:USDC"
         ]
     },
     "pairlists": [
