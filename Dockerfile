@@ -30,12 +30,6 @@ RUN pip install --user plotly
 COPY plugins/pairlist/HistoricalVolumePairList.py /freqtrade/freqtrade/plugins/pairlist/
 COPY plugins/pairlist/GMXLiquidityFilter.py /freqtrade/freqtrade/plugins/pairlist/
 
-# Apply minimal freqtrade patches for GMX compatibility
-# Fix: taker fee KeyError for GMX markets (market dict missing 'taker' key)
-RUN sed -i 's/taker_fee_rate = market\["taker"\] or/taker_fee_rate = market.get("taker") or/' \
-    /freqtrade/freqtrade/exchange/exchange.py && \
-    sed -i 's/\.get("taker", 0.001)/.get("taker", 0.001) or 0.0006/' \
-    /freqtrade/freqtrade/exchange/exchange.py
 
 # Use the patched entrypoint
 ENTRYPOINT ["python", "-u", "-B", "-m", "eth_defi.gmx.freqtrade.patched_entrypoint", "freqtrade"]
