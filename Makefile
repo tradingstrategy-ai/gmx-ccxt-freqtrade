@@ -7,6 +7,24 @@ VERBOSE ?=
 -include .env
 export
 
+# Live bot containers — these must NEVER be interrupted.
+# Targets that spawn new containers (docker compose run) are blocked for these.
+LIVE_BOTS := ichiv2_gmx ichiv2_gmx_vault
+
+# Guard: block docker compose run against live bot containers
+define CHECK_NOT_LIVE_BOT
+	@if echo "$(LIVE_BOTS)" | grep -qw "$(CONTAINER)"; then \
+		echo ""; \
+		echo "ERROR: $(CONTAINER) is a LIVE BOT with real money."; \
+		echo "       'docker compose run' would spawn a new container and risk OOM-killing the bot."; \
+		echo ""; \
+		echo "  Use a dedicated backtest container instead:"; \
+		echo "    make $(1) CONTAINER=ichiv2_gmx_oi_filter_backtest ..."; \
+		echo ""; \
+		exit 1; \
+	fi
+endef
+
 # Generate a table of contents for README.md from Markdown headings.
 # Places/updates the TOC above the "# Overview" section.
 toc:
@@ -30,6 +48,7 @@ list-pairs:
 		echo "Error: CONTAINER is not set. Usage: make list-pairs CONTAINER=YourContainer [EXCHANGE=gmx] [VERBOSE=-v/-vv/-vvv]"; \
 		exit 1; \
 	fi
+	$(call CHECK_NOT_LIVE_BOT,list-pairs)
 	docker compose run --rm $(CONTAINER) list-pairs \
 		--config /freqtrade/configs/$(CONTAINER).json \
 		--config /freqtrade/configs/$(CONTAINER).secrets.json \
@@ -47,6 +66,7 @@ backtest:
 		echo "Error: STRATEGY is not set. Usage: make backtest CONTAINER=YourContainer STRATEGY=YourStrategy [VERBOSE=-v/-vv/-vvv]"; \
 		exit 1; \
 	fi
+	$(call CHECK_NOT_LIVE_BOT,backtest)
 	docker compose run --rm $(CONTAINER) backtesting \
 		--config /freqtrade/configs/$(CONTAINER).json \
 		--config /freqtrade/configs/$(CONTAINER).secrets.json \
@@ -65,6 +85,7 @@ plot-dataframe:
 		echo "Optional: BACKTEST_FILENAME=path/to/backtest.zip (defaults to latest backtest in user_data/backtest_results)"; \
 		exit 1; \
 	fi
+	$(call CHECK_NOT_LIVE_BOT,plot-dataframe)
 	docker compose run --rm $(CONTAINER) plot-dataframe \
 		--config /freqtrade/configs/$(CONTAINER).json \
 		--config /freqtrade/configs/$(CONTAINER).secrets.json \
@@ -86,6 +107,7 @@ plot-profit:
 		echo "Optional: TRADE_SOURCE=DB DB=db_filename.sqlite (only use if you want database trades instead of backtest)"; \
 		exit 1; \
 	fi
+	$(call CHECK_NOT_LIVE_BOT,plot-profit)
 	docker compose run --rm $(CONTAINER) plot-profit \
 		--config /freqtrade/configs/$(CONTAINER).json \
 		--config /freqtrade/configs/$(CONTAINER).secrets.json \
@@ -111,6 +133,7 @@ hyperopt:
 		echo "Error: STRATEGY is not set. Usage: make hyperopt CONTAINER=YourContainer STRATEGY=YourStrategy [EPOCHS=500] [SPACES='buy sell'] [LOSS=SharpeHyperOptLossDaily] [VERBOSE=-v/-vv/-vvv]"; \
 		exit 1; \
 	fi
+	$(call CHECK_NOT_LIVE_BOT,hyperopt)
 	docker compose run --rm $(CONTAINER) hyperopt \
 		--config /freqtrade/configs/$(CONTAINER).json \
 		--config /freqtrade/configs/$(CONTAINER).secrets.json \
@@ -133,6 +156,7 @@ trade:
 		echo "Error: STRATEGY is not set. Usage: make trade CONTAINER=YourContainer STRATEGY=YourStrategy [DB=yourdb.sqlite] [FREQAI_MODEL=YourModel] [VERBOSE=-v/-vv/-vvv]"; \
 		exit 1; \
 	fi
+	$(call CHECK_NOT_LIVE_BOT,trade)
 	docker compose run --rm $(CONTAINER) trade \
 		--config /freqtrade/configs/$(CONTAINER).json \
 		--config /freqtrade/configs/$(CONTAINER).secrets.json \
