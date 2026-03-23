@@ -161,10 +161,10 @@ gmx-data-collector-init:
 # Invokes CLI directly so it works regardless of submodule Makefile version
 gmx-data: gmx-data-collector-init
 	@echo "Running GMX data collection and export..."
-	@cd $(GMX_COLLECTOR_DIR) && python -m gmx_historical_data.cli collect --update --output-dir ./data --concurrency $(CONCURRENCY)
-	@cd $(GMX_COLLECTOR_DIR) && python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet --resume
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli collect --update --output-dir ./data --concurrency $(CONCURRENCY)
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet --resume
 	@echo "Exporting to Freqtrade format..."
-	@cd $(GMX_COLLECTOR_DIR) && python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
 	@echo "GMX data ready in user_data/data/gmx/futures/"
 
 # Incremental data refresh: top up ALL local data in one command.
@@ -189,13 +189,13 @@ refresh-data:
 	@echo "Step 2/4: Refreshing Binance volume + GMX OI + pool liquidity..."
 	python3 scripts/refresh_all_data.py
 	@echo ""
-	@echo "Step 3/4: Merging GMX candles with Binance gap-fill..."
-	python scripts/merge_gmx_binance.py
+	@echo "Step 3/4: Filling internal gaps with Binance data..."
+	python3 scripts/merge_gmx_binance.py
 	@echo ""
 	@echo "Step 4/4: Backfilling historical data from Binance..."
-	python scripts/backfill_1h_5m_from_binance.py
+	python3 scripts/backfill_1h_5m_from_binance.py
 	@echo ""
-	@echo "✓ All data ready in user_data/data/gmx_complete_w_binance/"
+	@echo "✓ All data ready in user_data/data/gmx/"
 
 # Full history rebuild: collect all GMX data from genesis + merge + backfill.
 # Use this for first-time setup or after data loss. Slow (hours).
@@ -203,19 +203,19 @@ refresh-data:
 # Uses gmx-data-collector submodule for memory-safe collection with checkpoints.
 full-data: gmx-data-collector-init
 	@echo "Step 1/4: Full GMX data collection from genesis (this will take a while)..."
-	@cd $(GMX_COLLECTOR_DIR) && python -m gmx_historical_data.cli collect --full --output-dir ./data --concurrency $(CONCURRENCY)
-	@cd $(GMX_COLLECTOR_DIR) && python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli collect --full --output-dir ./data --concurrency $(CONCURRENCY)
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet
 	@echo ""
 	@echo "Step 2/4: Exporting to Freqtrade format..."
-	@cd $(GMX_COLLECTOR_DIR) && python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
 	@echo ""
-	@echo "Step 3/4: Merging GMX candles with Binance gap-fill..."
-	python scripts/merge_gmx_binance.py
+	@echo "Step 3/4: Filling internal gaps with Binance data..."
+	python3 scripts/merge_gmx_binance.py
 	@echo ""
 	@echo "Step 4/4: Backfilling historical data from Binance..."
-	python scripts/backfill_1h_5m_from_binance.py
+	python3 scripts/backfill_1h_5m_from_binance.py
 	@echo ""
-	@echo "✓ Full data ready in user_data/data/gmx_complete_w_binance/"
+	@echo "✓ Full data ready in user_data/data/gmx/"
 
 # ==============================================================================
 # Security

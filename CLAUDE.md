@@ -16,14 +16,16 @@ Algorithmic trading system for GMX DEX using Freqtrade with custom CCXT adapter.
 
 ```
 user_data/data/
-├── gmx/                    # Raw GMX candles (from gmx-data-collector or freqtrade download-data)
-├── gmx_complete/           # GMX candles gap-filled with Binance (output of merge_gmx_binance.py)
-├── gmx_complete_w_binance/ # Final dataset: historical Binance backfill + GMX data (USE THIS FOR BACKTESTS)
-├── binance/futures/        # Binance volume data (1d feathers for HistoricalVolumePairList)
+├── gmx/
+│   ├── futures/            # OHLCV candles + funding rates (freqtrade download-data writes here)
+│   └── futures_metrics/    # OI + pool liquidity (refresh_all_data.py writes here)
+├── binance/futures/        # Binance 1d volume data (for HistoricalVolumePairList)
 └── market_cap_history.json # CoinGecko market cap data (for IchiV3 tier sizing)
 ```
 
-**Always use `gmx_complete_w_binance` as the datadir for backtesting** — it has the deepest history.
+All backtesting uses `datadir = user_data/data/gmx`. The `GMXLiquidityFilter` reads from
+`{datadir}/futures_metrics/` and `HistoricalVolumePairList` reads from its own `data_source_dir`
+(configured as `user_data/data/binance` in pairlist config).
 
 ### How to refresh data
 
