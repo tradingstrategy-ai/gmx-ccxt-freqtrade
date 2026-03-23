@@ -27,51 +27,30 @@ user_data/data/
 
 ### How to refresh data
 
-There are two scenarios. Both require `.env` file (copy from `.env.example`):
+#### Incremental update (daily use, ~5 min)
 
 ```bash
-cp .env.example .env
-# Fill in JSON_RPC_ARBITRUM and HYPERSYNC_API_TOKEN
+make refresh-data
 ```
 
-#### Incremental update (daily use, ~10-30 min)
+Downloads the last 30 days of GMX data via the vault container (safe, small memory), then
+merges with Binance and rebuilds the final dataset. No external API tokens needed.
 
-```bash
-# Step 1: Update GMX candles via gmx-data-collector
-source .env && make gmx-data
-
-# Step 2: Gap-fill with Binance and create final dataset
-python scripts/merge_gmx_binance.py
-python scripts/backfill_1h_5m_from_binance.py
-```
+Customize: `make refresh-data REFRESH_DAYS=60` for a wider window.
 
 #### Full history rebuild (first-time setup or after data loss)
 
+Requires `.env` with `JSON_RPC_ARBITRUM` and `HYPERSYNC_API_TOKEN` (copy from `.env.example`).
+Uses `gmx-data-collector` submodule for memory-safe collection with checkpoints.
+
 ```bash
-# Step 1: Collect full history from genesis (takes hours)
-source .env
-cd gmx-data-collector
-poetry run python -m gmx_historical_data.cli collect --full --output-dir ./data --concurrency 5
-poetry run python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet
-poetry run python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir ../user_data/data
-cd ..
-
-# Step 2: Gap-fill with Binance and create final dataset
-python scripts/merge_gmx_binance.py
-python scripts/backfill_1h_5m_from_binance.py
+make full-data
 ```
-
-#### Refresh Binance volume data only (for HistoricalVolumePairList)
-
-The 1d Binance feathers in `user_data/data/binance/futures/` power the `HistoricalVolumePairList`.
-These were originally downloaded via freqtrade and can be topped up by running a ccxt fetch
-script inside the Docker container (no standalone script exists yet).
 
 ### Do NOT use `make data`
 
-`make data` has been deprecated. It wrapped freqtrade's `download-data` which loads all data into
-memory and will OOM on large pair sets. Use `make refresh-data` or `make full-data` instead —
-they use the `gmx-data-collector` pipeline which is incremental, checkpointed, and memory-safe.
+`make data` has been removed. It used freqtrade's `download-data` which loads all data into
+memory and OOMs on large pair sets. Use `make refresh-data` instead.
 
 ## Running backtests
 
