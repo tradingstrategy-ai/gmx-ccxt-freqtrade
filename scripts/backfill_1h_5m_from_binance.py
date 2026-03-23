@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Create gmx_complete_w_binance by copying gmx_complete and prepending Binance 1h/5m data.
+"""Create gmx_complete_w_binance by copying gmx_complete and prepending Binance data.
 
 For each token:
 1. Find the token's earliest date across ALL timeframes in gmx_complete (= GMX listing date)
-2. For 1h and 5m: if their start date is later than the listing date, prepend Binance data
-   from listing_date up to where the GMX 1h/5m data begins
+2. For 1d, 4h, 1h, and 5m: if their start date is later than the listing date, prepend
+   Binance data from listing_date up to where the GMX data begins
 3. Tokens that only appeared recently (all timeframes start ~same date) get no backfill
 
 This creates a new directory so the original gmx_complete is preserved.
@@ -37,7 +37,7 @@ PRICE_DIVISORS = {
     "FLOKI": 1000,
 }
 
-TIMEFRAMES_TO_BACKFILL = ["1h", "5m"]
+TIMEFRAMES_TO_BACKFILL = ["1d", "4h", "1h", "5m"]  # Extended from original ["1h", "5m"] to cover all informative timeframes
 
 # Minimum gap (days) between earliest date and 1h/5m start to warrant backfill
 MIN_GAP_DAYS = 7

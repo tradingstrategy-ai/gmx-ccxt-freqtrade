@@ -248,31 +248,15 @@ source .env && make gmx-data
 
 Data is written to `user_data/data/gmx/futures/`. This provides broader historical coverage than the GMX REST API alone.
 
-#### Option B: Freqtrade download-data
-
-FreqTrade provides a command that fetches GMX market data from the GMX GraphQL endpoint and stores it locally. Choose a time range within the last ~6 months. For example, if today is February 2026:
+To also merge with Binance data (extends history and adds volume data for `HistoricalVolumePairList`):
 
 ```bash
-BACKTEST_TIME_RANGE=20250901-20260201
-
-./freqtrade-gmx download-data \
-  --config configs/adxmomentum_gmx.json \
-  --config configs/secrets.empty.json \
-  --exchange gmx \
-  --timeframe 1h \
-  --timerange $BACKTEST_TIME_RANGE
+python scripts/merge_gmx_binance.py
+python scripts/backfill_1h_5m_from_binance.py
 ```
 
-Example output:
-
-```
-2025-12-10 12:20:51,030 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDC:USDC", 1h, index and store in /Users/moo/code/gmx-ccxt-freqtrade/user_data/data/gmx. From 2025-12-10T09:00:00 to
-2025-12-08T00:00:00
-2025-12-10 12:20:51,033 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDC:USDC with length 0.
-Timeframe                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3/3 100% • 0:00:01 • 0:00:00
-Downloading ETH/USDC:USDC ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4/4 100% • 0:00:01 • 0:00:00
-2025-12-10 12:20:51,111 - eth_defi.gmx.ccxt.async_support.exchange - INFO - Async GMX exchange session closed
-```
+For incremental daily updates, use `make refresh-data` which runs the full pipeline (collect + export + merge + backfill).
+For a full rebuild from genesis, use `make full-data`.
 
 ### Run backtest
 
