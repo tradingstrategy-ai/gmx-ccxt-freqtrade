@@ -135,6 +135,20 @@ services:
         --datadir /freqtrade/user_data/data/gmx_complete
         --timeframe-detail 5m
 
+  # Generic backtest runner — used by `make backtest`, `make hyperopt`, etc.
+  # Does NOT run by default (no command). Starts only when invoked via make targets.
+  # Shares data volumes with live bots but runs as a separate container.
+  backtest-runner:
+    <<: *default-freqtradebot
+    container_name: backtest-runner
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: "no"
+    profiles:
+      - tools
+    command: ["echo", "Use via make backtest/hyperopt targets"]
+
   caddy:
     image: caddy:2.4.5
     container_name: caddy

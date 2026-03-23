@@ -7,69 +7,39 @@ VERBOSE ?=
 -include .env
 export
 
-# Live bot containers — these must NEVER be interrupted.
-# Targets that spawn new containers (docker compose run) are blocked for these.
-LIVE_BOTS := ichiv2_gmx ichiv2_gmx_vault
-
-# Guard: block docker compose run against live bot containers
-define CHECK_NOT_LIVE_BOT
-	@if echo "$(LIVE_BOTS)" | grep -qw "$(CONTAINER)"; then \
-		echo ""; \
-		echo "ERROR: $(CONTAINER) is a LIVE BOT with real money."; \
-		echo "       'docker compose run' would spawn a new container and risk OOM-killing the bot."; \
-		echo ""; \
-		echo "  Use a dedicated backtest container instead:"; \
-		echo "    make $(1) CONTAINER=ichiv2_gmx_oi_filter_backtest ..."; \
-		echo ""; \
-		exit 1; \
-	fi
-endef
+# Config to use for backtesting/hyperopt (defaults to ichiv2_gmx, override with CONFIG=...)
+CONFIG ?= ichiv2_gmx
 
 # Generate a table of contents for README.md from Markdown headings.
-# Places/updates the TOC above the "# Overview" section.
 toc:
 	python scripts/generate_toc.py
 
 # DEPRECATED: 'make data' used freqtrade download-data which OOMs on large datasets.
-# Use 'make refresh-data' or 'make full-data' instead.
 data:
 	@echo ""
 	@echo "ERROR: 'make data' has been removed."
 	@echo ""
-	@echo "  Incremental update:  source .env && make refresh-data"
-	@echo "  Full history:        source .env && make full-data"
+	@echo "  Incremental update:  make refresh-data"
+	@echo "  Full history:        make full-data"
 	@echo ""
 	@exit 1
 
-# List available trading pairs on the exchange.
-# Defaults to GMX if no EXCHANGE is specified.
-list-pairs:
-	@if [ -z "$(CONTAINER)" ]; then \
-		echo "Error: CONTAINER is not set. Usage: make list-pairs CONTAINER=YourContainer [EXCHANGE=gmx] [VERBOSE=-v/-vv/-vvv]"; \
-		exit 1; \
-	fi
-	$(call CHECK_NOT_LIVE_BOT,list-pairs)
-	docker compose run --rm $(CONTAINER) list-pairs \
-		--config /freqtrade/configs/$(CONTAINER).json \
-		--config /freqtrade/configs/$(CONTAINER).secrets.json \
-		--exchange $(or $(EXCHANGE),gmx) \
-		$(VERBOSE)
+# ==============================================================================
+# Backtesting & analysis (uses dedicated backtest-runner container)
+# ==============================================================================
+# These targets use a separate 'backtest-runner' container that shares data
+# volumes with the live bots but runs independently. Live bots are never
+# touched or interrupted.
 
-# Run a strategy backtest against historical data.
-# Requires CONTAINER and STRATEGY; uses TIMEFRAME and TIMERANGE variables.
+# Run a strategy backtest.
 backtest:
-	@if [ -z "$(CONTAINER)" ]; then \
-		echo "Error: CONTAINER is not set. Usage: make backtest CONTAINER=YourContainer STRATEGY=YourStrategy [VERBOSE=-v/-vv/-vvv]"; \
-		exit 1; \
-	fi
 	@if [ -z "$(STRATEGY)" ]; then \
-		echo "Error: STRATEGY is not set. Usage: make backtest CONTAINER=YourContainer STRATEGY=YourStrategy [VERBOSE=-v/-vv/-vvv]"; \
+		echo "Usage: make backtest STRATEGY=YourStrategy [CONFIG=ichiv2_gmx] [TIMEFRAME=1h] [TIMERANGE=20260101-20260319]"; \
 		exit 1; \
 	fi
-	$(call CHECK_NOT_LIVE_BOT,backtest)
-	docker compose run --rm $(CONTAINER) backtesting \
-		--config /freqtrade/configs/$(CONTAINER).json \
-		--config /freqtrade/configs/$(CONTAINER).secrets.json \
+	docker compose run --rm backtest-runner backtesting \
+		--config /freqtrade/configs/$(CONFIG).json \
+		--config /freqtrade/configs/$(CONFIG).secrets.json \
 		--strategy-path /freqtrade/strategies \
 		--strategy $(STRATEGY) \
 		--timeframe $(TIMEFRAME) \
@@ -77,18 +47,43 @@ backtest:
 		--cache none \
 		$(VERBOSE)
 
-# Plot strategy entry/exit signals overlaid on price and indicator data.
-# Generates an interactive HTML chart from backtest results.
-plot-dataframe:
-	@if [ -z "$(CONTAINER)" ] || [ -z "$(STRATEGY)" ]; then \
-		echo "Error: CONTAINER and STRATEGY are required. Usage: make plot-dataframe CONTAINER=YourContainer STRATEGY=YourStrategy [PAIRS='BTC/USDT ETH/USDT']"; \
-		echo "Optional: BACKTEST_FILENAME=path/to/backtest.zip (defaults to latest backtest in user_data/backtest_results)"; \
+# Run hyperparameter optimization.
+EPOCHS ?= 500
+SPACES ?= buy sell
+LOSS ?= SharpeHyperOptLossDaily
+hyperopt:
+	@if [ -z "$(STRATEGY)" ]; then \
+		echo "Usage: make hyperopt STRATEGY=YourStrategy [CONFIG=ichiv2_gmx] [EPOCHS=500] [SPACES='buy sell']"; \
 		exit 1; \
 	fi
-	$(call CHECK_NOT_LIVE_BOT,plot-dataframe)
-	docker compose run --rm $(CONTAINER) plot-dataframe \
-		--config /freqtrade/configs/$(CONTAINER).json \
-		--config /freqtrade/configs/$(CONTAINER).secrets.json \
+	docker compose run --rm backtest-runner hyperopt \
+		--config /freqtrade/configs/$(CONFIG).json \
+		--config /freqtrade/configs/$(CONFIG).secrets.json \
+		--strategy-path /freqtrade/strategies \
+		--strategy $(STRATEGY) \
+		--hyperopt-loss $(LOSS) \
+		--spaces $(SPACES) \
+		--epochs $(EPOCHS) \
+		--timerange $(TIMERANGE) \
+		$(VERBOSE)
+
+# List available trading pairs on the exchange.
+list-pairs:
+	docker compose run --rm backtest-runner list-pairs \
+		--config /freqtrade/configs/$(CONFIG).json \
+		--config /freqtrade/configs/$(CONFIG).secrets.json \
+		--exchange $(or $(EXCHANGE),gmx) \
+		$(VERBOSE)
+
+# Plot strategy signals overlaid on price data.
+plot-dataframe:
+	@if [ -z "$(STRATEGY)" ]; then \
+		echo "Usage: make plot-dataframe STRATEGY=YourStrategy [CONFIG=ichiv2_gmx]"; \
+		exit 1; \
+	fi
+	docker compose run --rm backtest-runner plot-dataframe \
+		--config /freqtrade/configs/$(CONFIG).json \
+		--config /freqtrade/configs/$(CONFIG).secrets.json \
 		--strategy-path /freqtrade/strategies \
 		--strategy $(STRATEGY) \
 		$(if $(PAIRS),-p $(PAIRS)) \
@@ -98,19 +93,15 @@ plot-dataframe:
 		$(if $(INDICATORS1),--indicators1 $(INDICATORS1)) \
 		$(if $(INDICATORS2),--indicators2 $(INDICATORS2))
 
-# Plot the equity curve showing cumulative profit over time.
-# Can use backtest results or a live trading database as the data source.
+# Plot equity curve.
 plot-profit:
-	@if [ -z "$(CONTAINER)" ] || [ -z "$(STRATEGY)" ]; then \
-		echo "Error: CONTAINER and STRATEGY are required. Usage: make plot-profit CONTAINER=YourContainer STRATEGY=YourStrategy [PAIRS='BTC/USDT ETH/USDT']"; \
-		echo "Optional: BACKTEST_FILENAME=path/to/backtest.zip (defaults to latest backtest in user_data/backtest_results)"; \
-		echo "Optional: TRADE_SOURCE=DB DB=db_filename.sqlite (only use if you want database trades instead of backtest)"; \
+	@if [ -z "$(STRATEGY)" ]; then \
+		echo "Usage: make plot-profit STRATEGY=YourStrategy [CONFIG=ichiv2_gmx]"; \
 		exit 1; \
 	fi
-	$(call CHECK_NOT_LIVE_BOT,plot-profit)
-	docker compose run --rm $(CONTAINER) plot-profit \
-		--config /freqtrade/configs/$(CONTAINER).json \
-		--config /freqtrade/configs/$(CONTAINER).secrets.json \
+	docker compose run --rm backtest-runner plot-profit \
+		--config /freqtrade/configs/$(CONFIG).json \
+		--config /freqtrade/configs/$(CONFIG).secrets.json \
 		--strategy-path /freqtrade/strategies \
 		--strategy $(STRATEGY) \
 		$(if $(PAIRS),-p $(PAIRS)) \
@@ -119,81 +110,14 @@ plot-profit:
 		$(if $(AUTO_OPEN),--auto-open) \
 		$(if $(filter DB,$(TRADE_SOURCE)),--db-url sqlite:////freqtrade/db/$(DB) --trade-source DB,--backtest-filename $(if $(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results/$(BACKTEST_FILENAME),/freqtrade/user_data/backtest_results))
 
-# Run hyperparameter optimization on a strategy.
-# Requires CONTAINER and STRATEGY; uses TIMEFRAME, TIMERANGE, EPOCHS, SPACES, and LOSS variables.
-EPOCHS ?= 500
-SPACES ?= buy sell
-LOSS ?= SharpeHyperOptLossDaily
-hyperopt:
-	@if [ -z "$(CONTAINER)" ]; then \
-		echo "Error: CONTAINER is not set. Usage: make hyperopt CONTAINER=YourContainer STRATEGY=YourStrategy [EPOCHS=500] [SPACES='buy sell'] [LOSS=SharpeHyperOptLossDaily] [VERBOSE=-v/-vv/-vvv]"; \
-		exit 1; \
-	fi
-	@if [ -z "$(STRATEGY)" ]; then \
-		echo "Error: STRATEGY is not set. Usage: make hyperopt CONTAINER=YourContainer STRATEGY=YourStrategy [EPOCHS=500] [SPACES='buy sell'] [LOSS=SharpeHyperOptLossDaily] [VERBOSE=-v/-vv/-vvv]"; \
-		exit 1; \
-	fi
-	$(call CHECK_NOT_LIVE_BOT,hyperopt)
-	docker compose run --rm $(CONTAINER) hyperopt \
-		--config /freqtrade/configs/$(CONTAINER).json \
-		--config /freqtrade/configs/$(CONTAINER).secrets.json \
-		--strategy-path /freqtrade/strategies \
-		--strategy $(STRATEGY) \
-		--hyperopt-loss $(LOSS) \
-		--spaces $(SPACES) \
-		--epochs $(EPOCHS) \
-		--timerange $(TIMERANGE) \
-		$(VERBOSE)
-
-# Start live trading with a given strategy via Docker.
-# Requires CONTAINER and STRATEGY; optionally accepts DB and FREQAI_MODEL.
-trade:
-	@if [ -z "$(CONTAINER)" ]; then \
-		echo "Error: CONTAINER is not set. Usage: make trade CONTAINER=YourContainer STRATEGY=YourStrategy [DB=yourdb.sqlite] [FREQAI_MODEL=YourModel] [VERBOSE=-v/-vv/-vvv]"; \
-		exit 1; \
-	fi
-	@if [ -z "$(STRATEGY)" ]; then \
-		echo "Error: STRATEGY is not set. Usage: make trade CONTAINER=YourContainer STRATEGY=YourStrategy [DB=yourdb.sqlite] [FREQAI_MODEL=YourModel] [VERBOSE=-v/-vv/-vvv]"; \
-		exit 1; \
-	fi
-	$(call CHECK_NOT_LIVE_BOT,trade)
-	docker compose run --rm $(CONTAINER) trade \
-		--config /freqtrade/configs/$(CONTAINER).json \
-		--config /freqtrade/configs/$(CONTAINER).secrets.json \
-		--strategy-path /freqtrade/strategies \
-		--strategy $(STRATEGY) \
-		$(if $(FREQAI_MODEL),--freqaimodel $(FREQAI_MODEL)) \
-		$(if $(DB),--db-url sqlite:////freqtrade/db/$(DB)) \
-		$(VERBOSE)
-
 # ==============================================================================
-# GMX data collection (uses gmx-data-collector submodule)
+# Data refresh
 # ==============================================================================
-# Collects candles + funding from GMX, exports to user_data/data/gmx/futures/
-# Requires: source .env && make gmx-data (HYPERSYNC_API_TOKEN, JSON_RPC_ARBITRUM)
-# ==============================================================================
-
-GMX_COLLECTOR_DIR ?= ./gmx-data-collector
-GMX_FEATHER_DIR ?= $(abspath ./user_data/data)
-CONCURRENCY ?= 5
-
-# Ensure submodule is initialized
-gmx-data-collector-init:
-	git submodule update --init --recursive gmx-data-collector
-
-# Full GMX data pipeline: collect + export into user_data/data
-# Invokes CLI directly so it works regardless of submodule Makefile version
-gmx-data: gmx-data-collector-init
-	@echo "Running GMX data collection and export..."
-	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli collect --update --output-dir ./data --concurrency $(CONCURRENCY)
-	@cd $(GMX_COLLECTOR_DIR) && poetry run python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet --resume
-	@echo "Exporting to Freqtrade format..."
-	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
-	@echo "GMX data ready in user_data/data/gmx/futures/"
 
 # Incremental data refresh: top up ALL local data in one command.
 # Downloads last 30 days of GMX candles, refreshes Binance volume, OI, liquidity,
-# then rebuilds the merged dataset. No external API tokens needed.
+# then fills gaps with Binance. No external API tokens needed.
+# Uses docker exec on the live vault container — zero extra memory.
 REFRESH_DAYS ?= 30
 REFRESH_CONTAINER ?= ichiv2_gmx_vault
 REFRESH_CONFIG ?= ichiv2_gmx_prod_vault
@@ -202,14 +126,14 @@ refresh-data:
 	@START=$$(date -d "-$(REFRESH_DAYS) days" +%Y%m%d); \
 	END=$$(date +%Y%m%d); \
 	echo "  Timerange: $$START-$$END"; \
-	docker compose exec $(REFRESH_CONTAINER) python -u -B -m eth_defi.gmx.freqtrade.patched_entrypoint \
+	docker exec $(REFRESH_CONTAINER) \
+		python -u -B -m eth_defi.gmx.freqtrade.patched_entrypoint \
 		freqtrade download-data \
 		--config /freqtrade/configs/$(REFRESH_CONFIG).json \
 		--config /freqtrade/configs/$(REFRESH_CONFIG).secrets.json \
 		--timeframes 1h 4h 1d \
 		--timerange $$START-$$END \
 		--prepend
-	@echo ""
 	@echo ""
 	@echo "Step 2/4: Refreshing Binance volume + GMX OI + pool liquidity..."
 	python3 scripts/refresh_all_data.py
@@ -222,10 +146,26 @@ refresh-data:
 	@echo ""
 	@echo "✓ All data ready in user_data/data/gmx/"
 
-# Full history rebuild: collect all GMX data from genesis + merge + backfill.
-# Use this for first-time setup or after data loss. Slow (hours).
-# Requires .env with JSON_RPC_ARBITRUM and HYPERSYNC_API_TOKEN.
-# Uses gmx-data-collector submodule for memory-safe collection with checkpoints.
+# ==============================================================================
+# GMX data collection (uses gmx-data-collector submodule)
+# ==============================================================================
+
+GMX_COLLECTOR_DIR ?= ./gmx-data-collector
+GMX_FEATHER_DIR ?= $(abspath ./user_data/data)
+CONCURRENCY ?= 5
+
+gmx-data-collector-init:
+	git submodule update --init --recursive gmx-data-collector
+
+gmx-data: gmx-data-collector-init
+	@echo "Running GMX data collection and export..."
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli collect --update --output-dir ./data --concurrency $(CONCURRENCY)
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python scripts/extract_unified_funding.py --network arbitrum --output-dir ./data/funding --output parquet --resume
+	@echo "Exporting to Freqtrade format..."
+	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
+	@echo "GMX data ready in user_data/data/gmx/futures/"
+
+# Full history rebuild from genesis. Slow (hours). Requires .env.
 full-data: gmx-data-collector-init
 	@echo "Step 1/4: Full GMX data collection from genesis (this will take a while)..."
 	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli collect --full --output-dir ./data --concurrency $(CONCURRENCY)
