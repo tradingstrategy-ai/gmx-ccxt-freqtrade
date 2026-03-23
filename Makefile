@@ -178,7 +178,8 @@ refresh-data:
 	@START=$$(date -d "-$(REFRESH_DAYS) days" +%Y%m%d); \
 	END=$$(date +%Y%m%d); \
 	echo "  Timerange: $$START-$$END"; \
-	docker compose run --rm $(REFRESH_CONTAINER) download-data \
+	docker compose exec $(REFRESH_CONTAINER) python -u -B -m eth_defi.gmx.freqtrade.patched_entrypoint \
+		freqtrade download-data \
 		--config /freqtrade/configs/$(REFRESH_CONFIG).json \
 		--config /freqtrade/configs/$(REFRESH_CONFIG).secrets.json \
 		--timeframes 1h 4h 1d \
