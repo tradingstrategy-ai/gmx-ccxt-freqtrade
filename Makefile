@@ -167,15 +167,14 @@ gmx-data: gmx-data-collector-init
 	@cd $(GMX_COLLECTOR_DIR) && python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
 	@echo "GMX data ready in user_data/data/gmx/futures/"
 
-# Incremental data refresh: top up local GMX data + merge + backfill from Binance.
-# Downloads the last 30 days of GMX data (safe, small memory footprint) using the
-# vault config's full pair universe, then rebuilds the merged dataset.
-# No external API tokens needed — uses the same GMX GraphQL API as live trading.
+# Incremental data refresh: top up ALL local data in one command.
+# Downloads last 30 days of GMX candles, refreshes Binance volume, OI, liquidity,
+# then rebuilds the merged dataset. No external API tokens needed.
 REFRESH_DAYS ?= 30
 REFRESH_CONTAINER ?= ichiv2_gmx_vault
 REFRESH_CONFIG ?= ichiv2_gmx_prod_vault
 refresh-data:
-	@echo "Step 1/3: Downloading last $(REFRESH_DAYS) days of GMX data..."
+	@echo "Step 1/4: Downloading last $(REFRESH_DAYS) days of GMX candles..."
 	@START=$$(date -d "-$(REFRESH_DAYS) days" +%Y%m%d); \
 	END=$$(date +%Y%m%d); \
 	echo "  Timerange: $$START-$$END"; \
@@ -186,13 +185,17 @@ refresh-data:
 		--timerange $$START-$$END \
 		--prepend
 	@echo ""
-	@echo "Step 2/3: Merging GMX candles with Binance gap-fill..."
+	@echo ""
+	@echo "Step 2/4: Refreshing Binance volume + GMX OI + pool liquidity..."
+	python3 scripts/refresh_all_data.py
+	@echo ""
+	@echo "Step 3/4: Merging GMX candles with Binance gap-fill..."
 	python scripts/merge_gmx_binance.py
 	@echo ""
-	@echo "Step 3/3: Backfilling historical data from Binance..."
+	@echo "Step 4/4: Backfilling historical data from Binance..."
 	python scripts/backfill_1h_5m_from_binance.py
 	@echo ""
-	@echo "✓ Data ready in user_data/data/gmx_complete_w_binance/"
+	@echo "✓ All data ready in user_data/data/gmx_complete_w_binance/"
 
 # Full history rebuild: collect all GMX data from genesis + merge + backfill.
 # Use this for first-time setup or after data loss. Slow (hours).
