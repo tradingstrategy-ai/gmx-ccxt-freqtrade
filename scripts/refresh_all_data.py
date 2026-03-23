@@ -30,7 +30,7 @@ import pyarrow.feather as pf
 # ---------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 BINANCE_DIR = BASE_DIR / "user_data" / "data" / "binance" / "futures"
-METRICS_DIR = BASE_DIR / "user_data" / "data" / "gmx_complete" / "futures_metrics"
+METRICS_DIR = BASE_DIR / "user_data" / "data" / "gmx" / "futures_metrics"
 
 GMX_API_BASE = "https://arbitrum-api.gmxinfra.io"
 

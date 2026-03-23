@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""Merge GMX and Binance futures data to create a gap-free dataset.
+"""Fill internal gaps in GMX futures data using Binance candles.
 
-Creates user_data/data/gmx_complete/futures/ with:
-- Chainlink tokens copied as-is (clean oracle data)
-- Non-Chainlink tokens gap-filled with Binance data where available
-- All non-futures files (mark, funding_rate, open_interest, pool_liquidity) copied as-is
+Operates IN-PLACE on user_data/data/gmx/futures/:
+- Non-Chainlink tokens: fills internal OHLCV gaps with Binance data
+- Chainlink tokens: skipped (already clean oracle data)
 
 Only fills INTERNAL gaps (never extends backwards past GMX listing date).
 """
 
-import shutil
 import sys
 from pathlib import Path
 
@@ -23,7 +21,6 @@ import pyarrow.feather as pf
 BASE_DIR = Path(__file__).resolve().parent.parent
 GMX_DIR = BASE_DIR / "user_data" / "data" / "gmx" / "futures"
 BINANCE_DIR = BASE_DIR / "user_data" / "data" / "binance" / "futures"
-OUTPUT_DIR = BASE_DIR / "user_data" / "data" / "gmx_complete" / "futures"
 
 # 33 Chainlink tokens — already have clean data, copy as-is
 CHAINLINK_TOKENS = {
@@ -190,12 +187,6 @@ def fill_gaps_with_binance(
     return merged, candles_filled
 
 
-def copy_file(src: Path, dst: Path) -> None:
-    """Copy a file, creating parent directories as needed."""
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, dst)
-
-
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -203,11 +194,10 @@ def copy_file(src: Path, dst: Path) -> None:
 
 def main() -> None:
     print("=" * 70)
-    print("GMX + Binance Data Merger")
+    print("GMX + Binance Gap-Fill (in-place)")
     print("=" * 70)
-    print(f"GMX source:     {GMX_DIR}")
+    print(f"GMX data:       {GMX_DIR}")
     print(f"Binance source: {BINANCE_DIR}")
-    print(f"Output:         {OUTPUT_DIR}")
     print()
 
     if not GMX_DIR.exists():
@@ -217,9 +207,6 @@ def main() -> None:
         print(f"ERROR: Binance directory not found: {BINANCE_DIR}")
         sys.exit(1)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Discover tokens
     gmx_tokens = discover_gmx_tokens()
     binance_tokens = discover_binance_tokens()
 
@@ -227,108 +214,40 @@ def main() -> None:
     print(f"Binance tokens found: {len(binance_tokens)}")
     print()
 
-    # Stats
-    stats = {
-        "chainlink_copied": 0,
-        "merged": 0,
-        "gmx_only_copied": 0,
-        "total_gaps_found": 0,
-        "total_candles_filled": 0,
-        "total_files_copied": 0,
-    }
-
-    merge_details = []
+    total_gaps = 0
+    total_filled = 0
+    tokens_fixed = 0
 
     for token in sorted(gmx_tokens.keys()):
         files = gmx_tokens[token]
-        is_chainlink = token in CHAINLINK_TOKENS
+
+        if token in CHAINLINK_TOKENS:
+            continue  # Clean oracle data, no gaps
+
         bn_name = get_binance_name(token)
-        has_binance = bn_name in binance_tokens
-
-        if is_chainlink:
-            # Copy all files as-is
-            for f in files:
-                dst = OUTPUT_DIR / f.name
-                copy_file(f, dst)
-                stats["total_files_copied"] += 1
-            stats["chainlink_copied"] += 1
-            continue
-
-        if not has_binance:
-            # No Binance equivalent — copy as-is
-            for f in files:
-                dst = OUTPUT_DIR / f.name
-                copy_file(f, dst)
-                stats["total_files_copied"] += 1
-            stats["gmx_only_copied"] += 1
-            continue
-
-        # Non-Chainlink with Binance match — process futures files, copy rest
-        token_gaps = 0
-        token_filled = 0
+        if bn_name not in binance_tokens:
+            continue  # No Binance data available
 
         for f in files:
-            dst = OUTPUT_DIR / f.name
             tf = parse_timeframe(f)
+            if tf not in TIMEFRAMES_TO_MERGE or not is_futures_file(f, tf):
+                continue
 
-            # Only merge futures files for target timeframes
-            if tf in TIMEFRAMES_TO_MERGE and is_futures_file(f, tf):
-                gmx_df = load_feather(f)
-                gaps = find_gaps(gmx_df, tf)
+            gmx_df = load_feather(f)
+            gaps = find_gaps(gmx_df, tf)
 
-                if gaps:
-                    bn_path = binance_file_for(token, tf)
-                    merged_df, filled = fill_gaps_with_binance(
-                        gmx_df, bn_path, gaps, token
-                    )
-                    token_gaps += len(gaps)
-                    token_filled += filled
-                    stats["total_gaps_found"] += len(gaps)
-                    stats["total_candles_filled"] += filled
+            if gaps:
+                bn_path = binance_file_for(token, tf)
+                merged_df, filled = fill_gaps_with_binance(gmx_df, bn_path, gaps, token)
+                if filled > 0:
+                    pf.write_feather(merged_df, f)  # Write back in-place
+                    total_gaps += len(gaps)
+                    total_filled += filled
 
-                    # Write merged data
-                    dst.parent.mkdir(parents=True, exist_ok=True)
-                    pf.write_feather(merged_df, dst)
-                    stats["total_files_copied"] += 1
-                else:
-                    # No gaps — copy as-is
-                    copy_file(f, dst)
-                    stats["total_files_copied"] += 1
-            else:
-                # Non-futures file or non-target timeframe — copy as-is
-                copy_file(f, dst)
-                stats["total_files_copied"] += 1
+        if total_filled > 0:
+            tokens_fixed += 1
 
-        stats["merged"] += 1
-
-        if token_gaps > 0:
-            merge_details.append((token, token_gaps, token_filled))
-
-    # ---------------------------------------------------------------------------
-    # Summary Report
-    # ---------------------------------------------------------------------------
-    print("-" * 70)
-    print("SUMMARY")
-    print("-" * 70)
-    print(f"Chainlink tokens (copied as-is):      {stats['chainlink_copied']}")
-    print(f"Non-Chainlink merged with Binance:     {stats['merged']}")
-    print(f"GMX-only (no Binance, copied as-is):   {stats['gmx_only_copied']}")
-    print(f"Total files written:                   {stats['total_files_copied']}")
-    print(f"Total gaps found:                      {stats['total_gaps_found']}")
-    print(f"Total candles filled from Binance:     {stats['total_candles_filled']}")
-    print()
-
-    if merge_details:
-        print("TOKENS WITH GAPS FILLED:")
-        print(f"  {'Token':<20} {'Gaps':>6} {'Candles Filled':>16}")
-        print(f"  {'-'*20} {'-'*6} {'-'*16}")
-        for token, gaps, filled in sorted(merge_details):
-            print(f"  {token:<20} {gaps:>6} {filled:>16}")
-    else:
-        print("No gaps found in any non-Chainlink token — all data was clean!")
-
-    print()
-    print(f"Output directory: {OUTPUT_DIR}")
+    print(f"Gaps found: {total_gaps}, candles filled: {total_filled}, tokens fixed: {tokens_fixed}")
     print("Done!")
 
 

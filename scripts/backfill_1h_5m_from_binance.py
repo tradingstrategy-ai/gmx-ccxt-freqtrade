@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""Create gmx_complete_w_binance by copying gmx_complete and prepending Binance data.
+"""Prepend Binance historical data to GMX futures files (in-place).
 
-For each token:
-1. Find the token's earliest date across ALL timeframes in gmx_complete (= GMX listing date)
-2. For 1d, 4h, 1h, and 5m: if their start date is later than the listing date, prepend
-   Binance data from listing_date up to where the GMX data begins
+For each token in user_data/data/gmx/futures/:
+1. Find the token's earliest date across ALL timeframes (= GMX listing date)
+2. For 1d, 4h, 1h, and 5m: if their start date is later than the listing date,
+   prepend Binance data from listing_date up to where the GMX data begins
 3. Tokens that only appeared recently (all timeframes start ~same date) get no backfill
 
-This creates a new directory so the original gmx_complete is preserved.
+Operates in-place on user_data/data/gmx/futures/.
 """
 
-import shutil
 import sys
 from pathlib import Path
 
@@ -22,8 +21,7 @@ import pyarrow.feather as pf
 # ---------------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SRC_DIR = BASE_DIR / "user_data" / "data" / "gmx_complete"
-OUTPUT_DIR = BASE_DIR / "user_data" / "data" / "gmx_complete_w_binance"
+GMX_DIR = BASE_DIR / "user_data" / "data" / "gmx"
 BINANCE_DIR = BASE_DIR / "user_data" / "data" / "binance" / "futures"
 
 # GMX name -> Binance name
@@ -49,28 +47,17 @@ def get_binance_name(gmx_token: str) -> str:
 
 def main() -> None:
     print("=" * 70)
-    print("Backfill 1h/5m from Binance into gmx_complete_w_binance")
+    print("Backfill historical data from Binance (in-place)")
     print("=" * 70)
 
-    if not SRC_DIR.exists():
-        print(f"ERROR: Source directory not found: {SRC_DIR}")
+    futures_dir = GMX_DIR / "futures"
+
+    if not futures_dir.exists():
+        print(f"ERROR: Futures directory not found: {futures_dir}")
         sys.exit(1)
     if not BINANCE_DIR.exists():
         print(f"ERROR: Binance directory not found: {BINANCE_DIR}")
         sys.exit(1)
-
-    # Step 1: Copy gmx_complete -> gmx_complete_w_binance
-    if OUTPUT_DIR.exists():
-        print(f"Removing existing output directory: {OUTPUT_DIR}")
-        shutil.rmtree(OUTPUT_DIR)
-
-    print(f"Copying {SRC_DIR} -> {OUTPUT_DIR} ...")
-    shutil.copytree(SRC_DIR, OUTPUT_DIR)
-    print("Copy complete.")
-    print()
-
-    # Step 2: Discover per-token earliest dates from gmx_complete/futures
-    futures_dir = OUTPUT_DIR / "futures"
     token_dates: dict[str, dict[str, pd.Timestamp]] = {}
 
     for f in sorted(futures_dir.glob("*-futures.feather")):
@@ -173,7 +160,7 @@ def main() -> None:
             print(f"{token:<20} {tf:<5} {candles:>10} {frm:<12} {to:<12}")
 
     print()
-    print(f"Output: {OUTPUT_DIR}")
+    print(f"Data directory: {futures_dir}")
     print("Done!")
 
 
