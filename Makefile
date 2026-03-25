@@ -166,3 +166,16 @@ gmx-data: gmx-data-collector-init
 	@echo "Exporting to Freqtrade format..."
 	@cd $(GMX_COLLECTOR_DIR) && poetry run python -m gmx_historical_data.cli export-freqtrade --data-dir ./data --output-dir $(GMX_FEATHER_DIR)
 	@echo "GMX data ready in user_data/data/gmx/futures/"
+
+# ==============================================================================
+# Security
+# ==============================================================================
+
+.PHONY: install-hooks scan-secrets
+
+install-hooks: ## Install pre-commit hooks (nbstripout + gitleaks + secret patterns)
+	pre-commit install
+	@echo "Pre-commit hooks installed"
+
+scan-secrets: ## Scan entire working tree for secrets (via gitleaks)
+	gitleaks detect --source . --verbose

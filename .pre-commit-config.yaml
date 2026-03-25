@@ -1,0 +1,42 @@
+repos:
+  # Strip notebook cell outputs before commit — prevents secret leakage
+  # through logged variables, env dumps, or exception tracebacks.
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
+
+  # Secret scanning with 160+ built-in patterns + custom crypto rules
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.22.1
+    hooks:
+      - id: gitleaks
+        args: ["--config=.gitleaks.toml", "--no-banner", "--redact"]
+
+  - repo: local
+    hooks:
+      - id: scan-staged-secrets
+        name: Scan staged files for secrets
+        entry: python3 scripts/security/scan_secrets.py --staged
+        language: system
+        pass_filenames: false
+
+      - id: block-secrets-files
+        name: Block secret files from being committed
+        entry: '.*\.secrets\.json$|^\.env\.live$|^\.env\.production$'
+        language: fail
+        files: '(\.secrets\.json|\.env\.live|\.env\.production)$'
+
+      - id: block-telegram-bot-tokens
+        name: Block Telegram bot tokens
+        entry: '\d{8,}:[A-Za-z0-9_-]{35,}'
+        language: pygrep
+        types: [text]
+        exclude: '(\.pre-commit-config\.yaml|tests/)$'
+
+      - id: block-discord-webhooks
+        name: Block Discord webhook URLs
+        entry: 'https://discord(?:app)?\.com/api/webhooks/\d+/[A-Za-z0-9._-]+'
+        language: pygrep
+        types: [text]
+        exclude: '(\.pre-commit-config\.yaml|tests/)$'

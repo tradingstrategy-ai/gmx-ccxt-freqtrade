@@ -1,0 +1,33 @@
+title = "Gitleaks config for gmx-ccxt-freqtrade"
+
+[[rules]]
+id = "private-key-context"
+description = "Private key near key-like context"
+regex = '''(?i)(?:private(?:[_\s-]?key)?|secret|seed|signing(?:[_\s-]?key)?)\W{0,32}(?:0x)?[0-9a-fA-F]{64}\b'''
+tags = ["crypto", "private-key"]
+
+[[rules]]
+id = "private-key-raw-line"
+description = "Bare private key on its own line"
+regex = '''(?m)^\s*(?:0x)?[0-9a-fA-F]{64}\s*$'''
+tags = ["crypto", "private-key"]
+
+[[rules]]
+id = "ed25519-secret"
+description = "ed25519 secret key format"
+regex = '''ed25519:[A-Za-z0-9+/=]{32,}'''
+tags = ["crypto", "private-key"]
+
+[[rules]]
+id = "pem-private-key"
+description = "PEM-encoded private key block"
+regex = '''-----BEGIN (?:EC |RSA |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----'''
+tags = ["crypto", "private-key"]
+
+[allowlist]
+paths = [
+    '''\.gitleaks\.toml$''',
+    '''\.pre-commit-config\.yaml$''',
+    '''\.secrets\.baseline$''',
+    '''tests/''',
+]
