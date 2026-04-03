@@ -3,8 +3,7 @@ Generate a new FreqTrade config and secrets file with a new Ethereum wallet.
 Creates both configs/<name>.json and configs/<name>.secrets.json files.
 
 Usage: python generate_config.py <config_name>
-Example: python generate_config.py ichiv2_gmx
-Example: python generate_config.py my_new_strategy
+Example: python generate_config.py my_strategy_gmx
 """
 
 import copy
@@ -61,8 +60,7 @@ def load_template_secrets():
 def main():
     if len(sys.argv) != 2:
         print("Usage: python generate_config.py <config_name>", file=sys.stderr)
-        print("Example: python generate_config.py ichiv2_gmx", file=sys.stderr)
-        print("Example: python generate_config.py my_new_strategy", file=sys.stderr)
+        print("Example: python generate_config.py my_strategy_gmx", file=sys.stderr)
         sys.exit(1)
 
     config_name = sys.argv[1]

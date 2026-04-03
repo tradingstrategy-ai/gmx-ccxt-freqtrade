@@ -30,52 +30,52 @@ All recipes accept extra arguments after the required positional args. Any addit
 
 ```bash
 just data <config>
-just data ichiv2_ls_gmx_backtest_chainlink --timeframes 1h 4h
+just data my_strategy_gmx --timeframes 1h 4h
 ```
 
 ### List pairs
 
 ```bash
 just list-pairs <config> [exchange]
-just list-pairs ichiv2_ls_gmx_backtest_chainlink gmx
+just list-pairs my_strategy_gmx gmx
 ```
 
 ### Backtest
 
 ```bash
 just backtest <config> <strategy>
-just backtest ichiv2_ls_gmx_backtest_chainlink IchiV2_LS_Optimised
-just backtest ichiv2_ls_gmx_backtest_chainlink IchiV2_LS_Optimised --timeframe-detail 5m --export signals
+just backtest my_strategy_gmx MyStrategy
+just backtest my_strategy_gmx MyStrategy --timeframe-detail 5m --export signals
 ```
 
 ### Hyperopt
 
 ```bash
 just hyperopt <config> <strategy>
-just hyperopt ichiv2_ls_gmx_hyperopt_chainlink IchiV2_LS_Backtest epochs=100
-just hyperopt ichiv2_ls_gmx_hyperopt_chainlink IchiV2_LS_Backtest epochs=200 spaces="sell" loss=SortinoHyperOptLossDaily
+just hyperopt my_strategy_gmx MyStrategy epochs=100
+just hyperopt my_strategy_gmx MyStrategy epochs=200 spaces="sell" loss=SortinoHyperOptLossDaily
 ```
 
 ### Plot dataframe
 
 ```bash
 just plot-dataframe <config> <strategy> [pairs] [backtest_filename]
-just plot-dataframe ichiv2_ls_gmx_backtest_chainlink IchiV2_LS_Optimised "BTC/USDC:USDC"
+just plot-dataframe my_strategy_gmx MyStrategy "BTC/USDC:USDC"
 ```
 
 ### Plot profit
 
 ```bash
 just plot-profit <config> <strategy> [pairs] [backtest_filename] [trade_source] [db]
-just plot-profit ichiv2_ls_gmx_backtest_chainlink IchiV2_LS_Optimised
-just plot-profit ichiv2_ls_gmx_backtest_chainlink IchiV2_LS_Optimised "" "" DB mydb.sqlite
+just plot-profit my_strategy_gmx MyStrategy
+just plot-profit my_strategy_gmx MyStrategy "" "" DB mydb.sqlite
 ```
 
 ### Live trade
 
 ```bash
 just trade <config> <strategy> [db] [freqai_model]
-just trade ichiv2_ls_gmx_backtest_chainlink IchiV2_LS_Optimised mydb.sqlite
+just trade my_strategy_gmx MyStrategy mydb.sqlite
 ```
 
 ### Generate TOC
@@ -89,18 +89,3 @@ just toc
 Each recipe loads two config files:
 - `configs/<config>.json` — strategy and exchange settings
 - `configs/<config>.secrets.json` — RPC URLs and credentials (gitignored)
-
-## Available strategies
-
-| Strategy | Description |
-|----------|-------------|
-| `IchiV2_LS_Backtest` | Dual long/short Ichimoku, all params `optimize=True` for hyperopt |
-| `IchiV2_LS_Optimised` | Same strategy with hyperopt-tuned defaults, `optimize=False` |
-| `IchiV2_LS_Static` | Full-featured version with daily cloud regime filter and ATR trailing stop |
-
-## Available configs
-
-| Config | Description |
-|--------|-------------|
-| `ichiv2_ls_gmx_backtest_chainlink` | 28 chainlink pairs, fixed-param backtesting |
-| `ichiv2_ls_gmx_hyperopt_chainlink` | 28 chainlink pairs, hyperopt runs |

@@ -7,7 +7,7 @@ then runs test-pairlist. This avoids needing to modify the base freqtrade image.
 Usage (inside container):
     python -u -B /freqtrade/plugins/pairlist/test_pairlist_runner.py \
         --config /freqtrade/configs/test_volume_pairlist.json \
-        --config /freqtrade/configs/ichiv2_gmx.secrets.json \
+        --config /freqtrade/configs/<your_strategy>.secrets.json \
         -vvv
 """
 import sys

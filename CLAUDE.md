@@ -5,7 +5,7 @@ Algorithmic trading system for GMX DEX using Freqtrade with custom CCXT adapter.
 ## Architecture
 
 - **Exchange adapter**: GMX ↔ CCXT bridge in `deps/web3-ethereum-defi/` (monkeypatched into Freqtrade)
-- **Strategies**: `user_data/strategies/` — IchiV2 (Ichimoku v2) is the primary production strategy
+- **Strategies**: `user_data/strategies/`
 - **Custom pairlists**: `plugins/pairlist/` — `HistoricalVolumePairList` (Binance volume proxy) + `GMXLiquidityFilter`
 - **Data collector**: `gmx-data-collector/` submodule — collects candles from Chainlink oracles + GMX API
 - **Freqtrade patches**: `freqtrade-develop/` — patched backtesting.py and pairlistmanager.py for dynamic pairlist support
@@ -19,8 +19,7 @@ user_data/data/
 ├── gmx/
 │   ├── futures/            # OHLCV candles + funding rates (freqtrade download-data writes here)
 │   └── futures_metrics/    # OI + pool liquidity (refresh_all_data.py writes here)
-├── binance/futures/        # Binance 1d volume data (for HistoricalVolumePairList)
-└── market_cap_history.json # CoinGecko market cap data (for IchiV3 tier sizing)
+└── binance/futures/        # Binance 1d volume data (for HistoricalVolumePairList)
 ```
 
 All backtesting uses `datadir = user_data/data/gmx`. The `GMXLiquidityFilter` reads from
@@ -58,10 +57,7 @@ memory and OOMs on large pair sets. Use `make refresh-data` instead.
 
 ```bash
 # Via Makefile (uses Docker)
-make backtest CONTAINER=ichiv2_gmx STRATEGY=IchiV2_LS_Static TIMEFRAME=1h TIMERANGE=20260101-20260319
-
-# Via notebook (inline, with live comparison)
-# See notebooks/analysis/live-vs-backtest/01-ichiv2_live_vs_backtest_gmx.ipynb
+make backtest STRATEGY=ADXMomentum CONFIG=adxmomentum_gmx TIMEFRAME=1h TIMERANGE=20260101-20260319
 ```
 
 ### Dynamic pairlist backtesting
@@ -70,33 +66,13 @@ For configs with `HistoricalVolumePairList` (e.g., vault configs), set `"enable_
 in the config. The patched backtesting engine refreshes the pairlist daily during backtests using
 historical Binance volume data.
 
-## Production bots
-
-Two bots run via `docker compose up -d`:
-
-- **ichiv2_gmx** — Static 41-pair whitelist, config: `configs/ichiv2_gmx.json`
-- **ichiv2_gmx_vault** — Dynamic top-40 via HistoricalVolumePairList, config: `configs/ichiv2_gmx_prod_vault.json`
-
-Live DBs: `db/ichiv2_gmx.sqlite`, `db/ichiv2_gmx_vault.sqlite`
-Archived DBs: `db/archive/`
-
 ## Key scripts
 
 | Script | Purpose |
 |--------|---------|
 | `scripts/merge_gmx_binance.py` | Gap-fill raw GMX candles with Binance → `gmx_complete/` |
 | `scripts/backfill_1h_5m_from_binance.py` | Prepend Binance historical data (1d/4h/1h/5m) → `gmx_complete_w_binance/` |
-| `scripts/fetch_historical_mcaps_gmx.py` | Fetch CoinGecko market cap history (for IchiV3) |
 | `scripts/db-backup` | Archive live trading databases |
-
-## Configs
-
-| Config | Use |
-|--------|-----|
-| `ichiv2_gmx.json` | Production static bot (41 pairs) |
-| `ichiv2_gmx_prod_vault.json` | Production vault bot (107 pairs, dynamic pairlist) |
-| `ichiv2_gmx_volume_pairlist.json` | Backtest config with full 3-layer pairlist (Static → Volume → Liquidity) |
-| `ichiv2_gmx_full_universe.json` | All 174 pairs, static (baseline backtests) |
 
 ## Conventions
 

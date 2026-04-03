@@ -7,8 +7,8 @@ VERBOSE ?=
 -include .env
 export
 
-# Config to use for backtesting/hyperopt (defaults to ichiv2_gmx, override with CONFIG=...)
-CONFIG ?= ichiv2_gmx
+# Config to use for backtesting/hyperopt (override with CONFIG=...)
+CONFIG ?= adxmomentum_gmx
 
 # Generate a table of contents for README.md from Markdown headings.
 toc:
@@ -34,7 +34,7 @@ data:
 # Run a strategy backtest.
 backtest:
 	@if [ -z "$(STRATEGY)" ]; then \
-		echo "Usage: make backtest STRATEGY=YourStrategy [CONFIG=ichiv2_gmx] [TIMEFRAME=1h] [TIMERANGE=20260101-20260319]"; \
+		echo "Usage: make backtest STRATEGY=YourStrategy [CONFIG=adxmomentum_gmx] [TIMEFRAME=1h] [TIMERANGE=20260101-20260319]"; \
 		exit 1; \
 	fi
 	docker compose run --rm backtest-runner backtesting \
@@ -53,7 +53,7 @@ SPACES ?= buy sell
 LOSS ?= SharpeHyperOptLossDaily
 hyperopt:
 	@if [ -z "$(STRATEGY)" ]; then \
-		echo "Usage: make hyperopt STRATEGY=YourStrategy [CONFIG=ichiv2_gmx] [EPOCHS=500] [SPACES='buy sell']"; \
+		echo "Usage: make hyperopt STRATEGY=YourStrategy [CONFIG=adxmomentum_gmx] [EPOCHS=500] [SPACES='buy sell']"; \
 		exit 1; \
 	fi
 	docker compose run --rm backtest-runner hyperopt \
@@ -78,7 +78,7 @@ list-pairs:
 # Plot strategy signals overlaid on price data.
 plot-dataframe:
 	@if [ -z "$(STRATEGY)" ]; then \
-		echo "Usage: make plot-dataframe STRATEGY=YourStrategy [CONFIG=ichiv2_gmx]"; \
+		echo "Usage: make plot-dataframe STRATEGY=YourStrategy [CONFIG=adxmomentum_gmx]"; \
 		exit 1; \
 	fi
 	docker compose run --rm backtest-runner plot-dataframe \
@@ -96,7 +96,7 @@ plot-dataframe:
 # Plot equity curve.
 plot-profit:
 	@if [ -z "$(STRATEGY)" ]; then \
-		echo "Usage: make plot-profit STRATEGY=YourStrategy [CONFIG=ichiv2_gmx]"; \
+		echo "Usage: make plot-profit STRATEGY=YourStrategy [CONFIG=adxmomentum_gmx]"; \
 		exit 1; \
 	fi
 	docker compose run --rm backtest-runner plot-profit \
@@ -119,8 +119,8 @@ plot-profit:
 # then fills gaps with Binance. No external API tokens needed.
 # Uses docker exec on the live vault container — zero extra memory.
 REFRESH_DAYS ?= 30
-REFRESH_CONTAINER ?= ichiv2_gmx_vault
-REFRESH_CONFIG ?= ichiv2_gmx_prod_vault
+REFRESH_CONTAINER ?= adxmomentum_gmx
+REFRESH_CONFIG ?= adxmomentum_gmx
 refresh-data:
 	@echo "Step 1/4: Downloading last $(REFRESH_DAYS) days of GMX candles..."
 	@START=$$(date -d "-$(REFRESH_DAYS) days" +%Y%m%d); \

@@ -11,7 +11,7 @@
 # What this does NOT do:
 #   - No trading (test-pairlist only)
 #   - No wallet interaction (dry_run: true)
-#   - Does NOT touch running containers (ichiv2_gmx, ichiv2_gmx_vault)
+#   - Does NOT touch running containers
 #
 # Data sources it will hit:
 #   - Binance public API (fetch_tickers, no credentials needed)
@@ -21,7 +21,7 @@
 set -e
 
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
-IMAGE="gmx-ccxt-freqtrade-ichiv2_gmx"
+IMAGE="gmx-ccxt-freqtrade-adxmomentum_gmx"
 PAIRLIST_DIR="${REPO_DIR}/freqtrade-develop/freqtrade/plugins/pairlist"
 SCRIPTS_DIR="${REPO_DIR}/scripts"
 
@@ -31,7 +31,7 @@ echo "============================================"
 echo ""
 echo "Image:   ${IMAGE}"
 echo "Config:  plugins/pairlist/test_volume_pairlist.json"
-echo "Secrets: configs/ichiv2_gmx.secrets.json (RPC URLs only, dry_run=true)"
+echo "Secrets: configs/<your_strategy>.secrets.json (RPC URLs only, dry_run=true)"
 echo ""
 echo "Custom plugins mounted:"
 echo "  - HistoricalVolumePairList.py (Binance volume ranking)"
@@ -56,7 +56,7 @@ docker run --rm \
     "${IMAGE}" \
     -u -B /freqtrade/plugins/pairlist/test_pairlist_runner.py \
         --config /freqtrade/plugins/pairlist/test_volume_pairlist.json \
-        --config /freqtrade/configs/ichiv2_gmx.secrets.json \
+        --config /freqtrade/configs/<your_strategy>.secrets.json \
         -vvv
 
 echo ""

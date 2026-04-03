@@ -109,7 +109,7 @@
             "method": "StaticPairList"
         }
     ],
-    "bot_name": "ichiv2_ls_hyperliquid_static",
+    "bot_name": "gmx_bot_static",
     "initial_state": "running",
     "force_entry_enable": false,
     "internals": {

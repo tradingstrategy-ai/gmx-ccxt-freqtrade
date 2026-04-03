@@ -86,13 +86,12 @@ CMD ["trade"]
 
 ### docker-compose.yml
 
-Defines 6 pre-configured containers for different strategy/exchange combinations:
+Defines pre-configured containers for different strategy/exchange combinations:
 
 - **pingpong_gmx** (port 9090) - Pingpong strategy on GMX
 - **simple_gmx** (port 9091) - Simple strategy on GMX
 - **adxmomentum_gmx** (port 9093) - ADX Momentum strategy on GMX
-- **ichiv2_gmx** (port 9094) - IchiV2_LS_Live strategy on GMX
-- **pingpong_hyperliquid** (port 9090) - Pingpong strategy on Hyperliquid
+- **pingpong_hyperliquid** (port 9095) - Pingpong strategy on Hyperliquid
 - **simple_hyperliquid** (port 9092) - Simple strategy on Hyperliquid
 
 Each container:
@@ -343,7 +342,6 @@ docker compose run --rm adxmomentum_gmx plot-profit \
 | `pingpong_gmx` | Pingpong | GMX | 9090 | `configs/pingpong_gmx.json`, `configs/pingpong_gmx.secrets.json` |
 | `simple_gmx` | Simple | GMX | 9091 | `configs/simple_gmx.json`, `configs/simple_gmx.secrets.json` |
 | `adxmomentum_gmx` | ADXMomentum | GMX | 9093 | `configs/adxmomentum_gmx.json`, `configs/adxmomentum_gmx.secrets.json` |
-| `ichiv2_gmx` | IchiV2_LS_Live | GMX | 9094 | `configs/ichiv2_gmx.json`, `configs/ichiv2_gmx.secrets.json` |
 
 ### Hyperliquid Containers
 
@@ -567,7 +565,7 @@ make plot-profit CONTAINER=<name> STRATEGY=<strat> [AUTO_OPEN=1] [TIMERANGE=<ran
 
 ### Container Names
 
-- GMX: `pingpong_gmx`, `simple_gmx`, `adxmomentum_gmx`
+- GMX: `pingpong_gmx`, `simple_gmx`, `adxmomentum_gmx`, `backtest-runner`
 - Hyperliquid: `pingpong_hyperliquid`, `simple_hyperliquid`
 
 ### Strategy Names

@@ -2,7 +2,7 @@
 """Refresh all supplementary data: Binance volume, GMX open interest, and pool liquidity.
 
 Run inside the Docker container (has ccxt + GMX API access):
-    docker compose exec ichiv2_gmx_vault python /freqtrade/scripts/refresh_all_data.py
+    docker compose exec <container_name> python /freqtrade/scripts/refresh_all_data.py
 
 Or from host via make:
     make refresh-data  (calls this as part of the pipeline)
