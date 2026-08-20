@@ -3,7 +3,7 @@ FROM freqtradeorg/freqtrade:2026.7
 # Switch user to root to install build dependencies
 USER root
 
-# Install build dependencies for web3-ethereum-defi
+# Install build dependencies for web3-ethereum-defi and uv for fast Python installs.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
@@ -13,18 +13,19 @@ RUN apt-get update && \
         libgmp-dev \
         libmpfr-dev \
         libmpc-dev && \
+    python -m pip install --no-cache-dir uv && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Switch back to ftuser
-USER ftuser
-
 # Copy and install web3-ethereum-defi dependency with extras
 COPY deps/web3-ethereum-defi /tmp/web3-ethereum-defi
-RUN pip install --user --force-reinstall "/tmp/web3-ethereum-defi[ccxt]"
+RUN uv pip install --system --force-reinstall "/tmp/web3-ethereum-defi[ccxt]"
 
 # Install plotly for freqtrade plotting commands
-RUN pip install --user plotly
+RUN uv pip install --system plotly
+
+# Switch back to ftuser
+USER ftuser
 
 # Install custom pairlist plugins into freqtrade's plugin directory
 COPY plugins/pairlist/HistoricalVolumePairList.py /freqtrade/freqtrade/plugins/pairlist/
