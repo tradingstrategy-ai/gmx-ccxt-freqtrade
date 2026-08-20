@@ -50,38 +50,16 @@ This guide covers running freqtrade-gmx-demo using Docker containers, providing 
 
 ### The Dockerfile
 
-The project uses a custom Dockerfile based on the official Freqtrade image:
-
-```dockerfile
-FROM freqtradeorg/freqtrade:2025.10
-
-# Install build dependencies for web3-ethereum-defi
-USER root
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        build-essential \
-        gcc g++ python3-dev \
-        libgmp-dev libmpfr-dev libmpc-dev && \
-    apt-get clean
-
-USER ftuser
-
-# Install web3-ethereum-defi from local submodule
-COPY deps/web3-ethereum-defi /tmp/web3-ethereum-defi
-RUN pip install --user --force-reinstall "/tmp/web3-ethereum-defi[web3v7]"
-
-# Install plotly for visualization
-RUN pip install --user plotly
-
-# Use patched entrypoint for GMX integration
-ENTRYPOINT ["python", "-u", "-B", "-m", "eth_defi.gmx.freqtrade.patched_entrypoint", "freqtrade"]
-CMD ["trade"]
-```
+The project uses a custom Dockerfile based on the official Freqtrade image: see
+[`../Dockerfile`](../Dockerfile) for the exact, current build. It is linked rather than
+duplicated here so this guide cannot drift out of sync with it again — a full copy previously
+went stale (wrong base image tag, wrong install mechanism, wrong extras) without anyone noticing.
 
 **Key points:**
-- Based on official `freqtradeorg/freqtrade:2025.10` image
-- Installs `web3-ethereum-defi` from local submodule (not PyPI)
-- Uses patched entrypoint to apply GMX integration
+- Based on the official `freqtradeorg/freqtrade` image (see the `Dockerfile`'s `FROM` line for
+  the exact tag in use)
+- Installs `web3-ethereum-defi` from the local submodule (not PyPI)
+- Uses the patched entrypoint to apply GMX integration
 - Includes plotly for generating equity curves
 
 ### docker-compose.yml
@@ -131,21 +109,21 @@ docker-compose build
 
 ```bash
 # Using Makefile (recommended)
-make data CONTAINER=pingpong_gmx TIMERANGE=20251128-20251208
+make data CONTAINER=pingpong_gmx
 
 # Or using docker compose directly
 docker compose run --rm pingpong_gmx download-data \
   --config /freqtrade/configs/pingpong_gmx.json \
   --config /freqtrade/configs/pingpong_gmx.secrets.json \
   --timeframe 5m \
-  --timerange 20251128-20251208
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 ### Step 4: Run Backtest
 
 ```bash
 # Using Makefile (recommended)
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20251128-20251208
+make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
 
 # Or using docker compose directly
 docker compose run --rm pingpong_gmx backtesting \
@@ -153,7 +131,7 @@ docker compose run --rm pingpong_gmx backtesting \
   --config /freqtrade/configs/pingpong_gmx.secrets.json \
   --strategy Pingpong \
   --timeframe 5m \
-  --timerange 20251128-20251208
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 ---
@@ -197,36 +175,36 @@ The Makefile provides convenient shortcuts for common operations.
 
 ```bash
 # Basic usage
-make data CONTAINER=pingpong_gmx TIMERANGE=20251128-20251208
+make data CONTAINER=pingpong_gmx
 
 # With custom timeframe
-make data CONTAINER=adxmomentum_gmx TIMEFRAME=1h TIMERANGE=20250101-20250401
+make data CONTAINER=adxmomentum_gmx TIMEFRAME=1h
 
 # With verbosity
-make data CONTAINER=pingpong_gmx TIMERANGE=20251128-20251208 VERBOSE=-vv
+make data CONTAINER=pingpong_gmx VERBOSE=-vv
 ```
 
 **Parameters:**
 - `CONTAINER` (required): Container name (e.g., `pingpong_gmx`, `adxmomentum_gmx`)
 - `TIMEFRAME` (optional): Default `5m`, can be `1m`, `1h`, `4h`, `1d`
-- `TIMERANGE` (optional): Default `20250101-20251130`
+- `TIMERANGE` (optional): Default is a live rolling 5-month window ending yesterday (GMX's data API only serves roughly the last 6 months)
 - `VERBOSE` (optional): `-v`, `-vv`, or `-vvv`
 
 #### Run Backtest
 
 ```bash
 # Basic usage
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20251128-20251208
+make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
 
 # With custom timeframe and verbosity
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250101-20250401 VERBOSE=-vv
+make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h VERBOSE=-vv
 ```
 
 **Parameters:**
 - `CONTAINER` (required): Container name
 - `STRATEGY` (required): Strategy name (e.g., `Pingpong`, `Simple`, `ADXMomentum`)
 - `TIMEFRAME` (optional): Default `5m`
-- `TIMERANGE` (optional): Default `20250101-20251130`
+- `TIMERANGE` (optional): Default is a live rolling 5-month window ending yesterday (GMX's data API only serves roughly the last 6 months)
 - `VERBOSE` (optional): `-v`, `-vv`, or `-vvv`
 
 #### Plot Dataframe
@@ -239,7 +217,7 @@ make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
 make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum INDICATORS1="adx plus_di minus_di" INDICATORS2="mom"
 
 # With timeframe and timerange
-make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250101-20250401
+make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h
 
 # With specific backtest file
 make plot-dataframe CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum BACKTEST_FILENAME=backtest-result-2025-12-08_11-36-37.json
@@ -265,7 +243,7 @@ make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum
 make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum AUTO_OPEN=1
 
 # With specific pairs and timerange
-make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum PAIRS="ETH/USDC:USDC" TIMERANGE=20250101-20250401
+make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum PAIRS="ETH/USDC:USDC"
 
 # Using database trades instead of backtest
 make plot-profit CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TRADE_SOURCE=DB DB=adxmomentum_gmx.sqlite
@@ -295,7 +273,7 @@ docker compose run --rm pingpong_gmx download-data \
   --config /freqtrade/configs/pingpong_gmx.json \
   --config /freqtrade/configs/pingpong_gmx.secrets.json \
   --timeframe 5m \
-  --timerange 20251128-20251208 \
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) \
   --prepend
 ```
 
@@ -307,7 +285,7 @@ docker compose run --rm adxmomentum_gmx backtesting \
   --config /freqtrade/configs/adxmomentum_gmx.secrets.json \
   --strategy ADXMomentum \
   --timeframe 1h \
-  --timerange 20250101-20250401 \
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) \
   -vv
 ```
 
@@ -460,7 +438,7 @@ docker-compose build --no-cache pingpong_gmx
 
 ```bash
 # Check timerange format (YYYYMMDD-YYYYMMDD)
-make data CONTAINER=pingpong_gmx TIMERANGE=20251128-20251208 VERBOSE=-vv
+make data CONTAINER=pingpong_gmx VERBOSE=-vv
 
 # Verify container has access to configs
 docker compose run --rm pingpong_gmx ls -la /freqtrade/configs/
