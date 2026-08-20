@@ -1,5 +1,7 @@
 TIMEFRAME ?= 5m
-TIMERANGE ?= 20250101-20251130
+# GMX's data API serves a rolling ~6-month window ending yesterday; a hardcoded
+# date range goes dead the moment it falls outside that window.
+TIMERANGE ?= $(shell date -d '5 months ago' +%Y%m%d)-$(shell date -d 'yesterday' +%Y%m%d)
 # Verbosity level for freqtrade commands (empty, -v, -vv, or -vvv)
 VERBOSE ?=
 
