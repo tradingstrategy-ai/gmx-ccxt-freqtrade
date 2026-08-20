@@ -1,4 +1,4 @@
-FROM freqtradeorg/freqtrade:2025.10
+FROM freqtradeorg/freqtrade:2026.7
 
 # Switch user to root to install build dependencies
 USER root
