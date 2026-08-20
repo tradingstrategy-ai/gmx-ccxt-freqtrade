@@ -54,8 +54,10 @@ Complete guide to installing the GMX Freqtrade setup and running your first back
 
    **macOS:**
    ```bash
-   brew install gettext libomp
+   brew install coreutils gettext libomp
    ```
+
+   The command examples use GNU `date -d`; on macOS, replace `date` with Homebrew's `gdate`.
 
    **For other systems**, see [Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
 

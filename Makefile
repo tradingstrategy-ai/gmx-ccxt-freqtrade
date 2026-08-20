@@ -1,7 +1,11 @@
 TIMEFRAME ?= 5m
 # GMX's data API serves a rolling ~6-month window ending yesterday; a hardcoded
 # date range goes dead the moment it falls outside that window.
-TIMERANGE ?= $(shell date -d '5 months ago' +%Y%m%d)-$(shell date -d 'yesterday' +%Y%m%d)
+DATE_BIN := $(shell if date -d yesterday +%Y%m%d >/dev/null 2>&1; then printf date; elif command -v gdate >/dev/null 2>&1; then printf gdate; else printf missing; fi)
+ifeq ($(DATE_BIN),missing)
+$(error GNU date is required; install coreutils with Homebrew on macOS)
+endif
+TIMERANGE ?= $(shell $(DATE_BIN) -d '5 months ago' +%Y%m%d)-$(shell $(DATE_BIN) -d 'yesterday' +%Y%m%d)
 # Verbosity level for freqtrade commands (empty, -v, -vv, or -vvv)
 VERBOSE ?=
 
@@ -125,8 +129,8 @@ REFRESH_CONTAINER ?= adxmomentum_gmx
 REFRESH_CONFIG ?= adxmomentum_gmx
 refresh-data:
 	@echo "Step 1/4: Downloading last $(REFRESH_DAYS) days of GMX candles..."
-	@START=$$(date -d "-$(REFRESH_DAYS) days" +%Y%m%d); \
-	END=$$(date +%Y%m%d); \
+	@START=$$($(DATE_BIN) -d "-$(REFRESH_DAYS) days" +%Y%m%d); \
+	END=$$($(DATE_BIN) +%Y%m%d); \
 	echo "  Timerange: $$START-$$END"; \
 	docker exec $(REFRESH_CONTAINER) \
 		python -u -B -m eth_defi.gmx.freqtrade.patched_entrypoint \

@@ -14,8 +14,11 @@ sudo apt install -y python3-pip python3-venv python3-dev python3-pandas git curl
 
 **macOS:**
 ```bash
-brew install gettext libomp
+brew install coreutils gettext libomp
 ```
+
+The date examples below use GNU `date -d`. On macOS, Homebrew provides it as `gdate`; replace
+`date` with `gdate` in the commands below.
 
 **For other systems**, see [Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
 
@@ -50,7 +53,7 @@ uv pip install -e "deps/web3-ethereum-defi[data,ccxt]"
 # config schema still requires a jwt_secret_key of at least 32 characters --
 # the shipped template's "x" placeholder will fail validation as-is.
 cp configs/secrets.empty.json configs/adxmomentum_gmx.secrets.json
-sed -i 's/"jwt_secret_key": "x"/"jwt_secret_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/' configs/adxmomentum_gmx.secrets.json
+python -c 'import re; from pathlib import Path; p = Path("configs/adxmomentum_gmx.secrets.json"); p.write_text(re.sub(r"(\"jwt_secret_key\"\s*:\s*\")[^\"]*(\")", r"\g<1>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\g<2>", p.read_text(), count=1))'
 ```
 
 **Why these steps?**
@@ -191,13 +194,13 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 ### Test Different Date Ranges
 
 ```bash
-# First half of the available window (in-sample)
+# First two months of the available window (in-sample)
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange $(date -d "6 months ago" +%Y%m%d)-$(date -d "3 months ago" +%Y%m%d)
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d "3 months ago" +%Y%m%d)
 
 # Second half (out-of-sample)
 ./freqtrade-gmx backtesting \
@@ -228,21 +231,21 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 # 1. Setup (if not done)
 # See Step 1 above
 
-# 2. Download 6 months of data
+# 2. Download the last 5 months of data
 ./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange $(date -d "6 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 
-# 3. Backtest first 3 months
+# 3. Backtest the first 2 months
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange $(date -d "6 months ago" +%Y%m%d)-$(date -d "3 months ago" +%Y%m%d) \
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d "3 months ago" +%Y%m%d) \
   -vv
 
 # 4. Generate equity curve (freqtrade packages results as .zip, not bare .json)
