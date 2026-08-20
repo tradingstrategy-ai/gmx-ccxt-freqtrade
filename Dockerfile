@@ -21,7 +21,7 @@ USER ftuser
 
 # Copy and install web3-ethereum-defi dependency with extras
 COPY deps/web3-ethereum-defi /tmp/web3-ethereum-defi
-RUN pip install --user --force-reinstall "/tmp/web3-ethereum-defi[web3v7]"
+RUN pip install --user --force-reinstall "/tmp/web3-ethereum-defi[ccxt]"
 
 # Install plotly for freqtrade plotting commands
 RUN pip install --user plotly
@@ -35,4 +35,3 @@ COPY plugins/pairlist/GMXLiquidityFilter.py /freqtrade/freqtrade/plugins/pairlis
 ENTRYPOINT ["python", "-u", "-B", "-m", "eth_defi.gmx.freqtrade.patched_entrypoint", "freqtrade"]
 # Default to trade mode
 CMD ["trade"]
-
