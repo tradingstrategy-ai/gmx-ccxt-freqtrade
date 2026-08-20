@@ -213,13 +213,13 @@ source .venv/bin/activate
 # 4. Install Freqtrade and dependencies
 uv pip install -r freqtrade-develop/requirements.txt
 uv pip install -e freqtrade-develop/
-uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+uv pip install -e "deps/web3-ethereum-defi[data,ccxt]"
 
 # 5. Download data
-./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 
 # 6. Backtest
-./freqtrade-gmx backtesting --strategy Pingpong --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timerange 20250101-20250201
+./freqtrade-gmx backtesting --strategy Pingpong --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 See [Getting Started](getting-started.md) for detailed instructions.

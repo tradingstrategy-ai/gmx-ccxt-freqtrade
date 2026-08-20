@@ -298,7 +298,7 @@ ERROR: GMX only supports futures trading
 
 **Problem:**
 ```bash
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 WARNING: No data found for pair ETH/USDC
 ```
 
@@ -307,7 +307,7 @@ WARNING: No data found for pair ETH/USDC
 **1. Check timerange format:**
 ```bash
 # ✅ Correct format: YYYYMMDD-YYYYMMDD
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 
 # ❌ Wrong formats:
 --timerange 2025-01-01-2025-02-01  # Hyphens in dates
@@ -327,7 +327,7 @@ freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --time
 
 **4. Check with verbose output:**
 ```bash
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201 -vvv
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) -vvv
 ```
 
 ---
@@ -378,19 +378,19 @@ WARNING: Missing candles in downloaded data
 
 **1. Re-download with `--prepend` flag:**
 ```bash
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201 --prepend
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) --prepend
 ```
 
 **2. Delete cached data and re-download:**
 ```bash
 rm -rf user_data/data/gmx/
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 **3. Try smaller timerange:**
 ```bash
 # Instead of 1 year, try 1 month
-freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange 20250101-20250201
+freqtrade download-data --exchange gmx --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 ## Backtest Failures
@@ -407,7 +407,7 @@ Backtest completed: 0 trades
 **1. Check strategy logic:**
 ```bash
 # Run with very verbose output
-freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timerange 20250101-20250201 -vvv
+freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) -vvv
 ```
 
 **2. Verify indicators calculate correctly:**
@@ -531,13 +531,13 @@ ERROR: MemoryError
 freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timerange 20240101-20241231
 
 # Try 1 month:
-freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timerange 20250101-20250201
+freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 **2. Use higher timeframe:**
 ```bash
 # Instead of 1m, use 5m or 1h
-freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timeframe 1h --timerange 20250101-20250201
+freqtrade backtesting --strategy MyStrategy --config configs/pingpong_gmx.json --timeframe 1h --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 **3. Increase system memory:**
@@ -567,7 +567,7 @@ source .venv/bin/activate
 uv pip uninstall web3-ethereum-defi
 
 # Install from local submodule (includes freqtrade integration)
-uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+uv pip install -e "deps/web3-ethereum-defi[data,ccxt]"
 
 # Verify
 ./freqtrade-gmx --version
@@ -615,7 +615,7 @@ ls deps/web3-ethereum-defi/eth_defi/gmx/
 source .venv/bin/activate
 # Reinstall from local submodule
 uv pip uninstall web3-ethereum-defi
-uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+uv pip install -e "deps/web3-ethereum-defi[data,ccxt]"
 ```
 
 **5. Verify using patched entrypoint:**
@@ -780,7 +780,7 @@ When asking for help, include:
 
 1. **Command run:**
    ```bash
-   freqtrade backtesting --strategy Pingpong --config configs/pingpong_gmx.json --timerange 20250101-20250201
+   freqtrade backtesting --strategy Pingpong --config configs/pingpong_gmx.json --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
    ```
 
 2. **Error message:**
@@ -854,7 +854,7 @@ When reporting bugs:
    source .venv/bin/activate
    uv pip install -r freqtrade-develop/requirements.txt
    uv pip install -e freqtrade-develop/
-   uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+   uv pip install -e "deps/web3-ethereum-defi[data,ccxt]"
    ```
 5. Ask on Freqtrade Discord with details
 

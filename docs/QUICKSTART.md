@@ -14,8 +14,11 @@ sudo apt install -y python3-pip python3-venv python3-dev python3-pandas git curl
 
 **macOS:**
 ```bash
-brew install gettext libomp
+brew install coreutils gettext libomp
 ```
+
+The date examples below use GNU `date -d`. On macOS, Homebrew provides it as `gdate`; replace
+`date` with `gdate` in the commands below.
 
 **For other systems**, see [Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
 
@@ -41,26 +44,33 @@ uv pip install -r freqtrade-develop/requirements.txt
 uv pip install -e freqtrade-develop/
 
 # Install GMX integration from local submodule (includes freqtrade integration)
-uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+uv pip install -e "deps/web3-ethereum-defi[data,ccxt]"
 
 # Verify installation
 ./freqtrade-gmx --version
+
+# Create a secrets file. Backtesting needs no real API keys, but freqtrade's
+# config schema still requires a jwt_secret_key of at least 32 characters --
+# the shipped template's "x" placeholder will fail validation as-is.
+cp configs/secrets.empty.json configs/adxmomentum_gmx.secrets.json
+python -c 'import re; from pathlib import Path; p = Path("configs/adxmomentum_gmx.secrets.json"); p.write_text(re.sub(r"(\"jwt_secret_key\"\s*:\s*\")[^\"]*(\")", r"\g<1>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\g<2>", p.read_text(), count=1))'
 ```
 
 **Why these steps?**
 - We install from the **local submodule** (`deps/web3-ethereum-defi`) because the PyPI version doesn't include the freqtrade integration yet
 - We use the **freqtrade-gmx wrapper script** to avoid Python import conflicts with the `freqtrade/` directory
+- `configs/adxmomentum_gmx.secrets.json` is gitignored and machine-local -- every config below assumes it already exists
 
 ## Step 2: Download Data (2-3 min)
 
 ```bash
-# Download 3 months of 1h data for ETH/USDC
+# Download the last 3 months of 1h data for ETH/USDC
 ./freqtrade-gmx download-data \
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --exchange gmx \
   --timeframe 1h \
-  --timerange 20250101-20250401
+  --timerange $(date -d "3 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 ## Step 3: Run Backtest (1-2 min)
@@ -72,7 +82,7 @@ uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
   --config configs/adxmomentum_gmx.secrets.json \
   --strategy ADXMomentum \
   --timeframe 1h \
-  --timerange 20250101-20250401 \
+  --timerange $(date -d "3 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) \
   -vv
 ```
 
@@ -113,11 +123,22 @@ uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 # Activate virtual environment
 source .venv/bin/activate
 
-# Find latest backtest results
-ls -lt user_data/backtest_results/ | head -5
+# scripts/plot_equity.py needs seaborn, which is not pulled in by any
+# earlier step
+uv pip install seaborn
+
+# Find latest backtest results -- freqtrade packages each run as a .zip
+# (plus a .meta.json), not a bare .json file
+ls -lt user_data/backtest_results/*.zip | head -5
+
+# Extract the result JSON the plot script expects (not the sibling
+# _config.json / .py / .feather files the zip also contains)
+LATEST_ZIP=$(ls -t user_data/backtest_results/*.zip | head -1)
+unzip -o "$LATEST_ZIP" -d /tmp/backtest-result
+RESULT_JSON="/tmp/backtest-result/$(basename "$LATEST_ZIP" .zip).json"
 
 # Generate equity curve and monthly returns heatmap
-python scripts/plot_equity.py user_data/backtest_results/backtest-result-YYYY-MM-DD_HH-MM-SS.json
+python scripts/plot_equity.py "$RESULT_JSON"
 ```
 
 **Output:**
@@ -165,7 +186,7 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 4h \
-  --timerange 20250101-20250401
+  --timerange $(date -d "3 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 
 # Compare results
 ```
@@ -173,21 +194,21 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 ### Test Different Date Ranges
 
 ```bash
-# Q1 2025
+# First two months of the available window (in-sample)
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange 20250101-20250401
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d "3 months ago" +%Y%m%d)
 
-# Q2 2025 (out-of-sample)
+# Second half (out-of-sample)
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange 20250401-20250701
+  --timerange $(date -d "3 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 
@@ -210,26 +231,30 @@ This strategy enters when a strong uptrend is confirmed by multiple indicators a
 # 1. Setup (if not done)
 # See Step 1 above
 
-# 2. Download 6 months of data
+# 2. Download the last 5 months of data
 ./freqtrade-gmx download-data \
   --exchange gmx \
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange 20250101-20250701
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 
-# 3. Backtest first 3 months
+# 3. Backtest the first 2 months
 ./freqtrade-gmx backtesting \
   --strategy ADXMomentum \
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange 20250101-20250401 \
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d "3 months ago" +%Y%m%d) \
   -vv
 
-# 4. Generate equity curve
+# 4. Generate equity curve (freqtrade packages results as .zip, not bare .json)
 source .venv/bin/activate
-python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
+uv pip install seaborn
+LATEST_ZIP=$(ls -t user_data/backtest_results/*.zip | head -1)
+unzip -o "$LATEST_ZIP" -d /tmp/backtest-result
+RESULT_JSON="/tmp/backtest-result/$(basename "$LATEST_ZIP" .zip).json"
+python scripts/plot_equity.py "$RESULT_JSON"
 
 # 5. Analyze results
 # - Check win rate (aim for 40-55%)
@@ -242,7 +267,7 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange 20250401-20250701 \
+  --timerange $(date -d "3 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) \
   -vv
 
 # 7. Compare results
@@ -283,9 +308,13 @@ python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
   --config configs/adxmomentum_gmx.secrets.json \
   --indicators1 adx plus_di minus_di
 
-# Visualizations (Custom Python)
+# Visualizations (Custom Python) -- extract the .zip first, see Step 4 Option 2
 source .venv/bin/activate
-python scripts/plot_equity.py user_data/backtest_results/backtest-result-*.json
+uv pip install seaborn
+LATEST_ZIP=$(ls -t user_data/backtest_results/*.zip | head -1)
+unzip -o "$LATEST_ZIP" -d /tmp/backtest-result
+RESULT_JSON="/tmp/backtest-result/$(basename "$LATEST_ZIP" .zip).json"
+python scripts/plot_equity.py "$RESULT_JSON"
 
 # List backtest results
 ls -lt user_data/backtest_results/

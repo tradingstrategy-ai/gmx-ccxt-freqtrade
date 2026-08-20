@@ -116,8 +116,10 @@ sudo apt install -y python3-pip python3-venv python3-dev python3-pandas git curl
 
 ```bash
 # Install packages
-brew install gettext libomp
+brew install coreutils gettext libomp
 ```
+
+The command examples use GNU `date -d`; on macOS, replace `date` with Homebrew's `gdate`.
 
 **For other systems or troubleshooting**, see the [official Freqtrade installation requirements](https://www.freqtrade.io/en/stable/installation/#requirements).
 
