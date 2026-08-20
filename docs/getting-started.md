@@ -153,7 +153,7 @@ python -m freqtrade --version
 
 **Expected output:**
 ```
-freqtrade 2025.10
+freqtrade 2026.7
 ```
 
 **Troubleshooting**: If installation fails:
@@ -168,7 +168,7 @@ freqtrade 2025.10
 source .venv/bin/activate
 
 # Install web3-ethereum-defi from local submodule (includes freqtrade integration)
-uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
+uv pip install -e "deps/web3-ethereum-defi[data,ccxt]"
 
 # Verify installation
 ./freqtrade-gmx --version
@@ -177,7 +177,7 @@ uv pip install -e "deps/web3-ethereum-defi[web3v7,data,ccxt]"
 **What this installs:**
 - web3-ethereum-defi core library (from local submodule with freqtrade integration)
 - GMX-specific modules including freqtrade monkeypatch
-- Web3 v7 dependencies (with web3v7 extra)
+- Web3 v7 dependencies (required by eth_defi; installed by the `[ccxt]`/`[data]` extras)
 - Data processing tools (with data extra)
 - CCXT integration (with ccxt extra)
 
@@ -187,7 +187,7 @@ The PyPI version of `web3-ethereum-defi` (v0.35) doesn't include the freqtrade i
 
 ```bash
 # ❌ This won't work - PyPI version missing freqtrade module
-uv pip install "web3-ethereum-defi[web3v7,data,ccxt]"
+uv pip install "web3-ethereum-defi[data,ccxt]"
 python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
 # Error: ModuleNotFoundError: No module named 'eth_defi.gmx.freqtrade'
 ```
@@ -252,7 +252,7 @@ GMX registered: True
 ```
 
 If you see `False`, troubleshoot:
-1. Reinstall from PyPI: `uv pip install --force-reinstall "web3>=7.12.0" "web3-ethereum-defi[web3v7]"`
+1. Reinstall from PyPI: `uv pip install --force-reinstall "web3>=7.12.0" "web3-ethereum-defi[ccxt]"`
 2. Check venv is activated: `which python`
 3. Verify installation: `python -c "import eth_defi.gmx"`
 
@@ -263,7 +263,7 @@ python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade --version
 
 **Expected output:**
 ```
-freqtrade 2025.10
+freqtrade 2026.7
 ```
 
 ## Your First Backtest
@@ -286,7 +286,7 @@ Download 1 month of 5-minute candle data:
   --config configs/pingpong_gmx.json \
   --config configs/pingpong_gmx.secrets.json \
   --timeframe 5m \
-  --timerange 20250101-20250201
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 **What this does:**
@@ -304,13 +304,13 @@ Download 1 month of 5-minute candle data:
 **Add verbosity for more details:**
 ```bash
 # Basic progress
-./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -v
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) -v
 
 # Detailed progress
-./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -vv
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) -vv
 
 # Debug information
-./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange 20250101-20250201 -vvv
+./freqtrade-gmx download-data --exchange gmx --config configs/pingpong_gmx.json --config configs/pingpong_gmx.secrets.json --timeframe 5m --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) -vvv
 ```
 
 **Data location:**
@@ -340,14 +340,14 @@ Backtest the Pingpong strategy using the downloaded data:
   --strategy Pingpong \
   --config configs/pingpong_gmx.json \
   --config configs/pingpong_gmx.secrets.json \
-  --timerange 20250101-20250201
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 
 # With verbose output
 ./freqtrade-gmx backtesting \
   --strategy Pingpong \
   --config configs/pingpong_gmx.json \
   --config configs/pingpong_gmx.secrets.json \
-  --timerange 20250101-20250201 \
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) \
   -vv
 ```
 
@@ -480,10 +480,10 @@ Try different parameters:
 make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20241101-20241201
 
 # 2. Different strategy (Simple RSI)
-make backtest CONTAINER=simple_gmx STRATEGY=Simple TIMERANGE=20250101-20250201
+make backtest CONTAINER=simple_gmx STRATEGY=Simple
 
 # 3. Different timeframe (1-hour candles)
-make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h TIMERANGE=20250101-20250201
+make backtest CONTAINER=adxmomentum_gmx STRATEGY=ADXMomentum TIMEFRAME=1h
 
 # 4. Verbose output for debugging
 make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong VERBOSE=-vvv
@@ -740,7 +740,7 @@ WARNING - No data found for pair ETH/USDC
 
 ```bash
 # Debug download
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201 VERBOSE=-vvv
+make data CONTAINER=pingpong_gmx VERBOSE=-vvv
 ```
 
 ### Issue: GMX exchange not recognized
@@ -804,10 +804,10 @@ Now that you have a working setup:
 
 ```bash
 # Download data
-make data CONTAINER=pingpong_gmx TIMERANGE=20250101-20250201
+make data CONTAINER=pingpong_gmx
 
 # Backtest
-make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong TIMERANGE=20250101-20250201
+make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong
 
 # Backtest with verbose output
 make backtest CONTAINER=pingpong_gmx STRATEGY=Pingpong VERBOSE=-vv

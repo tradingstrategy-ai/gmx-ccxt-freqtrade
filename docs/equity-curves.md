@@ -48,7 +48,7 @@ Generate interactive candlestick charts with indicators and entry/exit points ov
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   --timeframe 1h \
-  --timerange 20250101-20250401 \
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d) \
   --indicators1 adx plus_di minus_di
 ```
 
@@ -104,7 +104,7 @@ Generate equity curve and profit visualizations from backtest results.
   --config configs/adxmomentum_gmx.json \
   --config configs/adxmomentum_gmx.secrets.json \
   -p ETH/USDC:USDC \
-  --timerange 20250101-20250401
+  --timerange $(date -d "5 months ago" +%Y%m%d)-$(date -d yesterday +%Y%m%d)
 ```
 
 **With specific backtest file:**

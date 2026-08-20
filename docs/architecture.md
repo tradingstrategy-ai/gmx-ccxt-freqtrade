@@ -87,7 +87,7 @@ pip install -e .
 
 # 3. Install web3-ethereum-defi (contains GMX integration)
 cd ..
-pip install -e deps/web3-ethereum-defi[web3v7]
+pip install -e deps/web3-ethereum-defi[ccxt]
 
 # 4. Set up alias for convenience
 alias freqtrade='python -m eth_defi.gmx.freqtrade.patched_entrypoint freqtrade'
