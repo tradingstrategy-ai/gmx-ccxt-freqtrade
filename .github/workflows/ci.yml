@@ -45,7 +45,7 @@ jobs:
       - name: Install GMX CCXT adapter
         run: |
           source .venv/bin/activate
-          pip install "web3-ethereum-defi[data,ccxt]"
+          pip install "./deps/web3-ethereum-defi[data,ccxt]"
 
       - name: Verify installation
         run: ./freqtrade-gmx --version
